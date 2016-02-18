@@ -1,0 +1,38 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Normailzed text to LF
+*.html text
+*.css text
+*.js text
+*.less text
+*.ejs text
+*.jade text
+*.json text
+*.md text
+*.py text
+*.rst text
+*.txt text
+*.xml text
+*.ini text
+*.inc text
+.htaccess text
+
+# Binary Files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+*.gif binary
+
+# Documents
+*.doc  diff=astextplain
+*.DOC  diff=astextplain
+*.docx diff=astextplain
+*.DOCX diff=astextplain
+*.dot  diff=astextplain
+*.DOT  diff=astextplain
+*.pdf  diff=astextplain
+*.PDF  diff=astextplain
+*.rtf  diff=astextplain
+*.RTF  diff=astextplain

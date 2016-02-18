@@ -1,0 +1,19 @@
+{
+    "browser" : true,
+    "curly" : true,
+    "devel" : true,
+    "eqeqeq" : true,
+    "esnext" : true,
+    "globals" : {
+        "angular" : true,
+        "_" : true,
+        "Chartist" : true,
+        "Comment" : true
+    },
+    "latedef" : "nofunc",
+    "noarg": true,
+    "node" : true,
+    "undef" : true,
+    "unused" : false,
+    "strict" : true
+}
