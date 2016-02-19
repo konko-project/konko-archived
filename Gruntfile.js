@@ -3,6 +3,7 @@
 const _ = require('lodash');
 const server = require('./configurations/server');
 const client = require('./configurations/client');
+const statics = require('./configurations/statics');
 const env = require('./configurations/environment');
 
 module.exports = grunt => {
@@ -26,7 +27,10 @@ module.exports = grunt => {
     /** grunt-bower-concat **/
     bower_concat: {
       all: {
-        dest: '',
+        dest: {
+          js: statics.shared.libs.root + '/vendors.js',
+          css: statics.shared.libs.root + '/vendors.css'
+        },
         dependencies: {
           'bootstrap' : 'tether'
         }
@@ -57,6 +61,10 @@ module.exports = grunt => {
       options: {
         sourceMap: true,
         advanced: false
+      },
+      bower: {
+        src: statics.shared.libs.root + '/vendors.css',
+        dest: statics.shared.libs.root + '/vendors.min.css'
       }
     },
     /** grunt-eslint **/
@@ -106,6 +114,10 @@ module.exports = grunt => {
       options: {
         mangle: true,
         compress: true
+      },
+      bower: {
+        src: statics.shared.libs.root + '/vendors.js',
+        dest: statics.shared.libs.root + '/vendors.min.js'
       }
     },
     /** grunt-contrib-watch **/
@@ -114,7 +126,7 @@ module.exports = grunt => {
           livereload: true
       },
       express: {
-        files: _.union(env.js, server.js),
+        files: _.union(env.grunt, env.configs, server.js),
         tasks: ['server'],
         options: {
           spawn: false
@@ -135,6 +147,8 @@ module.exports = grunt => {
       }
       grunt.task.run('express:' + global.e);
   });
+
+  grunt.registerTask('vendors', ['bower_concat', 'uglify:bower', 'cssmin:bower']);
 
   grunt.registerTask('lint:server', ['jshint:server', 'eslint:server']);
   grunt.registerTask('build:server', ['clean:server', 'lint:server', 'babel:server']);
