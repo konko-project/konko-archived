@@ -2,8 +2,13 @@
 node_modules
 bower_components
 
-# Build directory
-dist
+# Compiled directory
+build
+dist/server
+dist/client
+
+# Compiled vendors
+public/libs
 
 # Debug log from npm
 npm-debug.log
