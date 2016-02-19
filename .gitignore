@@ -4,3 +4,6 @@ bower_components
 
 # Build directory
 dist
+
+# Debug log from npm
+npm-debug.log
