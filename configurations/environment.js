@@ -1,5 +1,6 @@
 'use strict';
 
 module.exports = {
-  js: ['Gruntfile.js'],
+  grunt: ['Gruntfile.js'],
+  configs: ['./configurations/*.js']
 };

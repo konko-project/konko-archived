@@ -3,29 +3,44 @@
 module.exports = {
   build: {
     root: 'build',
-    static: 'build/static'
+    static: 'build',
+    js: 'build/javascripts',
+    css: 'build/css'
   },
   dist: {
     root: 'dist',
-    static: 'dist/static'
+    static: 'dist/client',
+    js: 'dist/client/javascripts',
+    css: 'dist/client/css'
   },
   shared: {
+    libs: {
+      root: 'static/libs'
+    },
+    favicons: {
+      root: 'static/favicons'
+    },
     uploads: {
-      root: 'dist/uploads',
-      users: 'dist/uploads/users',
-      attachments: 'dist/uploads/attachments'
+      root: 'static/uploads',
+      users: 'static/uploads/users',
+      attachments: 'static/uploads/attachments'
     },
     styles: {
-      root: 'dist/styles',
+      root: 'static/styles',
       core: {
-        root: 'dist/styles/core',
-        images: 'dist/styles/core/images'
+        root: 'static/styles/core',
+        images: 'static/styles/core/images'
       },
       konko: {
-        root: 'dist/styles/konko',
-        views: 'dist/styles/konko/views',
-        images: 'dist/styles/konko/images'
+        root: 'static/styles/konko',
+        views: 'static/styles/konko/views',
+        images: 'static/styles/konko/images'
       }
     }
-  }
+  },
+  required: [
+    'static/uploads',
+    'static/uploads/users',
+    'static/uploads/attachments'
+  ]
 };
