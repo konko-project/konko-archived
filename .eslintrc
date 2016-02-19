@@ -1,21 +1,21 @@
 {
-    "ecmaFeatures": {
-        "jsx": true,
-        "modules": true
-    },
-    "env": {
-        "browser": true,
-        "node": true,
-        "es6": true
-    },
-    "globals": {
-        "angular": true,
-        "_": true
-    },
-    "rules": {
-        "strict": 0,
-        "eqeqeq": 1,
-        "curly": 2,
-        "quotes": [2, "single"]
-    }
+  "ecmaFeatures": {
+    "jsx": true,
+    "modules": true
+  },
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true
+  },
+  "globals": {
+    "angular": true,
+    "_": true
+  },
+  "rules": {
+    "strict": 0,
+    "eqeqeq": 1,
+    "curly": 2,
+    "quotes": [2, "single"]
+  }
 }
