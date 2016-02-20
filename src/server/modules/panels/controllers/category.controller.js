@@ -38,17 +38,18 @@ export default class CategoryController {
           populate: {
             path: 'profile',
             model: 'Profile',
-            select: 'username avatar'
-          }
-        }
+            select: 'username avatar',
+          },
+        },
       },
       options: {
-        sort: { 'order': -1 }
-      }
+        sort: { order: -1 },
+      },
     }, (err, category) => {
       if (err) {
         return res.status(500).send({ message: err });
       }
+
       res.json(category);
     });
   }
@@ -74,9 +75,9 @@ export default class CategoryController {
           populate: {
             path: 'profile',
             model: 'Profile',
-            select: 'username avatar'
-          }
-        }
+            select: 'username avatar',
+          },
+        },
       }).exec()
       .then(categories => res.json(categories))
       .catch(err => res.status(500).send({ message: err }));
@@ -94,7 +95,7 @@ export default class CategoryController {
     req.checkBody('name', 'Category name cannot be empty!').notEmpty();
     let errors = req.validationErrors();
     if (errors) {
-        return res.status(400).send({ message: errors });
+      return res.status(400).send({ message: errors });
     }
 
     let user = req.payload;

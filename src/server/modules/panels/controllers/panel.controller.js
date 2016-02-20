@@ -29,14 +29,15 @@ export default class PanelController {
         path: 'children',
         select: '_id name description order topics comments',
         options: {
-          sort: { 'order': -1 }
-        }
+          sort: { order: -1 },
+        },
       }, (err, panel) => {
-          if (err) {
-            res.status(500).send({ message: err });
-          }
-          res.json(req.panel);
-        });
+        if (err) {
+          res.status(500).send({ message: err });
+        }
+
+        res.json(req.panel);
+      });
   }
 
   /**
@@ -51,7 +52,7 @@ export default class PanelController {
       .populate({
         path: 'children',
         select: '_id name',
-        options: { sort: { 'order': -1 } }
+        options: { sort: { order: -1 } },
       }).exec()
       .then(panels => res.json(panels))
       .catch(err => res.status(500).send({ message: err }));
@@ -148,7 +149,7 @@ export default class PanelController {
    static findPanelById(req, res, next, id) {
      if (!mongoose.Types.ObjectId.isValid(id)) {
        return res.status(400).send({
-         message: 'Category ID is invalid'
+         message: 'Category ID is invalid',
        });
      }
 

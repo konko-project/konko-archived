@@ -16,7 +16,7 @@ const panelSchema = new mongoose.Schema({
   last: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Topic' }],
   topics: { type: Number, default: 0 },
   comments: { type: Number, default: 0 },
-  logo: { type: String, default: null }
+  logo: { type: String, default: null },
 });
 
 /**
@@ -24,7 +24,7 @@ const panelSchema = new mongoose.Schema({
  *
  * @returns {Promise} The promise of this updated panel.
  */
-panelSchema.methods.addtopic = function() {
+panelSchema.methods.addtopic = function () {
   this.topics += 1;
   return this.save();
 };
@@ -34,7 +34,7 @@ panelSchema.methods.addtopic = function() {
  *
  * @returns {Promise} The promise of this updated panel.
  */
-panelSchema.methods.addComment = function() {
+panelSchema.methods.addComment = function () {
   this.comments += 1;
   return this.save();
 };
