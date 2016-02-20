@@ -10,42 +10,42 @@ module.exports = {
     root: 'build',
     static: 'build',
     js: 'build/javascripts',
-    css: 'build/css'
+    css: 'build/css',
   },
   dist: {
     root: 'dist',
     static: 'dist/client',
     js: 'dist/client/javascripts',
-    css: 'dist/client/css'
+    css: 'dist/client/css',
   },
   shared: {
     libs: {
-      root: 'static/libs'
+      root: 'static/libs',
     },
     favicons: {
-      root: 'static/favicons'
+      root: 'static/favicons',
     },
     uploads: {
       root: 'static/uploads',
       users: 'static/uploads/users',
-      attachments: 'static/uploads/attachments'
+      attachments: 'static/uploads/attachments',
     },
     styles: {
       root: 'static/styles',
       core: {
         root: 'static/styles/core',
-        images: 'static/styles/core/images'
+        images: 'static/styles/core/images',
       },
       konko: {
         root: 'static/styles/konko',
         views: 'static/styles/konko/views',
-        images: 'static/styles/konko/images'
-      }
-    }
+        images: 'static/styles/konko/images',
+      },
+    },
   },
   required: [
     'static/uploads',
     'static/uploads/users',
-    'static/uploads/attachments'
-  ]
+    'static/uploads/attachments',
+  ],
 };

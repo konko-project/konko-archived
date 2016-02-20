@@ -7,5 +7,5 @@
  */
 module.exports = {
   grunt: ['Gruntfile.js'],
-  configs: ['./configurations/*.js']
+  configs: ['./configurations/*.js'],
 };
