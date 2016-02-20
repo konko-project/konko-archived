@@ -13,93 +13,96 @@ module.exports = grunt => {
     /** grunt-babel **/
     babel: {
       options: {
-        presets: ['babel-preset-es2015-node5', 'stage-0']
+        presets: ['babel-preset-es2015-node5', 'stage-0'],
       },
       server: {
-        files: [{
-          expand: true,
-          cwd: server.paths.src,
-          src: ['**/*.js'],
-          dest: server.paths.dist,
-        }]
-      }
+        files: [
+          {
+            expand: true,
+            cwd: server.paths.src,
+            src: ['**/*.js'],
+            dest: server.paths.dist,
+          },
+        ],
+      },
     },
     /** grunt-bower-concat **/
-    bower_concat: {
+    BOWER_CONCAT: {
       all: {
         dest: {
           js: statics.shared.libs.root + '/vendors.js',
-          css: statics.shared.libs.root + '/vendors.css'
+          css: statics.shared.libs.root + '/vendors.css',
         },
         dependencies: {
-          'bootstrap' : 'tether'
-        }
-      }
+          bootstrap: 'tether',
+        },
+      },
     },
     /** grunt-browserify **/
     browserify: {
       options: {
         transform: [
           ['babelify', {
-            'presets': ['es2015', 'stage-0']
-          }]
-        ]
-      }
+              presets: ['es2015', 'stage-0'],
+            },
+          ],
+        ],
+      },
     },
     /** grunt-contrib-clean **/
     clean: {
-      server: [server.paths.dist]
+      server: [server.paths.dist],
     },
     /** grunt-contrib-csslint **/
     csslint: {
       options: {
-        csslintrc: '.csslintrc'
-      }
+        csslintrc: '.csslintrc',
+      },
     },
     /** grunt-contrib-cssmin **/
     cssmin: {
       options: {
         sourceMap: true,
-        advanced: false
+        advanced: false,
       },
       bower: {
         src: statics.shared.libs.root + '/vendors.css',
-        dest: statics.shared.libs.root + '/vendors.min.css'
-      }
+        dest: statics.shared.libs.root + '/vendors.min.css',
+      },
     },
     /** grunt-eslint **/
     eslint: {
       options: {
-        format: 'visualstudio'
+        format: 'visualstudio',
       },
       server: {
-        src: _.union(server.js)
-      }
+        src: _.union(server.js),
+      },
     },
     /** grunt-express-server **/
     express: {
       options: {
-        harmony: true
+        harmony: true,
       },
       dev: {
         options: {
-            debug: true,
-            script: server.paths.dist + '/server.js',
-            node_env: 'development',
-            background: true
-        }
-      }
+          debug: true,
+          script: server.paths.dist + '/server.js',
+          NODE_ENV: 'development',
+          background: true,
+        },
+      },
     },
     /** grunt-contrib-jshint **/
     jshint: {
       options: {
         reporter: require('jshint-stylish'),
         jshintrc: true,
-        node: true
+        node: true,
       },
       server: {
-        src: _.union(server.js)
-      }
+        src: _.union(server.js),
+      },
     },
     /** grunt-contrib-less **/
     less: {
@@ -113,39 +116,40 @@ module.exports = grunt => {
     uglify: {
       options: {
         mangle: true,
-        compress: true
+        compress: true,
       },
       bower: {
         src: statics.shared.libs.root + '/vendors.js',
-        dest: statics.shared.libs.root + '/vendors.min.js'
-      }
+        dest: statics.shared.libs.root + '/vendors.min.js',
+      },
     },
     /** grunt-contrib-watch **/
     watch: {
       options: {
-          livereload: true
+        livereload: true,
       },
       express: {
         files: _.union(env.grunt, env.configs, server.js),
         tasks: ['server'],
         options: {
-          spawn: false
-        }
+          spawn: false,
+        },
       },
-      server_scripts: {
+      serverScripts: {
         files: _.union(server.js),
-        tasks: ['build:server']
-      }
-    }
+        tasks: ['build:server'],
+      },
+    },
   });
 
   require('load-grunt-tasks')(grunt);
 
   grunt.task.registerTask('server', 'Start the correct server environment.', env => {
-      if (env && env !== undefined) {
-          global.e = env;
-      }
-      grunt.task.run('express:' + global.e);
+    if (env && env !== undefined) {
+      global.e = env;
+    }
+
+    grunt.task.run('express:' + global.e);
   });
 
   grunt.registerTask('vendors', ['bower_concat', 'uglify:bower', 'cssmin:bower']);
