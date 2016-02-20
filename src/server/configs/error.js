@@ -23,7 +23,7 @@ export default app => {
       res.status(err.status || 500);
       res.render('jade/error', {
         message: err.message,
-        error: err
+        error: err,
       });
     });
   }
@@ -34,7 +34,7 @@ export default app => {
     res.status(err.status || 500);
     res.render('jade/error', {
       message: err.message,
-      error: {}
+      error: {},
     });
   });
 };

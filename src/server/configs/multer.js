@@ -19,10 +19,10 @@ export default (app, dest, filename = null, limits = null, fileFilter = null) =>
   let storage = typeof dest === 'string' ? dest :
                 typeof dest === 'function' && filename ? multer.diskStorage({
                   destination: dest,
-                  filename: filename
+                  filename: filename,
                 }) :
                 typeof dest === 'function' ? multer.diskStorage({
-                  destination: dest
+                  destination: dest,
                 }) : require(path.join(app.pwd, 'configurations', 'statics')).uploads.root;
 
   return limits && fileFilter ? multer({ storage: storage, limits: limits, fileFilter: fileFilter }) :

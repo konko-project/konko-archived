@@ -14,16 +14,17 @@ const User = mongoose.model('User');
  */
 export default () => {
   passport.use(new LocalStrategy({
-    usernameField: 'email'
-  },(email, password, done) => {
+    usernameField: 'email',
+  }, (email, password, done) => {
     User.findOne({ email: email }, (err, user) => {
       if (err) {
         return done(err);
       } else if (!user || !user.validPassword(password)) {
         return done(null, false, {
-          message: 'Invalid Email or Password.'
+          message: 'Invalid Email or Password.',
         });
       }
+
       return done(null, user);
     });
   }));

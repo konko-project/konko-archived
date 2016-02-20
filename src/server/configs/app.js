@@ -46,7 +46,7 @@ export default dirname => {
   // express/app setup
   app.use(favicon(path.join(STATICS.shared.root, 'favicon.ico')));
   app.use(morgan('dev'));
-  app.use(cookieParser(SECRETS.cookie_secret));
+  app.use(cookieParser(SECRETS.cookieSecret));
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(passport.initialize());
@@ -56,7 +56,8 @@ export default dirname => {
     filter: (req, res) => {
       return /json|text|xml|javascript|css|font|svg/.test(res.getHeader('Content-Type'));
     },
-    level: 9
+
+    level: 9,
   }));
 
   // setup static directories
@@ -73,7 +74,7 @@ export default dirname => {
   _mailer(app, mailer);
 
   // JWT
-  app.set('secret', SECRETS.jwt_secret);
+  app.set('secret', SECRETS.jwtSecret);
 
   // database setup
   db.loadModels(SERVER);
@@ -85,8 +86,8 @@ export default dirname => {
   // CSRF
   app.use(csrf({ cookie: true }));
   app.use((req, res, next) => {
-      res.cookie('csrfToken', req.csrfToken());
-      return next();
+    res.cookie('csrfToken', req.csrfToken());
+    return next();
   });
 
   // set routes

@@ -36,15 +36,13 @@ export default (app, statics, client) => {
   if (app.get('env') === 'development') {
     app.use(express.static(path.join(app.pwd, statics.build.static)));
     globFilePath(client.build.css, {}, app.locals.css, statics.build.root);
-    globFilePath(client.build.js, {nosort: true}, app.locals.js, statics.build.root);
+    globFilePath(client.build.js, { nosort: true }, app.locals.js, statics.build.root);
   } else if (app.get('env') === 'production') {
     app.use(express.static(path.join(app.pwd, statics.dist.static)));
     globFilePath(client.dist.css, {}, app.locals.css, statics.dist.root);
     globFilePath(client.dist.js, {}, app.locals.js, statics.dist.root);
-  } else {
-    // Do something later
   }
-  
+
   app.use('/libs', express.static(path.join(app.pwd, statics.shared.libs.root)));
   app.use('/favicons', express.static(path.join(app.pwd, statics.shared.favicons.root)));
   app.use('/uploads', express.static(path.join(app.pwd, statics.shared.uploads.root)));

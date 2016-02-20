@@ -4,9 +4,9 @@ import mongoose from 'mongoose';
 import glob from 'glob';
 import path from 'path';
 
-const uri_pord = 'mongodb://localhost/konko';
-const uri_dev = 'mongodb://localhost/konko-dev';
-const uri_test = 'mongodb://localhost/konko-test';
+const URI_PROD = 'mongodb://localhost/konko';
+const URI_DEV = 'mongodb://localhost/konko-dev';
+const URL_TEST = 'mongodb://localhost/konko-test';
 
 /**
  * A class that handling mongoose
@@ -37,7 +37,7 @@ export default class Database {
       });
     });
     if (callback) {
-        callback();
+      callback();
     }
   }
 
@@ -50,9 +50,9 @@ export default class Database {
    */
   static connect(app, callback) {
     let env = app.get('env');
-    let uri = env === 'production' ? uri_pord :
-              env === 'development' ? uri_dev :
-              env === 'test' ? uri_test : '';
+    let uri = env === 'production' ? URI_PROD :
+              env === 'development' ? URI_DEV :
+              env === 'test' ? URL_TEST : '';
 
     // connect to mongoDB
     let database = mongoose.connect(uri, err => {
@@ -61,7 +61,7 @@ export default class Database {
         console.log(err);
       } else {
         if (callback) {
-            callback(database);
+          callback(database);
         }
       }
     });
