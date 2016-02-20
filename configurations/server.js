@@ -1,5 +1,10 @@
 'use strict';
 
+/**
+ * Paths and/or file patterns for server side codes
+ *
+ * @module Konko/Global/Configurations/Server
+ */
 module.exports = {
   paths: {
     src: 'src/server',

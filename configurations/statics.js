@@ -1,5 +1,10 @@
 'use strict';
 
+/**
+ * Paths and/or file patterns for static files
+ *
+ * @module Konko/Global/Configurations/Statics
+ */
 module.exports = {
   build: {
     root: 'build',

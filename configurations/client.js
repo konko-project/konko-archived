@@ -1,5 +1,11 @@
 'use strict';
 
+/**
+ * Paths and/or file patterns for client side codes
+ * with different versions (source, dev-build, and final distribution)
+ *
+ * @module Konko/Global/Configurations/Client
+ */
 module.exports = {
   src: {
     path: [
