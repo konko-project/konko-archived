@@ -24,7 +24,7 @@ export default class IndexController {
       title: 'Konko Project',
       description: 'MEAN stack based forum',
       protocol: req.protocol,
-      host: req.get('host')
+      host: req.get('host'),
     });
   }
 }

@@ -24,12 +24,13 @@ export default class UploadController {
   static profileUpload(req, res, next) {
     if (req.payload._id !== req.body.userId) {
       return res.status(401).send({
-        message: 'Unauthorized'
+        message: 'Unauthorized',
       });
     }
+
     let url = '/uploads/users/' + req.payload._id + '/' + req.file.fieldname + '/' + req.file.filename;
     return res.status(200).send({
-      url: url
+      url: url,
     });
   }
 }

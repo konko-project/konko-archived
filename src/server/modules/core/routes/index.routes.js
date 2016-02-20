@@ -13,7 +13,7 @@ export default app => {
 
   app.route('/:url(api|modules|lib)/*').get((req, res) => {
     res.status(404).json({
-      messages: 'Not Found!'
+      messages: 'Not Found!',
     });
   });
 

@@ -14,16 +14,18 @@ import upload from '../controllers/upload.controller';
  */
 const storage = (req, file, cb) => {
   const STATICS = require(path.join(req.app.pwd, 'configurations', 'statics'));
-  const base = STATICS.shared.uploads.users;
-  const user_dir = path.join(base, req.body.userId);
-  const field_dir = path.join(user_dir, file.fieldname);
-  if (!fs.existsSync(path.join(req.app.pwd, user_dir))) {
-      fs.mkdirSync(path.join(req.app.pwd, user_dir));
+  const BASE = STATICS.shared.uploads.users;
+  const USER_DIR = path.join(BASE, req.body.userId);
+  const FIELD_DIR = path.join(USER_DIR, file.fieldname);
+  if (!fs.existsSync(path.join(req.app.pwd, USER_DIR))) {
+    fs.mkdirSync(path.join(req.app.pwd, USER_DIR));
   }
-  if (!fs.existsSync(path.join(req.app.pwd, field_dir))) {
-      fs.mkdirSync(path.join(req.app.pwd, field_dir));
+
+  if (!fs.existsSync(path.join(req.app.pwd, FIELD_DIR))) {
+    fs.mkdirSync(path.join(req.app.pwd, FIELD_DIR));
   }
-  cb(null, path.join(req.app.pwd, field_dir));
+
+  cb(null, path.join(req.app.pwd, FIELD_DIR));
 };
 
 /**
@@ -34,15 +36,15 @@ const storage = (req, file, cb) => {
  * @param {Object} app - Express app.
  */
 export default app => {
-  const jwt_auth = jwt({secret: app.get('secret'), userProperty: 'payload'});
+  const JWT_AUTH = jwt({ secret: app.get('secret'), userProperty: 'payload' });
   const profileAUpload = new app.multer(app, storage, null, { fileSize: 2 * 1024 * 1024 });
   const profileBUpload = new app.multer(app, storage, null, { fileSize: 5 * 1024 * 1024 });
 
   app.route('/api/upload/avatar')
-    .post(jwt_auth, profileAUpload.single('avatar'), upload.profileUpload);
+    .post(JWT_AUTH, profileAUpload.single('avatar'), upload.profileUpload);
 
   app.route('/api/upload/banner')
-    .post(jwt_auth, profileBUpload.single('banner'), upload.profileUpload);
+    .post(JWT_AUTH, profileBUpload.single('banner'), upload.profileUpload);
 };
 
 /**
