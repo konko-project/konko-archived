@@ -19,14 +19,24 @@ const panelSchema = new mongoose.Schema({
   logo: { type: String, default: null }
 });
 
-panelSchema.methods.addtopic = function(callback) {
-    this.topics += 1;
-    this.save(callback);
+/**
+ * Increment topic number by one.
+ *
+ * @returns {Promise} The promise of this updated panel.
+ */
+panelSchema.methods.addtopic = function() {
+  this.topics += 1;
+  return this.save();
 };
 
-panelSchema.methods.addComments = function(callback) {
-    this.comments += 1;
-    this.save(callback);
+/**
+ * Increment comment number by one.
+ *
+ * @returns {Promise} The promise of this updated panel.
+ */
+panelSchema.methods.addComment = function() {
+  this.comments += 1;
+  return this.save();
 };
 
 mongoose.model('Panel', panelSchema);
