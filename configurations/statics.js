@@ -19,6 +19,7 @@ module.exports = {
     css: 'dist/client/css',
   },
   shared: {
+    root: 'static',
     libs: {
       root: 'static/libs',
     },
