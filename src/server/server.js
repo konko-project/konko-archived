@@ -39,8 +39,8 @@ APP.set('port', port);
  * Start express server
  */
 let server = http.createServer(APP).listen(port, () => {
-    console.log('Express server listening on port ' + port);
-    console.log('Environment:\t' + APP.get('env'));
+  console.log('Express server listening on port ' + port);
+  console.log('Environment:\t' + APP.get('env'));
 });
 
 /**
