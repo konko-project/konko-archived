@@ -1,10 +1,10 @@
 'use strict';
 
 import passport from 'passport';
+import passportLocal from 'passport-local';
 import mongoose from 'mongoose';
 
-const LocalStrategy = passport.Strategy;
-const User = mongoose.model('User');
+const LocalStrategy = passportLocal.Strategy;
 
 /**
  * Configurate passport for account authentication.
@@ -13,6 +13,7 @@ const User = mongoose.model('User');
  * @module Konko/Server/Configurations/Passport
  */
 export default () => {
+  const User = mongoose.model('User');
   passport.use(new LocalStrategy({
     usernameField: 'email',
   }, (email, password, done) => {
