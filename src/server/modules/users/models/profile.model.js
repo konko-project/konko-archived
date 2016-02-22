@@ -9,7 +9,7 @@ const genders = 'Neutrois Male Female Bigender None'.split(' ');
  */
 const profileSchema = new mongoose.Schema({
   username: { type: String, unique: true, required: '{PATH} is required' },
-  avatar: { type: String, default: 'images/users/default.png' },
+  avatar: { type: String, default: 'style/core/images/users/default.png' },
   banner: { type: String, default: null },
   gender: { type: String, enum: genders, default: 'None' },
   dob: { type: Date },
