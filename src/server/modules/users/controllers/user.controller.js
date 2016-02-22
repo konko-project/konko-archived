@@ -49,12 +49,11 @@ export default class UserController {
 
     Profile.findById(req.user.profile).exec()
       .then(profile => {
-        // profile.username = req.body.profile.username || profile.username;
-        // profile.avatar = req.body.profile.avatar || profile.avatar;
-        // profile.banner = req.body.profile.banner || profile.banner;
-        // profile.gender = req.body.profile.gender || profile.gender;
-        // profile.dob = req.body.profile.dob || profile.dob;
-        profile = req.body.profile;
+        profile.username = req.body.profile.username || profile.username;
+        profile.avatar = req.body.profile.avatar || profile.avatar;
+        profile.banner = req.body.profile.banner || profile.banner;
+        profile.gender = req.body.profile.gender || profile.gender;
+        profile.dob = req.body.profile.dob || profile.dob;
         profile.save()
           .then(profile => res.json(profile))
           .catch(err => res.status(500).send({ message: err }));
