@@ -104,12 +104,12 @@ export default class CommentController {
             req.topic.comments.push(comment);
 
             // storing last 3 recent comments
-            req.topic.last.unshift(comment);
-            if (req.topic.last.length > 3) {
-              req.topic.last.pop();
+            req.topic.lastReplies.unshift(comment);
+            if (req.topic.lastReplies.length > 3) {
+              req.topic.lastReplies.pop();
             }
 
-            req.topic.lastd = comment.date;
+            req.topic.lastReplyDate = comment.date;
             req.topic.save()
               .then(topic => {
                 req.topic.reply()

@@ -65,7 +65,8 @@ export default class TopicController {
       sort = { date: -1 };
     } else if (req.query && req.query.panelId) {
       select = { panel: req.query.panelId };
-      sort = { lastd: -1 };
+      optional = 'lastReplyDate';
+      sort = { lastReplyDate: -1 };
     } else {
       return res.status(400).send('Bad Request');
     }
@@ -77,7 +78,7 @@ export default class TopicController {
       req.query.limit = 20;
     }
 
-    Topic.find(select, '_id author title update date replies views last' + optional)
+    Topic.find(select, '_id author title date replies views lastReplies ' + optional)
       .lean().sort(sort).skip(req.query.offset).limit(req.query.limit)
       .populate('panel', '_id name')
       .populate({
@@ -90,7 +91,7 @@ export default class TopicController {
         },
       })
       .populate({
-        path: 'last',
+        path: 'lastReplies',
         select: '_id date short author',
         populate: {
           path: 'author',

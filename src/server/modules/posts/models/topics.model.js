@@ -21,8 +21,8 @@ const topicSchema = new mongoose.Schema({
   upvotes: { type: Number, default: 0 },
   downvotes: { type: Number, default: 0 },
   panel: { type: mongoose.Schema.Types.ObjectId, ref: 'Panel' },
-  last: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
-  lastd: { type: Date, default: Date.now },
+  lastReplies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
+  lastReplyDate: { type: Date, default: Date.now },
 });
 
 /**
