@@ -6,14 +6,33 @@
  * @module Konko/Global/Configurations/Server
  */
 module.exports = {
-  paths: {
-    src: 'src/server',
-    dist: 'dist/server',
-    views: 'dist/views',
+  src: {
+    paths: {
+      root: 'src/server',
+      js: 'src/server',
+    },
+    js: [
+      'src/server/**/*.js',
+    ],
   },
-  js: [
-    'src/server/**/*.js',
-  ],
+  build: {
+    paths: {
+      root: 'build/server',
+      js: 'build/server',
+    },
+    js: [
+      'build/server/**/*.js',
+    ],
+  },
+  dist: {
+    paths: {
+      root: 'dist/server',
+      js: 'dist/server',
+    },
+    js: [
+      'dist/server/**/*.js',
+    ],
+  },
   models: [
     'modules/*/models/**/*.js',
   ],

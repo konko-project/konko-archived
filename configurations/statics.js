@@ -8,9 +8,9 @@
 module.exports = {
   build: {
     root: 'build',
-    static: 'build',
-    js: 'build/javascripts',
-    css: 'build/css',
+    static: 'build/client',
+    js: 'build/client/javascripts',
+    css: 'build/client/css',
   },
   dist: {
     root: 'dist',
@@ -22,6 +22,10 @@ module.exports = {
     root: 'static',
     libs: {
       root: 'static/libs',
+      js: 'static/libs/vendors.js',
+      css: 'static/libs/vendors.css',
+      minjs: 'static/libs/vendors.min.js',
+      mincss: 'static/libs/vendors.min.css',
     },
     favicons: {
       root: 'static/favicons',

@@ -8,31 +8,36 @@
  */
 module.exports = {
   src: {
-    path: [
-      'src/client',
-    ],
+    paths: {
+      root: 'src/client',
+      js: 'src/client',
+      less: 'src/stylesheets/less',
+    },
     js: [
       'src/client/**/*.js',
     ],
     less: [
-      'src/client/**/*.less',
+      'src/stylesheets/**/*.less',
     ],
   },
   build: {
-    path: [
-      'build',
-    ],
+    paths: {
+      root: 'build/client',
+      js: 'build/client/javascripts',
+      css: 'build/client/css',
+    },
     js: [
-      'build/javascripts/**/*.js',
+      'build/client/javascripts/**/*.js',
     ],
     css: [
-      'build/css/**/*.css',
+      'build/client/css/**/*.css',
     ],
   },
   dist: {
-    path: [
-      'dist/client',
-    ],
+    paths: {
+      root: 'dist/client',
+      js: 'dist/client/javascripts',
+    },
     js: [
       'dist/client/javascripts/**/*.min.js',
     ],
