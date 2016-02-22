@@ -12,9 +12,18 @@ import path from 'path';
  * @param {Object} server - Object contains all server side path/files.
  */
 export default (app, server) => {
+  let env = app.get('env');
+  let index = '';
   server.routes.forEach(pattern => {
-    glob.sync(path.join(server.paths.dist, pattern)).forEach(path => {
-      require(path.replace(server.paths.dist, '..').replace('.js', '')).default(app);
+    let root = env === 'development' ? server.build.paths.root :
+               env === 'production' ? server.dist.paths.root : '';
+    glob.sync(path.join(root, pattern)).forEach(path => {
+      if (path.match(/index/gi)) {
+        index = path.match(/index/gi) ? path.replace(root, '..').replace('.js', '') : '';
+      } else {
+        require(path.replace(root, '..').replace('.js', '')).default(app);
+      }
     });
   });
+  require(index).default(app);
 };

@@ -77,7 +77,7 @@ export default dirname => {
   app.set('secret', SECRETS.jwtSecret);
 
   // database setup
-  db.loadModels(SERVER);
+  db.loadModels(app, SERVER);
   db.connect(app);
 
   // passport setup

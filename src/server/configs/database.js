@@ -30,10 +30,13 @@ export default class Database {
    * @param {Database~optionalCallback} callback - An optional callback.
    * @static
    */
-  static loadModels(server, callback) {
+  static loadModels(app, server, callback) {
+    let env = app.get('env');
     server.models.forEach(pattern => {
-      glob.sync(path.join(server.paths.dist, pattern)).forEach(path => {
-        require(path.replace(server.paths.dist, '..').replace('.js', ''));
+      let root = env === 'development' ? server.build.paths.root :
+                 env === 'production' ? server.dist.paths.root : '';
+      glob.sync(path.join(root, pattern)).forEach(path => {
+        require(path.replace(root, '..').replace('.js', ''));
       });
     });
     if (callback) {
@@ -42,10 +45,12 @@ export default class Database {
   }
 
   /**
-   * Make connection to MongoDB via mongoose based on current express environment.
+   * Make connection to MongoDB via mongoose based on current express
+   * environment.
    *
    * @param {Object} app - An express application.
-   * @param {Database~databaseCallback} callback - A callback that handles a connected database.
+   * @param {Database~databaseCallback} callback - A callback that handles a
+   *        connected database.
    * @static
    */
   static connect(app, callback) {
