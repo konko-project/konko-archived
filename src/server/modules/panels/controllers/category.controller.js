@@ -63,19 +63,22 @@ export default class CategoryController {
    */
   static list(req, res) {
     Category.find().lean().sort('-order')
-      .populate('panels', '_id name order description last topics comments')
       .populate({
-        path: 'last',
-        model: 'Topic',
-        select: '_id title date author',
+        path: 'panels',
+        select: '_id name order description last topics comments',
         populate: {
-          path: 'author',
-          model: 'User',
-          select: '_id profile',
+          path: 'last',
+          model: 'Topic',
+          select: '_id title date author',
           populate: {
-            path: 'profile',
-            model: 'Profile',
-            select: 'username avatar',
+            path: 'author',
+            model: 'User',
+            select: '_id profile',
+            populate: {
+              path: 'profile',
+              model: 'Profile',
+              select: 'username avatar',
+            },
           },
         },
       }).exec()
