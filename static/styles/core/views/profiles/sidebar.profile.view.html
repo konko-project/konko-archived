@@ -1,0 +1,26 @@
+<div class="profile-sidebar bg-faded" data-ng-show="vm.showSideBar" data-ng-class="{bg:vm.showSideBg}">
+  <div class="p-s-menu list-group" data-ng-show="vm.showSideBar">
+    <a role="button" ui-sref="user.profile.view" class="list-group-item b-b-1-d">
+      {{vm.profile.username}}
+    </a>
+    <a role="button" ui-sref="user.profile.edit" class="list-group-item b-b-1-d" data-ng-if="vm.isMe()">
+      Edit Profile
+    </a>
+    <!-- TODO -->
+    <a role="button" ui-sref="user.profile.setting" class="list-group-item b-b-1-d sr-only" data-ng-if="vm.isMe()">
+      Perference Settings
+    </a>
+  </div>
+</div>
+<div class="profile-sidebar-avatar" data-ng-class="{show:vm.showSideBar}">
+  <img data-ng-click="vm.showSideBar=!vm.showSideBar" class="img-circle" data-ng-src="{{vm.profile.avatar}}" alt="{{vm.profile.username}}" title="{{vm.profile.username}}">
+</div>
+<div class="profile-sidebar-avatar-cover" data-ng-class="{hide:vm.showSideBar}">
+  <div data-ng-click="vm.showSideBar=!vm.showSideBar" class="img-circle" title="Click to expand menu">
+    <span>&ggg;</span>
+  </div>
+</div>
+
+<style type="text/css">
+  .profile-sidebar.bg:before { background-image: url('{{vm.profile.banner}}'); }
+</style>

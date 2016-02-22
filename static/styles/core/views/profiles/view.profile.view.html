@@ -1,0 +1,62 @@
+<div class="profile-container" data-ng-class="{pushed:vm.showSideBar}">
+    <div class="p-c-inner">
+        <div class="p-banner ratio16_9">
+            <img data-ng-src="{{vm.profile.banner}}">
+            <div class="p-b-edit" data-ng-if="vm.isMe()">
+                <a role="button" data-toggle="modal" data-target="#changeProfileImage" data-ng-click="vm.setType('banner')">&#x2699;</a>
+            </div>
+        </div>
+        <div class="img-circle p-a text-xs-center">
+            <img data-ng-src="{{vm.profile.avatar}}" alt="{{vm.profile.username}}" title="{{vm.profile.username}}">
+            <div data-ng-if="vm.isMe()">
+                <a role="button" data-toggle="modal" data-target="#changeProfileImage" data-ng-click="vm.setType('avatar')">Change Avatar</a>
+            </div>
+        </div>
+        <div class="text-xs-center p-u">
+            <div class="p-username">
+                {{vm.profile.username}}<span class="p-gender" data-ng-bind-html="vm.getGenderDisplay(vm.profile.gender)"></span>
+            </div>
+            <span>Member since </span><span title="{{vm.user.joined | date : 'medium'}}">{{vm.user.joined | date : 'yyyy'}}</span>
+        </div>
+        <div class="profile-t p-t-1">
+            <div class="card card-block" data-ng-repeat="topic in vm.topics | orderBy: '-date'">
+                <div class="card-title">
+                    <img class="img-circle m-r-1" data-ng-src="{{topic.author.profile.avatar}}" alt="{{topic.author.profile.username}}">
+                    <div class="p-t-title">
+                        <a ui-sref="topic.view({topicId: topic._id})">{{topic.title}}</a>
+                        &nbsp;&Sc;&nbsp;
+                        <a ui-sref="panel.view({panelId: topic.panel._id})">{{topic.panel.name}}</a>
+                    </div>
+                    <span>{{topic.date | date : 'short'}}</span>
+                </div>
+                <div class="b-b-1-d">
+                    <p class="card-text">{{topic.content}}</p>
+                </div>
+                <div class="p-y-1">
+                    <div class="pull-xs-right">Views&nbsp;:&nbsp;<span class="p-r-1">{{topic.views}}</span>Replies&nbsp;:&nbsp;<span>{{topic.replies}}</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="changeProfileImage" tabindex="-1" role="dialog" aria-labelledby="change profile images modal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" data-ng-if="vm.profileImageType === 'avatar'">Upload avatar</h4>
+                <h4 class="modal-title" data-ng-if="vm.profileImageType === 'banner'">Upload banner</h4>
+            </div>
+            <div class="modal-body">
+                <konko-uploader data-ng-model="vm.profileImage" accept="image/*"></konko-uploader>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning-outline" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary-outline" data-ng-click="vm.uploadProfileImage()">Upload</button>
+            </div>
+        </div>
+    </div>
+</div>

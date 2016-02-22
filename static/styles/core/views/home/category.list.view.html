@@ -1,0 +1,12 @@
+<div ng-cloak id="category_{{category._id}}">
+	<div class="cate-title">
+		<a ui-sref="category.view({ categoryId: category._id })">{{category.name}}</a>
+	</div>
+	<div class="cate-panels">
+		<ul class="list-group row">
+    		<li class="list-group-item" data-ng-repeat="panel in category.panels | orderBy: '-order'">
+    			<konko-panel-list></konko-panel-list>
+    		</li>
+		</ul>
+	</div>
+</div>

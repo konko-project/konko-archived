@@ -1,0 +1,6 @@
+<ol class="breadcrumb">
+    <li data-ng-repeat="breadcrumb in breadcrumbs" data-ng-class="{active: $last}">
+        <a data-ng-if="!$last" ui-sref="{{breadcrumb.sref}}(breadcrumb.params)">{{breadcrumb.name}}</a>
+        <span class="f-s-1" data-ng-if="$last">{{breadcrumb.name}}</span>
+    </li>
+</ol>

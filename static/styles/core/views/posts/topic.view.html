@@ -1,0 +1,68 @@
+<div ng-cloak>
+    <breadcrumb parent-name="{{ vm.topic.panel.name }}" parent-state="panel.view" parent-params='{"panelId" : "{{ vm.topic.panel._id }}"}' current-name="{{ vm.topic.title }}"></breadcrumb>
+    <div class="konko-topic b-b-1-d" id="topic_{{vm.topic._id}}">
+        <div class="flex-container f-a-i-fe f-j-c-sb b-b-1-d">
+            <div class="t-title">
+                <h3 class="text-truncate m-b-0">
+                    {{vm.topic.title}}
+                    <span data-ng-if="vm.isAuthor()"><a role="button" ui-sref="topic.edit({topicId: vm.topic._id})">edit</a></span>
+                </h3>
+            </div>
+            <span class="no-shrink hidden-xs-down">Posted&#160;at&#160;&#58;&#160;{{vm.topic.date | date : 'short'}}</span>
+        </div>
+        <div class="flex-container f-a-i-c f-j-c-sb b-b-1-d">
+            <div class="t-info">
+                <span>Views&#160;&#58;&#160;{{vm.topic.views}}</span>
+                <span class="p-l-1">Posts&#160;&#58;&#160;{{vm.topic.replies}}</span>
+            </div>
+            <a class="btn btn-secondary btn-sm" role="button" ui-sref="topic.comment({topicId: vm.topic._id})" data-ng-if="vm.user && vm.user.verified"><span class="f-s-1">comment</span></a>
+        </div>
+        <div class="flex-container f-j-c-fs p-t-1">
+            <div class="p-user no-shrink hidden-xs-down m-b-1 b-r-1-d">
+                <img class="img-circle" data-ng-src="{{vm.topic.author.profile.avatar}}" alt="{{vm.topic.author.profile.username}}">
+            </div>
+            <div class="t-content flex-container-column f-j-c-sb">
+                <div class="info-mini flex-container f-a-i-c f-j-c-sb hidden-sm-up">
+                    <div class="p-user-mini p-r-1">
+                        <img class="img-circle" data-ng-src="{{vm.topic.author.profile.avatar}}" alt="{{vm.topic.author.profile.username}}">
+                    </div>
+                    <div class="flex-1">{{vm.topic.author.profile.username}}</div>
+                    <span><small>Posted&#160;at&#160;&#58;&#160;{{vm.topic.date | date : 'short'}}</small></span>
+                </div>
+                <div class="flex-1">
+                    <p class="text-wrap" data-ng-bind-html="vm.content"></p>
+                    <span data-ng-if="vm.topic.updated.by">Edited&#160;by&#160;{{vm.topic.updated.by}}&#160;at&#160;{{vm.topic.updated.date | date : 'short'}}</span>
+                </div>
+                <konko-post-toolbar doc="vm.topic"></konko-post-toolbar>
+            </div>
+        </div>
+        <div class="comments" data-ng-if="vm.comments">
+            <div class="comment p-t-1 b-t-1-d" id="{{comment._id}}" data-ng-repeat="comment in vm.comments | orderBy: '-date'">
+                <div class="flex-container f-j-c-fs">
+                    <div class="p-user no-shrink hidden-xs-down b-r-1-d m-b-1">
+                        <img class="img-circle" data-ng-src="{{comment.author.profile.avatar}}" alt="{{comment.author.profile.username}}">
+                    </div>
+                    <div class="c-content flex-container-column">
+                        <div class="info-mini flex-container f-a-i-c f-j-c-sb hidden-sm-up">
+                            <div class="p-user-mini p-r-1">
+                                <img class="img-circle" data-ng-src="{{comment.author.profile.avatar}}" alt="{{comment.author.profile.username}}">
+                            </div>
+                            <div class="flex-1">{{comment.author.profile.username}}</div>
+                            <span><small>Posted&#160;at&#160;&#58;&#160;{{comment.date | date : 'short'}}</small></span>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-wrap" data-ng-bind-html="vm.converter(comment.content)"></p>
+                            <span data-ng-if="comment.updated.by">Edited&#160;by&#160;{{comment.updated.by}}&#160;at&#160;{{comment.updated.date | date : 'short'}}</span>
+                        </div>
+                        <konko-post-toolbar doc="comment">
+                            <span>Posted&#160;at&#160;&#58;&#160;{{comment.date | date : 'short'}}</span>
+                        </konko-post-toolbar>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="text-xs-center p-t-2">
+        <a role="button" data-ng-click="vm.updateComments()">{{vm.loadcomment}}</a> 
+    </div>
+</div>

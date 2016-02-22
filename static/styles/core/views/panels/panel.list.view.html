@@ -1,0 +1,43 @@
+<div class="cate-panel row" id="panel_{{panel._id}}" ng-cloak>
+    <div class="c-p-info col-xs-9 col-sm-6 col-md-7">
+        <img class="pull-xs-left" data-ng-src="{{panel.logo}}">
+        <div class="c-p-name text-truncate">
+            <a ui-sref="panel.view({panelId: panel._id})">{{panel.name}}</a>
+            <div class="c-p-desc">
+                <span>{{panel.description}}</span>
+            </div>
+            <div class="hidden-sm-up c-p-l-mini" data-ng-if="panel.last.length">
+                <a ui-sref="user.profile.view({userId: panel.last[0].author._id})">
+                    <div class="img-circle l-u-a-mini pull-xs-left" data-placement="top" title="{{panel.last[0].author.profile.username}}" style="background: url('{{panel.last[0].author.profile.avatar}}')" konko-tooltip></div>
+                </a>
+                <div class="c-p-l-i-mini">
+                    <span>:</span>
+                    <a class="text-truncate" ui-sref="topic.view({topicId: panel.last[0]._id})"><b>{{panel.last[0].title}}</b></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="c-p-stat col-xs-3 col-sm-2 col-md-2">
+        <panel-stat topics="{{panel.topics || 0}}" comments="{{panel.comments || 0}}" pid="{{panel._id}}"></panel-stat>
+    </div>
+    <div class="c-p-last hidden-xs-down col-sm-4 col-md-3">
+        <div data-ng-if="panel.last.length">
+            <a ui-sref="user.profile.view({userId: panel.last[0].author._id})">
+                <div class="img-circle l-u-avt" data-placement="top" title="{{panel.last[0].author.profile.username}}" style="background: url('{{panel.last[0].author.profile.avatar}}') no-repeat center center" konko-tooltip></div>
+            </a>
+            <div class="c-p-l-info text-truncate">
+                <a ui-sref="topic.view({topicId: panel.last[0]._id})">{{panel.last[0].title}}</a>
+                <div>
+                    <span>
+                        <small>{{panel.last[0].date | date : 'short'}}</small>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div data-ng-if="!panel.last.length">
+            <div>
+                <pre class="text-truncate">No last activity yet!</pre>
+            </div>
+        </div>
+    </div>
+</div>

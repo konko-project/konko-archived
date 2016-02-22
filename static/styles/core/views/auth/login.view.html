@@ -1,0 +1,17 @@
+<div class="container">
+    <form class="login-form" id="loginForm" name="loginForm" role="form" data-ng-submit="vm.login(loginForm.$valid)" autocomplete="on">
+        <fieldset class="form-group">
+            <div class="form-heading">
+                <h2>Sign In</h2>
+            </div>
+            <label for="login__email" class="sr-only">Email Address</label>
+            <input type="email" name="email" class="form-control form-control-lg" id="login__email" data-ng-model="vm.user.email" placeholder="Enter email" autofocus lowercase required>
+            <label for="login__password" class="sr-only">Password</label>
+            <input type="password" name="password" class="form-control form-control-lg" id="login__password" data-ng-model="vm.user.password" placeholder="Enter password" required></input>
+            <button type="submit" class="btn btn-large btn-primary btn-block">Sign in</button>
+            <div class="n-l-o text-xs-center p-t-2">
+                <a ui-sref="register">Create Account</a>
+            </div>
+        </fieldset>
+    </form>
+</div> 

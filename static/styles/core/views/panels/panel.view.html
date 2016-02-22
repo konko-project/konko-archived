@@ -1,0 +1,66 @@
+<div ng-cloak>
+    <breadcrumb parent-name="{{ vm.panel.parent.name }}" parent-state="panel.view" parent-params='{"panelId" : "{{ vm.panel.parent._id }}"}' current-name="{{ vm.panel.name }}"></breadcrumb>
+    <div class="konko-panel" id="panel_{{vm.panel._id}}">
+        <div class="flex-container f-a-i-c f-j-c-sb">
+            <h2 class="p-name">{{vm.panel.name}}</h2>
+            <a class="btn btn-secondary" role="button" ui-sref="topic.new({panelId: vm.panel._id})" data-ng-if="vm.user && vm.user.verified"><span class="f-s-1">new&#160;topic</span></a>
+        </div>
+        <div class="p-subs" data-ng-if="vm.panel.children && vm.panel.children.length">
+            <div class="hidden-sm-up">
+                <ul class="list-group collapse" id="sub-list">
+                    <a role="button" class="list-group-item" data-ng-repeat="panel in vm.panel.children | orderBy: '-order'" ui-sref="panel.view({panelId: panel._id})">{{panel.name}}</a>
+                </ul>
+                <button type="button" class="btn btn-link btn-sm btn-block dropdown-toggle" data-toggle="collapse" data-target="#sub-list" aria-expanded="false">
+                    <span class="caret"></span>
+                </button>
+            </div>
+            <div class="hidden-xs-down flex-container f-j-c-fs wrap" data-ng-if="vm.panel.children.length > 3">
+                <div class="sub p-x-0" data-ng-repeat="panel in vm.panel.children | orderBy: '-order'" ui-sref="panel.view({panelId: panel._id})">
+                    <a role="button" class="btn btn-block text-xs-left text-truncate">
+                        <img class="img-circle" data-ng-src="{{panel.logo}}" data-ng-show="{{panel.logo}}">
+                        {{panel.name}}
+                    </a>
+                </div>
+            </div>
+            <div class="hidden-xs-down" data-ng-if="vm.panel.children.length <= 3">
+                <ul class="list-group p-a-1">
+                    <konko-panel-list class="list-group-item b-b-1-d p-a-0" data-ng-repeat="panel in vm.panel.children | orderBy: '-order'"></konko-panel-list>
+                </ul>
+            </div>
+        </div>
+        <div class="p-t-l">
+            <ul class="list-unstyled list-group">
+                <li class="list-group-item b-b-1-d" data-ng-repeat=" topic in vm.topics | orderBy: '-lastReplyDate' ">
+                    <div class="row p-t-l-i" id="topic_{{topic._id}}">
+                        <div class="col-xs-12 flex-container f-a-i-c f-j-c-sb">
+                            <div class="flex-container f-a-i-c f-j-c-fs text-truncate">
+                                <a ui-sref="user.profile.view({userId: topic.author._id})" data-placement="top" title="{{topic.author.profile.username}}" konko-tooltip>
+                                    <img class="img-circle" data-ng-src="{{topic.author.profile.avatar}}" alt="{{topic.author.profile.username}}">
+                                </a>
+                                <div class="text-truncate p-x-1 p-t-l-t">
+                                    <a ui-sref="topic.view({topicId: topic._id})">{{topic.title}}</a>
+                                    <div class="hidden-xs-down">
+                                        <span><small>{{topic.date | date : 'short'}}</small></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex-container f-a-i-c f-j-c-fe">
+                                <div class="flex-container f-a-i-c f-j-c-fe p-x-2 hidden-xs-down">
+                                    <span>{{topic.replies || 0}}&#160;&#47;&#160;{{topic.views || 0}}</span>
+                                </div>
+                                <span class="p-t-l-l" data-ng-repeat="l in topic.lastReplies | orderBy: '-date'" data-ng-class="{'hidden-xs-down': !$first}" data-ng-cloak>
+                                    <a href="/t/{{topic._id}}#{{l._id}}" data-placement="left" title="&#8220;{{l.short}}&#8221;&#10;{{l.author.profile.username}}&#160;&#64;&#160;{{l.date | date : 'short'}}" konko-tooltip>
+                                        <img class="img-circle" data-ng-src="{{l.author.profile.avatar}}" alt="{{l.author.profile.username}}">
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="text-xs-center p-t-2">
+        <a role="button" data-ng-click="vm.updateTopics()">{{vm.loadtopic}}</a>
+    </div>
+</div>
