@@ -1,0 +1,79 @@
+@import '../globals/mixins';
+@import '../globals/constants';
+
+/* Flex box */
+.flex-container {
+  .FlexDisplay();
+  .FlexDirection(row);
+}
+.flex-container-column {
+  .FlexDisplay();
+  .FlexDirection(column);
+}
+.flex-1 {
+  .Flex(1);
+}
+.f-a-i-c {
+  .AlignItems(center);
+}
+.f-a-i-fe {
+  .AlignItems(flex-end);
+}
+.f-j-c-sb {
+  .JustifyContent(space-between);
+}
+.f-j-c-fs {
+  .JustifyContent(flex-start);
+}
+.f-j-c-fe {
+  .JustifyContent(flex-end);
+}
+.no-shrink {
+  .FlexShrink(0);
+}
+.wrap {
+  .FlexWrap(wrap);
+}
+.f-s-1 {
+  font-size: 1rem;
+}
+
+/* border */
+.b-t-1-d {
+  border-top: 0.0625rem dotted @globalBorderColor !important;
+}
+.b-b-1-d {
+  border-bottom: 0.0625rem dotted @globalBorderColor !important;
+}
+.b-r-1-d {
+  border-right: 0.0625rem dotted @globalBorderColor !important;
+}
+.b-l-1-d {
+  border-left: 0.0625rem dotted @globalBorderColor !important;
+}
+
+/* angular loading bar */
+.bar {
+  background: @globalLoadingBarColor;
+}
+
+.text-wrap {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.file-custom::after {
+  content: attr(data-content);
+}
+
+ul .list-group-item, .list-group-item {
+  background: @globalBackgroundColor;
+  &:hover {
+    background: @globalListItemHoverColor;
+  }
+}
+
+/* form */
+.form-heading {
+  margin-bottom: 1.5rem;
+}

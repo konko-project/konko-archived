@@ -1,0 +1,122 @@
+@import '../globals/mixins';
+@import '../globals/constants';
+
+/* Banner */
+.p-banner {
+  position: relative;
+  width: 100%;
+  max-height: 25rem;      /* need media queue */
+  overflow: hidden;
+  &:before {
+    content: "";
+    display: block;
+    padding-top: 100%;
+  }
+  &:hover .p-b-edit {
+    visibility: visible;
+  }
+  img {
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    position: absolute;
+    width: 100%;
+  }
+}
+.p-b-edit {
+  top: 0;
+  right: 0;
+  position: absolute;
+  padding: 0 0.5rem;
+  visibility: hidden;
+  a {
+    font-family: 'Segoe UI', Frutiger, 'Frutiger Linotype', 'Dejavu Sans', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 1.5rem;
+    text-shadow: 0.125rem 0.125rem 0.125rem #000;
+  }
+}
+
+/* banner ratio */
+.ratio16_9:before {
+    padding-top: 56.25%;    /* must put after container */
+}
+.ratio2_1:before{
+    padding-top: 50%;
+}
+
+/* Avatar */
+.p-a {
+  left: 50%;
+  position: absolute;
+  width: 10rem;
+  height: 10rem;
+  z-index: 1;
+  overflow: hidden;
+  margin-top: -5rem;
+  .Translate2D(-50%, 0);
+  img {
+    position: absolute;
+    width: auto;
+    height: 10rem;
+    .Translate2D(-50%, 0);
+  }
+  div {
+    position: relative;
+    width: 10rem;
+    height: 10rem;
+    a {
+      top: 50%;
+      left: 50%;
+      position: absolute;
+      width: 100%;
+      visibility: hidden;
+      .Translate2D(-50%, -50%);
+    }
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.5);
+      a {
+        color: #fff;
+        visibility: visible;
+      }
+    }
+  }
+}
+
+/* user info */
+.p-u {
+  padding-top: 5rem;
+}
+.p-username {
+  position: relative;
+  font-size: 2.0rem;
+}
+.p-gender {
+  top: 50%;
+  position: absolute;
+  transform: translate(0, -50%) rotateZ(20deg);
+  font-size: 1.2rem;
+  padding-left: 0.5rem;
+  font-family: 'Segoe UI', Frutiger, 'Frutiger Linotype', 'Dejavu Sans', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* user topics */
+.profile-t {
+  .card-title {
+    position: relative;
+    img {
+      height: 4rem;
+      width: 4rem;
+    }
+    span {
+      top: 50%;
+      right: 0;
+      position: absolute;
+      .Translate2D(0, -50%);
+    }
+  }
+}
+.p-t-title {
+  display: -moz-inline-stack;
+  display: inline-block;
+}

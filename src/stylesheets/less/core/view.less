@@ -1,0 +1,40 @@
+@import '../globals/mixins';
+@import '../globals/constants';
+
+/* ui view */
+@defaultViewTop: 3.375rem;
+@defaultViewPadding: 4rem;
+.view {
+  top: @defaultViewTop;
+  padding:@defaultViewPadding;
+  .breadcrumb {
+    background: none;
+    border-radius: 0;
+    margin: 0;
+    padding: 1rem 0.5rem;
+  }
+  &.ng-enter {
+    transition: .5s linear;
+    opacity: 0;
+  }
+  &.ng-enter-active {
+    opacity: 1;
+  }
+}
+@media screen {
+  @media (max-width: (@largeScreen - 1px)) and (min-width: @mediumScreen) {
+    .view {
+      padding: @defaultViewPadding / 2;
+    }
+  }
+  @media (max-width: (@mediumScreen - 1px)) and (min-width: @smallScreen) {
+    .view {
+      padding: @defaultViewPadding / 4;
+    }
+  }
+  @media (max-width: (@smallScreen - 1px)) {
+    .view {
+      padding: 0;
+    }
+  }
+}

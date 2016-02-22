@@ -1,0 +1,62 @@
+@import '../globals/mixins';
+@import '../globals/constants';
+
+/* navbar */
+.pos-f-t > nav {
+  border-radius: 0;
+  .DropShadow(0, 0, 0.5rem, 0.0625rem, #000);
+}
+
+.navbar-brand {
+  > img {
+    width: auto;
+    height: 1.5rem;
+  }
+  > span {
+    line-height: normal;
+    font-size: 1.5rem;
+    padding-left: 0.5rem;
+  }
+  @media screen {
+    @media (max-width: @smallScreen) {
+      > img {
+        height: 1.25rem;
+      }
+      > span {
+        font-size: 1rem;
+        line-height: 1.5;
+      }
+    }
+  }
+}
+
+.navbar-header .list-group-item {
+  border-radius: 0;
+  border-top: 0.0625rem solid @globalBorderColor;
+  .btn-link {
+    color: @globalAnchorColor;
+    font-size: 1rem;
+  }
+}
+
+/* navbar user */
+@defaultUserAvatarSize: 7rem;
+.user {
+  height: @defaultUserAvatarSize;
+  padding: 0;
+  svg {
+    .CrispEdgeImage();
+  }
+  .user-info {
+    position: absolute;
+    padding: 0.5rem 1.5rem;
+  }
+}
+.navbar-user {
+  img {
+    max-height: 2.375rem;
+  }
+  span {
+    font-size: 1rem;
+  }
+}

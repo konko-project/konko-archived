@@ -1,0 +1,37 @@
+@import '../globals/mixins';
+@import '../globals/constants';
+
+/* panel view */
+.konko-panel {
+  padding: 0 0.5rem;
+  .p-subs {
+    .sub {
+      width: 33.33333%;
+      img {
+        width: 2rem;
+        height: 2rem;
+      }
+    }
+    .list-group-item {
+      border: 0;
+    }
+  }
+  .p-t-l li {
+    border: 0;
+    border-radius: 0 !important;
+    margin-bottom: 0.0625rem;
+  }
+  .p-t-l-i {
+    img {
+      height: 2rem;
+      width: 2rem;
+      .FlexShrink(0);
+    }
+  }
+  .p-t-l-t {
+    font-size: 1.125rem;
+  }
+  .p-t-l-l {
+    padding: 0 0.125rem;
+  }
+}

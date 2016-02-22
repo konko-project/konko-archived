@@ -1,0 +1,31 @@
+@import '../globals/mixins';
+@import '../globals/constants';
+
+.login-form {
+  max-width: 720px;
+  padding: 2rem 1rem;
+  margin: 0 auto;
+  @media screen {
+    @media (max-height: 375px) {
+      padding: 1rem;
+    }
+  }
+  .n-l-o {
+    a {
+      color: #0275d8;
+      &:hover {
+        color: #025aa5;
+      }
+    }
+  }
+  input[type="email"] {
+    border-radius: 0 !important;
+  }
+  input[type="password"] {
+    margin-top: -0.0625rem;
+    border-radius: 0 !important;
+  }
+  button {
+    margin-top: 2rem;
+  }
+}

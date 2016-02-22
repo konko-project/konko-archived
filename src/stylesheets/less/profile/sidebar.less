@@ -1,0 +1,110 @@
+@import '../globals/mixins';
+@import '../globals/constants';
+
+/* sidebar */
+.profile-sidebar {
+  top: 3.375rem;
+  left: 0;
+  position: fixed;
+  width: 15rem;
+  height: 100%;
+  z-index: 1030;
+  .DropShadow(0.125rem, 0.25rem, 0.25rem, 0.0625rem, #333);
+  .Transition(0.6s ease all);
+  &.ng-hide {
+    width: 0;
+    z-index: 0;
+    .Transition(0.6s ease all);
+    .DropShadow(0, 0, 0, 0, 0);
+  }
+  .bg:before {
+    top: 0;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    content: ' ';
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    .BackgroundSize(cover);
+    .Opacity(0.4);
+  }
+}
+
+/* sidebar menu */
+.p-s-menu {
+  .Animation(appear, 1s, linear);
+  &.ng-hide {
+    .Animation(disappear, 1s, linear);
+  }
+  .list-group-item {
+    border: 0;
+    border-radius: 0;
+    background: rgba(0, 0, 0, 0);
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+}
+
+/* sidebar avatar button */
+.profile-sidebar-avatar {
+  top: 50%;
+  left: -7rem;
+  position: fixed;
+  z-index: 1029;
+  .Transition(~'0.6s ease left, 0.4s linear opacity');
+  .Translate2D(0, -50%);
+  .Opacity(0.3);
+  &.show {
+    left: 10rem;
+    z-index: 1032;
+    .Transition(~'0.6s ease left, 0.4s linear opacity');
+    .Opacity(1);
+  }
+  img {
+    height: 10rem;
+    width: 10rem;
+    .DropShadow(0, 0, 0.25rem, 0.0625rem, #666);
+  }
+}
+.profile-sidebar-avatar-cover {
+  top: 50%;
+  left: -7rem;
+  position: fixed;
+  z-index: 1029;
+  .Transition(~'0.6s ease left, 0.4s linear opacity');
+  .Translate2D(0, -50%);
+  .Opacity(0.7);
+  &.hide {
+    left: 10rem;
+    z-index: 1031;
+    .Transition(~'0.6s ease left, 0.4s linear opacity');
+    .Opacity(0);
+  }
+  div {
+    &:extend(.profile-sidebar-avatar img);
+    position: relative;
+    background: #fff;
+    padding-left: 5rem;
+    text-align: center;
+    span {
+      top: 50%;
+      position: absolute;
+      font-size: 1.5rem;
+      .Translate2D(0, -50%);
+    }
+  }
+}
+
+.Keyframes(disappear);.frames(){
+  from    { .Opacity(1); }
+  to      { .Opacity(0); }
+}
+.Keyframes(appear);.frames(){
+  0%     { .Opacity(0); }
+  50%     { .Opacity(0); }
+  75%     { .Opacity(0.5); }
+  100%    { .Opacity(1); }
+}

@@ -1,0 +1,42 @@
+@import '../globals/mixins';
+@import '../globals/constants';
+
+/* editor */
+.editor-toolbar {
+  margin: 0;
+  padding: 0.75rem 0.5rem 1rem 0.5rem;
+  margin-bottom: -0.5rem;
+  border-style: solid;
+  border-width: 0.0625rem 0.0625rem 0 0.0625rem;
+  border-color: @globalBorderColor;
+  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
+  button {
+    width: 2.875rem;
+  }
+}
+.editor-content {
+  .DropShadow(0, -0.125rem, 0.25rem, -0.25rem);
+}
+.editor-wrap {
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+.wysiwyg-wrap {
+  position: relative;
+  > textarea {
+    margin-bottom: -1rem;
+  }
+  .contenteditable {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+    display: inline-block;
+    top: 0;
+    left: 0;
+    padding: 0.375rem 0.75rem;
+  }
+}

@@ -1,0 +1,21 @@
+@import '../globals/mixins';
+@import '../globals/constants';
+
+.profile-container {
+  top: 3.375rem;
+  left: 0;
+  position: fixed;
+  width: 100%;
+  height: calc(~'100% - 3.375rem');
+  overflow: auto;
+  .Transition(0.6s ease all);
+  &.pushed {
+    left: 16.25rem;
+    width: calc(~'100% - 16.25rem');
+    .Transition(0.6s ease all);
+  }
+}
+
+.p-c-inner {
+  margin: 0 4rem;
+}

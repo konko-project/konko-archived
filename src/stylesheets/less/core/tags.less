@@ -1,0 +1,34 @@
+@import '../globals/mixins';
+@import '../globals/constants';
+
+body {
+  background: @globalBackgroundColor;
+}
+
+a {
+	color: @globalAnchorColor;
+	&:hover {
+  	text-decoration: none;
+		color: @globalAnchorColorHover;
+	}
+}
+
+span {
+  color: @globalSpanColor;
+  font-size: 0.8rem;
+}
+
+img {
+  .NoDragAndSelect();
+}
+
+blockquote {
+  padding: 0 0 0.5rem 1rem;
+  border-left: 0.5rem solid @globalBorderColor;
+  border-bottom: 0.0625rem dotted @globalBorderColor;
+}
+
+svg {
+  color-rendering: optimizeQuality;
+  shape-rendering: geometricPrecision;
+}

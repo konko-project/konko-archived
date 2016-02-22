@@ -1,0 +1,101 @@
+.DropShadow(@h: 0, @v: 0, @blur: 0.0625rem, @spread: 0.0625rem, @color: #000) {
+	-webkit-box-shadow: @arguments;
+	-moz-box-shadow: @arguments;
+	box-shadow: @arguments;
+}
+.Translate2D(@x: 0, @y: 0) {
+	-webkit-transform: translate(@x, @y);
+	-moz-transform: translate(@x, @y);
+	-ms-transform: translate(@x, @y);
+	-o-transform: translate(@x, @y);
+	transform: translate(@x, @y);
+}
+.DonutChart(@color) {
+  stroke: @color;
+  stroke-width: 0.065rem !important;
+  stroke-linecap: butt;
+}
+.CrispEdgeImage() {
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -o-crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  -ms-interpolation-mode: nearest-neighbor;
+}
+.NoDragAndSelect() {
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.Flex(@value) {
+  -webkit-flex: @arguments;
+  -moz-flex: @arguments;
+  -ms-flex: @arguments;
+  flex: @arguments;
+}
+.FlexDisplay() {
+  display: -webkit-flex;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+.FlexDirection(@value) {
+  -webkit-flex-direction: @arguments;
+  -moz-flex-direction: @arguments;
+  -ms-flex-direction: @arguments;
+  flex-direction: @arguments;
+}
+.AlignItems(@value) {
+  -webkit-align-items: @arguments;
+  align-items: @arguments;
+}
+.JustifyContent(@value) {
+  -webkit-justify-content: @arguments;
+  -moz-justify-content: @arguments;
+  justify-content: @arguments;
+}
+.FlexShrink(@value: 1) {
+  -webkit-flex-shrink: @arguments;
+  -moz-flex-shrink: @arguments;
+  flex-shrink: @arguments;
+}
+.FlexWrap(@value) {
+  -webkit-flex-wrap: @arguments;
+  -moz-flex-wrap: @arguments;
+  flex-wrap: @arguments;
+}
+.BackgroundSize(@value) {
+  -webkit-background-size: @arguments;
+  -moz-background-size: @arguments;
+  -ms-background-size: @arguments;
+  -o-background-size: @arguments;
+  background-size: @arguments;
+}
+.Opacity(@value) {
+  -khtml-opacity: @arguments;
+  -moz-opacity: @arguments;
+  opacity: @arguments;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=@{arguments})";
+  filter: alpha(opacity=@arguments);
+}
+.Animation(@animation, @duration, @easing) {
+  -webkit-animation: @arguments;
+  -moz-animation: @arguments;
+  -o-animation: @arguments;
+  animation: @arguments;
+}
+.Keyframes(@name) {
+  @-webkit-keyframes @name { .frames(); }
+  @-moz-keyframes @name { .frames(); }
+  @-o-keyframes @name { .frames(); }
+  @keyframes @name { .frames(); }
+}
+.Transition(@value) {
+  -webkit-transition: @arguments;
+  -moz-transition: @arguments;
+  -o-transition: @arguments;
+  transition: @arguments;
+}

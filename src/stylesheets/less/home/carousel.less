@@ -1,0 +1,30 @@
+@import '../globals/mixins';
+@import '../globals/constants';
+
+/* carousel */
+@defaultCarouselHeight: 20rem;
+@carouselImgTranslate: -50%;
+.konko-carousel {
+  .carousel-item {
+    overflow: hidden;
+    height: @defaultCarouselHeight;
+    img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      .Translate2D(@carouselImgTranslate, @carouselImgTranslate);
+    }
+  }
+  @media screen {
+    @media (max-width: (@mediumScreen - 1px)) and (min-width: @smallScreen) {
+      .carousel-item {
+        height: @defaultCarouselHeight - 5rem;
+      }
+    }
+    @media (max-width: (@smallScreen - 1px)) {
+      .carousel-item {
+        height: @defaultCarouselHeight - 6rem;
+      }
+    }
+  }
+}

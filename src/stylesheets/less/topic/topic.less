@@ -1,0 +1,70 @@
+@import '../globals/mixins';
+@import '../globals/constants';
+
+/* topic view */
+.konko-topic {
+  padding: 0 0.5rem;
+  .t-title {
+    overflow: hidden;
+  }
+  .t-info {
+    padding: 0.5rem 0;
+  }
+  .p-user {
+    padding-right: 0.5rem;
+    > img {
+      width: 10rem;
+      height: 10rem;
+    }
+    @media screen {
+      @media (min-width: @mediumScreen) and (max-width: (@largeScreen - 1px)) {
+        > img {
+          width: 8rem;
+          height: 8rem;
+        }
+      }
+      @media (min-width: @smallScreen) and (max-width: (@mediumScreen - 1px)) {
+        > img {
+          width: 6rem;
+          height: 6rem;
+        }
+      }
+    }
+  }
+  .p-user-mini {
+    > img {
+      height: 2rem;
+      width: 2rem;
+    }
+  }
+  .t-content {
+    min-height: 15rem;
+  }
+  .info-mini {
+    padding-bottom: 0.5rem;
+  }
+  .c-content {
+    min-height: 10rem;
+  }
+  .t-content, .c-content {
+    overflow: auto;
+    width: 100%;
+    padding-left: 0.5rem;
+    img {
+      border-radius: 50%;
+      height: 2rem;
+      width: 2rem;
+    }
+  }
+  .toolbar {
+    padding: 0.5rem 0 0.5rem 0.5rem;
+    .btn-group {
+      margin: 0;
+      button {
+        width: 2.375rem;
+        height: 2.0rem;
+        font-family: 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;
+      }
+    }
+  }
+}
