@@ -33,14 +33,14 @@ export default (app, statics, client) => {
   app.locals.css = [statics.shared.libs.mincss.replace(statics.shared.root + '/', '')];
   app.locals.js = [statics.shared.libs.minjs.replace(statics.shared.root + '/', '')];
 
-  if (app.get('env') === 'development') {
-    app.use(express.static(path.join(app.pwd, statics.build.static)));
-    globFilePath(client.build.css, {}, app.locals.css, statics.build.static);
-    globFilePath(client.build.js, { nosort: true }, app.locals.js, statics.build.static);
-  } else if (app.get('env') === 'production') {
+  if (app.get('env') === 'production') {
     app.use(express.static(path.join(app.pwd, statics.dist.static)));
     globFilePath(client.dist.css, {}, app.locals.css, statics.dist.static);
     globFilePath(client.dist.js, {}, app.locals.js, statics.dist.static);
+  } else {
+    app.use(express.static(path.join(app.pwd, statics.build.static)));
+    globFilePath(client.build.css, {}, app.locals.css, statics.build.static);
+    globFilePath(client.build.js, { nosort: true }, app.locals.js, statics.build.static);
   }
 
   app.use('/libs', express.static(path.join(app.pwd, statics.shared.libs.root)));
