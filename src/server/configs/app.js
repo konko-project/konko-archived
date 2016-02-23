@@ -13,13 +13,13 @@ import mailer from 'express-mailer';
 import compression from 'compression';
 import validator from 'express-validator';
 
-import db from './database';
 import statics from './statics';
 import _mailer from './mailer';
 import _passport from './passport';
 import routes from './routes';
 import error from './error';
 import multer from './multer';
+import utils from './utils';
 
 /**
  * Create and init a new express application
@@ -46,6 +46,7 @@ export default dirname => {
   // express/app setup
   app.use(favicon(path.join(STATICS.shared.root, 'favicon.ico')));
   app.use(morgan('dev'));
+  utils.validCookieSecret(SECRETS.cookieSecret, true);
   app.use(cookieParser(SECRETS.cookieSecret));
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
@@ -71,14 +72,12 @@ export default dirname => {
   app.multer = multer;
 
   // Express mailer
+  utils.hasExpressMailerConfiguration(path.join(SERVER.build.paths.root, 'configs', '*.js'), true);
   _mailer(app, mailer);
 
   // JWT
+  utils.validJwtSecret(SECRETS.jwtSecret, true);
   app.set('secret', SECRETS.jwtSecret);
-
-  // database setup
-  db.loadModels(app, SERVER);
-  db.connect(app);
 
   // passport setup
   _passport();
