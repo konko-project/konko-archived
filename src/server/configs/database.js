@@ -19,9 +19,7 @@ export default class Database {
   /**
    * @constructs
    */
-  constructor() {
-
-  }
+  constructor() {}
 
   /**
    * Glob and require all data models's path with given path pattern.
@@ -30,11 +28,12 @@ export default class Database {
    * @param {Database~optionalCallback} callback - An optional callback.
    * @static
    */
-  static loadModels(app, server, callback) {
-    let env = app.get('env');
+  static loadModels(server, callback) {
+    let env = process.env.NODE_ENV;
     server.models.forEach(pattern => {
-      let root = env === 'development' ? server.build.paths.root :
-                 env === 'production' ? server.dist.paths.root : '';
+      let root = env === 'production' ? server.dist.paths.root :
+                 env === 'development' ? server.build.paths.root :
+                 env === 'test' ? server.build.paths.root : '';
       glob.sync(path.join(root, pattern)).forEach(path => {
         require(path.replace(root, '..').replace('.js', ''));
       });
@@ -48,13 +47,12 @@ export default class Database {
    * Make connection to MongoDB via mongoose based on current express
    * environment.
    *
-   * @param {Object} app - An express application.
    * @param {Database~databaseCallback} callback - A callback that handles a
    *        connected database.
    * @static
    */
-  static connect(app, callback) {
-    let env = app.get('env');
+  static connect(callback) {
+    let env = process.env.NODE_ENV;
     let uri = env === 'production' ? URI_PROD :
               env === 'development' ? URI_DEV :
               env === 'test' ? URL_TEST : '';
