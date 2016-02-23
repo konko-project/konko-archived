@@ -2,11 +2,12 @@
 
 const _ = require('lodash');
 const path = require('path');
-const bower = require('./configurations/bower');
-const server = require('./configurations/server');
-const client = require('./configurations/client');
-const statics = require('./configurations/statics');
-const env = require('./configurations/environment');
+const TEST = require('./configurations/test');
+const BOWER = require('./configurations/bower');
+const SERVER = require('./configurations/server');
+const CLIENT = require('./configurations/client');
+const STATICS = require('./configurations/statics');
+const ENV = require('./configurations/environment');
 
 module.exports = grunt => {
   // Grunt configuration
@@ -21,9 +22,9 @@ module.exports = grunt => {
         files: [
           {
             expand: true,
-            cwd: server.src.paths.js,
+            cwd: SERVER.src.paths.js,
             src: ['**/*.js'],
-            dest: server.build.paths.js,
+            dest: SERVER.build.paths.js,
           },
         ],
       },
@@ -32,7 +33,7 @@ module.exports = grunt => {
     bower_concat: {
       all: {
         dest: {
-          js: statics.shared.libs.js,
+          js: STATICS.shared.libs.js,
         },
         dependencies: {
           bootstrap: 'tether',
@@ -53,20 +54,21 @@ module.exports = grunt => {
         files: [
           {
             expand: true,
-            cwd: client.src.paths.js,
+            cwd: CLIENT.src.paths.js,
             src: ['**/*.js'],
-            dest: client.build.paths.js,
+            dest: CLIENT.build.paths.js,
           },
         ],
       },
     },
     /** grunt-contrib-clean **/
     clean: {
-      server: [server.build.paths.root],
-      client: [client.build.paths.root],
-      vendor: [statics.shared.libs.root],
-      buildJS: [client.build.paths.js],
-      buildCSS: [client.build.paths.css],
+      server: [SERVER.build.paths.root],
+      client: [CLIENT.build.paths.root],
+      vendor: [STATICS.shared.libs.root],
+      buildJS: [CLIENT.build.paths.js],
+      buildCSS: [CLIENT.build.paths.css],
+      test: [TEST.outputs.root],
     },
     /** grunt-contrib-csslint **/
     csslint: {
@@ -74,7 +76,7 @@ module.exports = grunt => {
         csslintrc: '.csslintrc',
       },
       build: {
-        src: client.build.css,
+        src: CLIENT.build.css,
       },
     },
     /** grunt-contrib-cssmin **/
@@ -84,8 +86,8 @@ module.exports = grunt => {
           sourceMap: false,
           advanced: true,
         },
-        src: bower.css,
-        dest: statics.shared.libs.mincss,
+        src: BOWER.css,
+        dest: STATICS.shared.libs.mincss,
       },
     },
     /** grunt-eslint **/
@@ -94,10 +96,13 @@ module.exports = grunt => {
         format: 'visualstudio',
       },
       server: {
-        src: server.src.js,
+        src: SERVER.src.js,
       },
       client: {
-        src: client.src.js,
+        src: CLIENT.src.js,
+      },
+      test: {
+        src: _.union(TEST.server.js, TEST.client.js),
       },
     },
     /** grunt-express-server **/
@@ -108,8 +113,8 @@ module.exports = grunt => {
       dev: {
         options: {
           debug: true,
-          script: server.build.paths.root + '/server.js',
-          NODE_ENV: 'development',
+          node_env: 'development',
+          script: SERVER.build.paths.root + '/bootstrap.js',
           background: true,
         },
       },
@@ -119,13 +124,17 @@ module.exports = grunt => {
       options: {
         reporter: require('jshint-stylish'),
         jshintrc: true,
+        mocha: true,
         node: true,
       },
       server: {
-        src: server.src.js,
+        src: SERVER.src.js,
       },
       client: {
-        src: client.src.js,
+        src: CLIENT.src.js,
+      },
+      test: {
+        src: _.union(TEST.server.js, TEST.client.js),
       },
     },
     /** grunt-contrib-less **/
@@ -134,9 +143,9 @@ module.exports = grunt => {
         files: [
           {
             expand: true,
-            cwd: client.src.paths.less,
+            cwd: CLIENT.src.paths.less,
             src: ['*/**/*.less', '!globals/**/*.less'],
-            dest: client.build.paths.css,
+            dest: CLIENT.build.paths.css,
             ext: '.css',
           },
         ],
@@ -145,15 +154,26 @@ module.exports = grunt => {
 
       },
     },
+    /* grunt-mocha-test */
+    mochaTest: {
+      test: {
+        options: {
+          reporter: 'Nyan',
+          timeout: 10000,
+          captureFile: TEST.outputs.mocha,
+        },
+        src: TEST.server.js,
+      },
+    },
     /** grunt-ng-annotate **/
     ngAnnotate: {
       build: {
         files: [
           {
             expand: true,
-            cwd: client.build.paths.js,
+            cwd: CLIENT.build.paths.js,
             src: ['**/*.js'],
-            dest: client.build.paths.js,
+            dest: CLIENT.build.paths.js,
           },
         ],
       },
@@ -165,8 +185,8 @@ module.exports = grunt => {
         compress: true,
       },
       bower: {
-        src: statics.shared.libs.js,
-        dest: statics.shared.libs.minjs,
+        src: STATICS.shared.libs.js,
+        dest: STATICS.shared.libs.minjs,
       },
     },
     /** grunt-contrib-watch **/
@@ -175,22 +195,22 @@ module.exports = grunt => {
         livereload: true,
       },
       express: {
-        files: _.union(env.grunt, env.configs, server.src.js, client.src.js, client.src.less),
+        files: _.union(ENV.grunt, ENV.configs, SERVER.src.js, CLIENT.src.js, CLIENT.src.less),
         tasks: ['server'],
         options: {
           spawn: false,
         },
       },
       serverScripts: {
-        files: server.src.js,
+        files: SERVER.src.js,
         tasks: ['build:server'],
       },
       clientScripts: {
-        files: client.src.js,
+        files: CLIENT.src.js,
         tasks: ['clean:buildJS', 'lint:script', 'babelify:build'],
       },
       less: {
-        files: client.src.less,
+        files: CLIENT.src.less,
         tasks: ['clean:buildCSS', 'lint:less'],
       },
     },
@@ -200,18 +220,28 @@ module.exports = grunt => {
 
   grunt.task.registerTask('mkdir:upload', 'Make upload directories.', () => {
     const done = grunt.task.current.async();
-    statics.required.forEach(_path => {
+    STATICS.required.forEach(_path => {
       grunt.file.mkdir(path.join(__dirname, _path));
     });
     done();
   });
 
   grunt.task.registerTask('server', 'Start the correct server environment.', env => {
+    const done = grunt.task.current.async();
     if (env && env !== undefined) {
       global.e = env;
     }
 
     grunt.task.run('express:' + global.e);
+    done();
+  });
+
+  grunt.task.registerTask('test-server', 'Start the test server.', () => {
+    const done = grunt.task.current.async();
+    process.env.NODE_ENV = 'test';
+    const Server = require(path.resolve(SERVER.build.paths.root, 'configs', 'server')).default;
+    const server = new Server(path.resolve(SERVER.build.paths.root));
+    server.start(done);
   });
 
   grunt.registerTask('vendors', [
@@ -244,7 +274,13 @@ module.exports = grunt => {
     'babel:server',
   ]);
 
-  grunt.registerTask('', []);
+  grunt.registerTask('lint:test', ['jshint:test', 'eslint:test']);
+  grunt.registerTask('test:server', [
+    'build:server',
+    'lint:test',
+    'test-server',
+    'mochaTest',
+  ]);
 
   /** Default mode **/
   grunt.registerTask('default', [
@@ -259,4 +295,13 @@ module.exports = grunt => {
   grunt.registerTask('dev', ['default']);
   /** Production mode **/
   grunt.registerTask('prod', []);
+  /** Test mode **/
+  grunt.registerTask('test', [
+    'clean:test',
+    'build:server',
+    'build:client',
+    'mkdir:upload',
+    'test-server',
+    'mochaTest',
+  ]);
 };
