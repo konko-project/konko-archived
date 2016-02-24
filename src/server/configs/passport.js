@@ -1,10 +1,8 @@
 'use strict';
 
 import passport from 'passport';
-import passportLocal from 'passport-local';
+import { Strategy } from 'passport-local';
 import mongoose from 'mongoose';
-
-const LocalStrategy = passportLocal.Strategy;
 
 /**
  * Configurate passport for account authentication.
@@ -14,7 +12,7 @@ const LocalStrategy = passportLocal.Strategy;
  */
 export default () => {
   const User = mongoose.model('User');
-  passport.use(new LocalStrategy({
+  passport.use(new Strategy({
     usernameField: 'email',
   }, (email, password, done) => {
     User.findOne({ email: email }, (err, user) => {
