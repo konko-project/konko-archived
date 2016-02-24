@@ -15,6 +15,13 @@ export default class Utilities {
    */
   constructor() {}
 
+  /**
+   * Validate a cookie secret if a default one, custom one, or null
+   *
+   * @param {String} secret - Cookie secret.
+   * @param {Boolean} log - Indicates should log to console or not.
+   * @returns {Boolean} true if cookie is valid, false otherwise.
+   */
   static validCookieSecret(secret, log) {
     if (process.env.NODE_ENV !== 'production') {
       return true;
@@ -42,6 +49,13 @@ export default class Utilities {
     }
   }
 
+  /**
+   * Validate a jwt secret if a default one, custom one, or null
+   *
+   * @param {String} secret - JWT secret.
+   * @param {Boolean} log - Indicates should log to console or not.
+   * @returns {Boolean} true if cookie is valid, false otherwise.
+   */
   static validJwtSecret(secret, log) {
     if (process.env.NODE_ENV !== 'production') {
       return true;
@@ -69,6 +83,13 @@ export default class Utilities {
     }
   }
 
+  /**
+   * Validate if exist a configuration for Express-Mailer.
+   *
+   * @param {String} path - Path where is the config file located.
+   * @param {Boolean} log - Indicates should log to console or not.
+   * @returns {Boolean} true if has a config file, false otherwise.
+   */
   static hasExpressMailerConfiguration(path, log) {
     if (process.env.NODE_ENV !== 'production') {
       return true;
@@ -85,5 +106,18 @@ export default class Utilities {
     }
 
     return false;
+  }
+
+  /**
+   * Update an object with new value if has one.
+   *
+   * @param {Object} data - An object that stores the new values.
+   * @param {Object} obj - The original object.
+   * @param {Array} props - An array of object properties that need to be updated.
+   */
+  static partialUpdate(data, obj, ...props) {
+    for (let prop of props) {
+      obj[prop] = data[prop] || obj[prop];
+    }
   }
 }
