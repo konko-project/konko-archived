@@ -158,7 +158,8 @@ module.exports = grunt => {
     mochaTest: {
       test: {
         options: {
-          reporter: 'Nyan',
+          require: 'babel-core/register',
+          reporter: 'spec',
           timeout: 10000,
           captureFile: TEST.outputs.mocha,
         },
