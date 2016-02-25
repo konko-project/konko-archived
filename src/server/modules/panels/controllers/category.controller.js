@@ -1,7 +1,9 @@
 'use strict';
 
 import mongoose from 'mongoose';
+import utils from '../../../configs/utils';
 const Category = mongoose.model('Category');
+const Panel = mongoose.model('Panel');
 
 /**
  * Controller that process category request.
@@ -111,35 +113,37 @@ export default class CategoryController {
   /**
    * Update a category with values from request body, if has any.
    *
-   * @param {Object} req - HTTP request.
+   * @param {Object} body - HTTP request body.
+   * @param {Object} category - The requested category object.
+   * @param {Object} user - The current user.
    * @param {Object} res - HTTP response.
    * @static
    */
-  static update(req, res) {
-    let user = req.payload;
-
-    let category = req.category;
-    category.name = req.body.name || category.name;
-    category.order = req.body.order || category.order;
-
+  static update({ body, category, payload: user }, res) {
+    utils.partialUpdate(body, category, 'name', 'order');
     category.save()
       .then(category => res.json(category))
       .catch(err => res.status(500).send({ message: err }));
   }
 
   /**
-   * Delete a category then response back HTTP 200.
+   * Delete a category and its panl then response back HTTP 200.
    *
-   * @param {Object} req - HTTP request.
+   * @param {Object} body - HTTP request body.
+   * @param {Object} category - The requested category object.
+   * @param {Object} user - The current user.
    * @param {Object} res - HTTP response.
    * @static
    */
-  static delete(req, res) {
-    let user = req.payload;
-
-    req.category.remove()
-      .then(() => res.status(200).send({ message: 'ok' }))
-      .catch(err => res.status(500).send({ message: err }));
+  static delete({ body, category, user }, res) {
+    Panel.find({ category: category }).then(panels => {
+      panels.forEach(panel => {
+        panel.remove().catch(err => res.status(500).send({ message: err }));
+      });
+      category.remove()
+        .then(() => res.status(200).send({ message: 'ok' }))
+        .catch(err => res.status(500).send({ message: err }));
+    }).catch(err => res.status(500).send({ message: err }));
   }
 
   /**

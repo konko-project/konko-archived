@@ -1,6 +1,7 @@
 'use strict';
 
 import mongoose from 'mongoose';
+import utils from '../../../configs/utils';
 const Panel = mongoose.model('Panel');
 
 /**
@@ -108,33 +109,49 @@ export default class PanelController {
   /**
    * Update a panel with values from request body, if has any.
    *
-   * @param {Object} req - HTTP request.
+   * @param {Object} body - HTTP request body.
+   * @param {Object} panel - The requested panel object.
+   * @param {Object} user - The current user.
    * @param {Object} res - HTTP response.
    * @static
    */
-  static update(req, res) {
-    let panel = req.panel;
-
-    panel.name = req.body.name || panel.name;
-    panel.order = req.body.order || panel.order;
-    panel.description = req.body.description;
-
+  static update({ body, panel, payload: user }, res) {
+    utils.partialUpdate(body, panel, 'name', 'order', 'description');
     panel.save()
       .then(panel => res.json(panel))
       .catch(err => res.status(500).send({ message: err }));
   }
 
   /**
-   * Delete a panel then response back HTTP 200.
+   * Delete a panel and its children then response back HTTP 200.
    *
-   * @param {Object} req - HTTP request.
-   * @param {Object} res - HTTP response.
+   * @param {Object} body - HTTP request body.
+   * @param {Object} panel - The requested panel object.
+   * @param {Object} user - The current user.
    * @static
    */
-  static delete(req, res) {
-    req.panel.remove()
-      .then(() => res.status(200).send({ message: 'ok' }))
-      .catch(err => res.status(500).send({ message: err }));
+  static delete({ body, panel, user }, res) {
+    let panels = [panel];
+
+    const cb = p => {
+      panels.push(p);
+    };
+
+    const errorCB = err => {
+      return res.status(500).send({ message: err });
+    };
+
+    while (panels.length) {
+      let _panel = panels.shift();
+      for (let child of _panel.children) {
+        Panel.findOne(child)
+          .then(cb).catch(errorCB);
+      }
+
+      _panel.remove().then().catch(errorCB);
+    }
+
+    res.status(200).send({ message: 'ok' });
   }
 
   /**
@@ -154,7 +171,7 @@ export default class PanelController {
      }
 
      Panel.findById(id)
-      .select(req.query.fields ? req.query.fields.join(' ') : '-category -last -order')
+      .select(req.query.fields ? req.query.fields.join(' ') : '')
       .exec()
       .then(panel => (req.panel = panel) ? next() : res.status(404).send({ message: 'Panel is not found' }))
       .catch(err => next(err));
