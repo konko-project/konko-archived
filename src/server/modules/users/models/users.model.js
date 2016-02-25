@@ -9,14 +9,14 @@ import jwt from 'jsonwebtoken';
  *
  */
 const userSchema = new mongoose.Schema({
-  email: { type: String, unique: true, lowercase: true,
-          required: '{PATH} is required', },
+  email: { type: String, unique: true, lowercase: true, required: '{PATH} is required' },
   profile: { type: mongoose.Schema.Types.ObjectId, ref: 'Profile' },
   preference: { type: mongoose.Schema.Types.ObjectId, ref: 'Preference' },
   hash: { type: String },
   salt: { type: String },
   joined: { type: Date, default: Date.now },
   verified: { type: Boolean, default: false },
+  permission: { type: String, default: 'user' },
 });
 
 /**
@@ -61,6 +61,7 @@ userSchema.methods.generateJWT = function (app) {
     _id: this._id,
     email: this.email,
     joined: this.joined,
+    permission: this.permission,
     verified: this.verified,
     profile: this.profile,
     preference: this.preference,
