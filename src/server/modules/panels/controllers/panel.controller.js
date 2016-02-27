@@ -3,6 +3,7 @@
 import mongoose from 'mongoose';
 import utils from '../../../configs/utils';
 const Panel = mongoose.model('Panel');
+const Core = mongoose.model('Core');
 
 /**
  * Controller that process panel request.
@@ -16,6 +17,30 @@ export default class PanelController {
    * @constructs
    */
   constructor() {}
+
+  /**
+   * Update Panel Schema so that it meets the limit config from Core settings.
+   *
+   * @param {Object} res - HTTP response.
+   * @returns {Response} Response 500 if error exist.
+   */
+  static updateSchema(res) {
+    Core.find().then(cores => {
+      let { panel: { panel: { name, description } } } = cores[0];
+      Panel.schema.path('name', {
+        type: String,
+        unique: true,
+        required: '{PATH} is required',
+        minlength: name.min,
+        maxlength: name.max,
+      });
+      Panel.schema.path('description', {
+        type: String,
+        minlength: description.min,
+        maxlength: description.max,
+      });
+    }).catch(err => res.status(500).send({ message: err }));
+  }
 
   /**
    * Get a panel then populates it, response as json.
@@ -68,6 +93,7 @@ export default class PanelController {
    * @static
    */
   static create(req, res, next) {
+    PanelController.updateSchema(res);
     req.checkBody('name', 'Panel name cannot be empty!').notEmpty();
     var errors = req.validationErrors();
     if (errors) {
@@ -80,30 +106,25 @@ export default class PanelController {
       .then(panel => {
         if (req.category) {
           panel.category = req.category;
-          panel.save()
-            .then(panel => {
-              req.category.panels.push(panel);
-              req.category.save()
-                .then(category => res.json(panel))
-                .catch(err => next(err));
-            })
-            .catch(err => next(err));
+          panel.save().then(panel => {
+            req.category.panels.push(panel);
+            req.category.save()
+              .then(category => res.json(panel))
+              .catch(err => next(err));
+          }).catch(err => next(err));
         } else if (req.panel) {
           panel.parent = req.panel;
           panel.category = req.panel.category;
-          panel.save()
-            .then(panel => {
-              req.panel.children.push(panel);
-              req.panel.save()
-                .then(_panel => res.json(panel))
-                .catch(err => next(err));
-            })
-            .catch(err => next(err));
+          panel.save().then(panel => {
+            req.panel.children.push(panel);
+            req.panel.save()
+              .then(_panel => res.json(panel))
+              .catch(err => next(err));
+          }).catch(err => next(err));
         } else {
-          return res.status(400).send({ message: 'Error: Missing Category or Parent' });
+          res.status(400).send({ message: 'Error: Missing Category or Parent' });
         }
-      })
-      .catch(err => res.status(500).send({ message: err }));
+      }).catch(err => res.status(500).send({ message: err }));
   }
 
   /**
@@ -116,6 +137,7 @@ export default class PanelController {
    * @static
    */
   static update({ body, panel, payload: user }, res) {
+    PanelController.updateSchema(res);
     utils.partialUpdate(body, panel, 'name', 'order', 'description');
     panel.save()
       .then(panel => res.json(panel))

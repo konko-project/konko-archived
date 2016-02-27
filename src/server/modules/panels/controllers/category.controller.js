@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import utils from '../../../configs/utils';
 const Category = mongoose.model('Category');
 const Panel = mongoose.model('Panel');
+const Core = mongoose.model('Core');
 
 /**
  * Controller that process category request.
@@ -17,6 +18,27 @@ export default class CategoryController {
    * @constructs
    */
   constructor() {}
+
+  /**
+   * Update Category Schema so that it meets the limit config from Core settings.
+   *
+   * @param {Object} res - HTTP response.
+   * @returns {Response} Response 500 if error exist.
+   */
+  static updateSchema(res) {
+    Core.find().then(cores => {
+      let { panel: { category: { name: { min, max } } } } = cores[0];
+      Category.schema.path('name', {
+        type: String,
+        unique: true,
+        required: '{PATH} is required',
+        minlength: min,
+        maxlength: max,
+      });
+    }).catch(err => {
+      res.status(500).send({ message: err });
+    });
+  }
 
   /**
    * Get a category then populates it, response as json.
@@ -97,6 +119,7 @@ export default class CategoryController {
    * @static
    */
   static create(req, res, next) {
+    CategoryController.updateSchema(res);
     req.checkBody('name', 'Category name cannot be empty!').notEmpty();
     let errors = req.validationErrors();
     if (errors) {
@@ -120,6 +143,7 @@ export default class CategoryController {
    * @static
    */
   static update({ body, category, payload: user }, res) {
+    CategoryController.updateSchema(res);
     utils.partialUpdate(body, category, 'name', 'order');
     category.save()
       .then(category => res.json(category))
