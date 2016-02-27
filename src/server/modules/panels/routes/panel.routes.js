@@ -3,6 +3,7 @@
 import jwt from 'express-jwt';
 import panels from '../controllers/panel.controller';
 import categories from '../controllers/category.controller';
+import permission from '../../../configs/permission';
 
 /**
  * Panel routing.
@@ -15,23 +16,23 @@ export default app => {
   const JWT_AUTH = jwt({ secret: app.get('secret'), userProperty: 'payload' });
 
   app.route('/api/categories')
-    .get(categories.list)
-    .post(JWT_AUTH, categories.create);
+    .get(JWT_AUTH, permission.allowAll, categories.list)
+    .post(JWT_AUTH, permission.allowAdmin, categories.create);
 
   app.route('/api/categories/:categoryId')
-    .get(categories.get)
-    .put(JWT_AUTH, categories.update)
-    .delete(JWT_AUTH, categories.delete)   // TODO: Destructing Category
-    .post(JWT_AUTH, panels.create);   // create sub-panel
+    .get(JWT_AUTH, permission.allowAll, categories.get)
+    .put(JWT_AUTH, permission.allowAdmin, categories.update)
+    .delete(JWT_AUTH, permission.allowAdmin, categories.delete)
+    .post(JWT_AUTH, permission.allowAdmin, panels.create);
 
   app.route('/api/panels')
-    .get(panels.list);
+    .get(JWT_AUTH, permission.allowAll, panels.list);
 
   app.route('/api/panels/:panelId')
-    .get(panels.get)
-    .put(JWT_AUTH, panels.update)
-    .delete(JWT_AUTH, panels.delete)       // TODO: Destructing Panel
-    .post(JWT_AUTH, panels.create);   // create sub-panel
+    .get(JWT_AUTH, permission.allowAll, panels.get)
+    .put(JWT_AUTH, permission.allowAdmin, panels.update)
+    .delete(JWT_AUTH, permission.allowAdmin, panels.delete)
+    .post(JWT_AUTH, permission.allowAdmin, panels.create);
 
   app.param('panelId', panels.findPanelById);
   app.param('categoryId', categories.findCategoryById);
