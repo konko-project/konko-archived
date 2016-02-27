@@ -8,7 +8,7 @@ import mongoose from 'mongoose';
  */
 const panelSchema = new mongoose.Schema({
   name: { type: String, unique: true, required: '{PATH} is required' },
-  order: { type: Number, default: 0 },
+  order: { type: Number, min: 0, default: 0 },
   description: { type: String },
   children: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Panel' }],
   parent: { type: mongoose.Schema.Types.ObjectId, ref: 'Panel', default: null },
