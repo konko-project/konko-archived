@@ -1,8 +1,11 @@
 'use strict';
 
 import mongoose from 'mongoose';
+import utils from '../../../configs/utils';
 const Comment = mongoose.model('Comment');
+const Topic = mongoose.model('Topic');
 const Panel = mongoose.model('Panel');
+const Core = mongoose.model('Core');
 
 /**
  * Controller that process comment request.
@@ -18,14 +21,32 @@ export default class CommentController {
   constructor() {}
 
   /**
+   * Update Comment Schema so that it meets the limit config from Core settings.
+   *
+   * @param {Object} res - HTTP response.
+   * @returns {Response} Response 500 if error exist.
+   */
+  static updateSchema(res) {
+    Core.find().then(cores => {
+      let { post: { comment: { content } } } = cores[0];
+      Comment.schema.path('content', {
+        type: String,
+        required: '{PATH} is required',
+        minlength: content.min,
+        maxlength: content.max,
+      });
+    }).catch(err => res.status(500).json({ message: err }));
+  }
+
+  /**
    * Get a comment then populates it, response as json.
    *
    * @param {Object} req - HTTP request.
    * @param {Object} res - HTTP response.
    * @static
    */
-  static get(req, res) {
-    req.comment.populate({
+  static get({ comment }, res) {
+    comment.populate('topic', '_id title panel').populate({
       path: 'author',
       select: '_id profile',
       populate: {
@@ -35,10 +56,10 @@ export default class CommentController {
       },
     }, (err, comment) => {
       if (err) {
-        return res.status(500).send({ message: err });
+        return res.status(500).json({ message: err });
       }
 
-      res.json(comment);
+      res.status(200).json(comment);
     });
   }
 
@@ -49,19 +70,16 @@ export default class CommentController {
    * @param {Object} res - HTTP response.
    * @static
    */
-  static list(req, res) {
-    req.sanitizeQuery('offset').toInt();
-    req.sanitizeQuery('limit').toInt();
-    let errors = req.validationErrors();
+  static list({ sanitizeQuery, validationErrors, query, topic }, res) {
+    sanitizeQuery('offset').toInt();
+    sanitizeQuery('limit').toInt();
+    let errors = validationErrors();
     if (errors) {
-      return res.status(400).send({ message: errors });
+      return res.status(400).json({ message: errors });
     }
 
-    if (req.query.limit === 0) {
-      req.query.limit = 20;
-    }
-
-    Comment.find({ topic: req.topic._id }, '-short', { skip: req.query.offset, limit: req.query.limit })
+    query.limit = query.limit || 20;
+    Comment.find({ topic: topic._id }, '-short', { skip: query.offset, limit: query.limit })
       .lean().sort('-date')
       .populate('topic', '_id')
       .populate({
@@ -74,8 +92,8 @@ export default class CommentController {
           select: 'username avatar',
         },
       }).exec()
-      .then(comments => res.json(comments))
-      .catch(err => res.status(500).send({ message: err }));
+      .then(comments => res.status(200).json(comments))
+      .catch(err => res.status(500).json({ message: err }));
   }
 
   /**
@@ -86,49 +104,38 @@ export default class CommentController {
    * @param {nextCallback} next - A callback to run.
    * @static
    */
-  static create(req, res, next) {
-    req.checkBody('content', 'Empty comment!').notEmpty();
-    let errors = req.validationErrors();
+  static create({ checkBody, validationErrors, body, topic, payload }, res, next) {
+    CommentController.updateSchema(res);
+    checkBody('content', 'Empty comment!').notEmpty();
+    let errors = validationErrors();
     if (errors) {
-      return res.status(400).send({ message: errors });
+      return res.status(400).json({ message: errors });
     }
 
-    Comment.create(req.body)
-      .then(comment => {
-        let max = comment.content.match(/[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]/) ? 15 : 30;
-        comment.short = comment.content.length < 15 ? comment.content : comment.content.substring(0, max).match(/((^.{0,20})(?=[ ]))|(^.{0,20}(?=.))/g) + ' ...';
-        comment.topic = req.topic;
-        comment.author = req.payload;
-        comment.save()
-          .then(comment => {
-            req.topic.comments.push(comment);
+    Comment.create(body).then(comment => {
+      Core.find().then(([{ post: { topic: { lastReplyLength }, comment: { short: { max } } } }, ...rest]) => {
+        comment.short = comment.content.length <= max ? comment.content : new RegExp(`(^.{0,${max}}(?=[ ]))|(^.{0,${max}}(?=.))`, 'g').exec(comment.content)[0] + '...';
+        comment.topic = topic;
+        comment.author = payload;
+        comment.save().then(comment => {
+          topic.comments.push(comment);
 
-            // storing last 3 recent comments
-            req.topic.lastReplies.unshift(comment);
-            if (req.topic.lastReplies.length > 3) {
-              req.topic.lastReplies.pop();
-            }
+          // storing last 3 recent comments
+          topic.lastReplies.unshift(comment);
+          if (topic.lastReplies.length > lastReplyLength) {
+            topic.lastReplies.pop();
+          }
 
-            req.topic.lastReplyDate = comment.date;
-            req.topic.save()
-              .then(topic => {
-                req.topic.reply()
-                  .then(topic => {
-                    Panel.findById(mongoose.Types.ObjectId(topic.panel)).exec()
-                      .then(panel => {
-                        panel.addComment()
-                          .then(panel => res.json(comment))
-                          .catch(err => next(err));
-                      })
-                      .catch(err => next(err));
-                  })
+          topic.lastReplyDate = comment.date;
+            topic.reply().then(topic => {
+              Panel.findById(topic.panel).then(panel => {
+                panel.addComment().then(panel => res.status(201).json(comment))
                   .catch(err => next(err));
-              })
-              .catch(err => next(err));
-          })
-          .catch(err => next(err));
-      })
-      .catch(err => next(err));
+              }).catch(err => next(err));
+            }).catch(err => next(err));
+        }).catch(err => next(err));
+      }).catch(err => next(err));
+    }).catch(err => next(err));
   }
 
   /**
@@ -138,14 +145,20 @@ export default class CommentController {
    * @param {Object} res - HTTP response.
    * @static
    */
-  static update(req, res) {
-    let comment = req.comment;
-    comment.content = req.body.content || comment.content;
-    comment.updated = Date.now();
+  static update({ checkBody, validationErrors, body, comment, payload }, res) {
+    CommentController.updateSchema(res);
+    checkBody('content', 'Cannot post a empty comment!').notEmpty();
+    let errors = validationErrors();
+    if (errors) {
+      return res.status(400).json({ message: errors });
+    }
 
+    utils.partialUpdate(body, comment, 'content');
+    comment.updated.date = Date.now();
+    comment.updated.by = payload.profile.username;
     comment.save()
-      .then(comment => res.json(comment))
-      .catch(err => res.status(500).send({ message: err }));
+      .then(comment => res.status(200).json(comment))
+      .catch(err => res.status(500).json({ message: err }));
   }
 
   /**
@@ -155,38 +168,47 @@ export default class CommentController {
    * @param {Object} res - HTTP response.
    * @static
    */
-  static delete(req, res) {
-    let user = req.payload;
-
-    req.comment.remove()
-      .then(() => res.status(200).send({ message: 'ok' }))
-      .catch(err => res.status(500).send({ message: err }));
+  static delete({ topic, comment }, res) {
+    topic.comments.remove(comment);
+    topic.save().then(topic => {
+      comment.remove()
+        .then(() => res.status(200).json({ message: 'ok' }))
+        .catch(err => res.status(500).json({ message: err }));
+    }).catch(err => res.status(500).json({ message: err }));
   }
 
   /**
-   * Calls model Comment method that doing upvate
+   * Calls model Comment method that doing like
    *
    * @param {Object} req - HTTP request.
    * @param {Object} res - HTTP response.
    * @param {nextCallback} next - A callback to run.
    */
-  static upvote(req, res, next) {
-    req.comment.upvote()
-      .then(comment => res.json(comment))
-      .catch(err => next(err));
+  static like({ comment, payload }, res, next) {
+    if (comment.likes.indexOf(payload._id) >= 0) {
+      return res.status(403).json({ message: 'Forbidden' });
+    } else {
+      comment.like(payload._id)
+        .then(comment => res.status(204).json({}))
+        .catch(err => next(err));
+    }
   }
 
   /**
-   * Calls model Comment method that doing downvote
+   * Calls model Comment method that doing unlike
    *
    * @param {Object} req - HTTP request.
    * @param {Object} res - HTTP response.
    * @param {nextCallback} next - A callback to run.
    */
-  static downvote(req, res, next) {
-    req.comment.downvote()
-      .then(comment => res.json(comment))
-      .catch(err => next(err));
+  static unlike({ comment, payload }, res, next) {
+    if (comment.likes.indexOf(payload._id) < 0) {
+      return res.status(204).json({});
+    } else {
+      comment.unlike(payload._id)
+        .then(comment => res.status(204).json({}))
+        .catch(err => next(err));
+    }
   }
 
   /**
@@ -200,13 +222,14 @@ export default class CommentController {
    */
   static findCommentById(req, res, next, id) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).send({
+      return res.status(400).json({
         message: 'Comment ID is invalid',
       });
     }
 
-    Comment.findById(id).exec()
-      .then(comment => (req.comment = comment) ? next() : res.status(404).send({ message: 'Comment is not found' }))
+    Comment.findById(id)
+      .select(req._fields).sort(req._sort).exec()
+      .then(comment => (req.comment = comment) ? next() : res.status(404).json({ message: 'Comment is not found' }))
       .catch(err => next(err));
   }
 }

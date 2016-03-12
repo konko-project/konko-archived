@@ -1,6 +1,8 @@
 'use strict';
 
 import mongoose from 'mongoose';
+import utils from '../../../configs/utils';
+const Core = mongoose.model('Core');
 const User = mongoose.model('User');
 const Profile = mongoose.model('Profile');
 const Preference = mongoose.model('Preference');
@@ -19,6 +21,36 @@ export default class UserController {
   constructor() {}
 
   /**
+   * Update Profile Schema so that it meets the limit config from Core settings.
+   *
+   * @param {Object} res - HTTP response.
+   * @returns {Response} Response 500 if error exist.
+   */
+  static updateSchema(res) {
+    Core.find().then(cores => {
+      let { profile: { username, tagline } } = cores[0];
+      Profile.schema.path('username', {
+        type: String,
+        required: '{PATH} is required',
+        minlength: username.min,
+        maxlength: username.max,
+        validate: {
+          validator: v => {
+            let regex = new RegExp(username.forbidden.join('|') || '(?!)');
+            return !regex.test(v);
+          },
+          message: '"{VALUE}" is not a valid username!',
+        }
+      });
+      Profile.schema.path('tagline', {
+        type: String,
+        minlength: tagline.min,
+        maxlength: tagline.max,
+      });
+    }).catch(err => res.status(500).json({ message: err }));
+  }
+
+  /**
    * Response an user.
    *
    * @param {Object} req - HTTP request.
@@ -28,37 +60,38 @@ export default class UserController {
   static get(req, res) {
     req.user.populate('profile preference', (err, user) => {
       if (err) {
-        return res.status(500).send(err);
+        return res.status(500).json(err);
       }
-
-      res.json(user);
+      res.status(200).json(user);
     });
   }
 
   /**
-   * Update an user profile.
+   * List all users
    *
    * @param {Object} req - HTTP request.
    * @param {Object} res - HTTP response.
+   * @param {nextCallback} next - A callback to run.
    * @static
    */
-  static updateProfile(req, res) {
-    if (!req.user._id.equals(req.payload._id)) {
-      return res.status(401).send('Unauthorized');
-    }
+  static list(req, res, next) {
+    User.find().select(req._fields + ' -hash -salt').sort(req._sort).exec()
+      .then(users => res.status(200).json(users))
+      .catch(err => next(err));
+  }
 
-    Profile.findById(req.user.profile).exec()
-      .then(profile => {
-        profile.username = req.body.profile.username || profile.username;
-        profile.avatar = req.body.profile.avatar || profile.avatar;
-        profile.banner = req.body.profile.banner || profile.banner;
-        profile.gender = req.body.profile.gender || profile.gender;
-        profile.dob = req.body.profile.dob || profile.dob;
-        profile.save()
-          .then(profile => res.json(profile))
-          .catch(err => res.status(500).send({ message: err }));
-      })
-      .catch(err => res.status(500).send({ message: err }));
+  /**
+   * Response a user's profile
+   *
+   * @param {Object} req - HTTP request.
+   * @param {Object} res - HTTP response.
+   * @param {nextCallback} next - A callback to run.
+   * @static
+   */
+  static getProfile({ user: { profile } }, res, next) {
+    Profile.findById(profile)
+      .then(profile => res.status(200).json(profile))
+      .catch(err => res.status(500).json({ message: err }));
   }
 
   /**
@@ -68,19 +101,140 @@ export default class UserController {
    * @param {Object} res - HTTP response.
    * @static
    */
-  static updatePreference(req, res) {
-    if (!req.user._id.equals(req.payload._id)) {
-      return res.status(401).send('Unauthorized');
-    }
-
-    Preference.findById(req.user.preference).exec()
-      .then(preference => {
-        preference = req.body.preference;
-        preference.save()
-          .then(preference => res.json(preference))
-          .catch(err => res.status(500).send({ message: err }));
+  static updateProfile({ body, user: { profile } }, res) {
+    UserController.updateSchema(res);
+    Profile.findById(profile)
+      .then(profile => {
+        utils.partialUpdate(body, profile, 'username', 'tagline', 'gender', 'dob', 'tokenLive');
+        profile.save()
+          .then(profile => res.status(200).json(profile))
+          .catch(err => res.status(500).json({ message: err }));
       })
-      .catch(err => res.status(500).send({ message: err }));
+      .catch(err => res.status(500).json({ message: err }));
+  }
+
+  /**
+   * Response a user's preference
+   *
+   * @param {Object} req - HTTP request.
+   * @param {Object} res - HTTP response.
+   * @param {nextCallback} next - A callback to run.
+   * @static
+   */
+  static getPreference({ user: { preference } }, res, next) {
+    Preference.findById(preference)
+      .then(preference => res.status(200).json(preference))
+      .catch(err => res.status(500).json({ message: err }));
+  }
+
+  /**
+   * Update an user profile.
+   *
+   * @param {Object} req - HTTP request.
+   * @param {Object} res - HTTP response.
+   * @static
+   */
+  static updatePreference({ body, user: { preference } }, res) {
+    Preference.findById(preference)
+      .then(preference => {
+        utils.partialUpdate.apply(null, [body, preference].concat(Object.keys(body)));
+        preference.save()
+          .then(preference => res.status(200).json(preference))
+          .catch(err => res.status(500).json({ message: err }));
+      })
+      .catch(err => res.status(500).json({ message: err }));
+  }
+
+  /**
+   * Response a user's bookmarks
+   *
+   * @param {Object} req - HTTP request.
+   * @param {Object} res - HTTP response.
+   * @param {nextCallback} next - A callback to run.
+   * @static
+   */
+  static getBookmarks({ user }, res, next) {
+    user.populate({
+      path: 'bookmarks',
+      select: '_id author date title views replies panel lastReplies',
+      populate: [{
+        path: 'author',
+        model: 'User',
+        select: '_id profile',
+        populate: {
+          path: 'profile',
+          model: 'Profile',
+          select: 'username avatar',
+        },
+      }, {
+        path: 'panel',
+        model: 'Panel',
+        select: '_id name',
+      }, {
+        path: 'lastReplies',
+        model: 'Comment',
+        select: '_id author short',
+        populate: {
+          path: 'author',
+          model: 'User',
+          select: '_id profile',
+          populate: {
+            path: 'profile',
+            model: 'Profile',
+            select: 'username avatar',
+          },
+        }
+      }],
+      options: {
+        sort: { date: -1 },
+      },
+    }, (err, user) => {
+      if (err) {
+        return res.status(500).json({ message: err });
+      }
+      res.status(200).json(user.bookmarks);
+    });
+  }
+
+  /**
+   * Remove a bookmark
+   *
+   * @param {Object} req - HTTP request.
+   * @param {Object} res - HTTP response.
+   * @static
+   */
+  static removeBookmark({ user, topic }, res) {
+    user.bookmarks.remove(topic);
+    user.save().then(u => {
+      topic.unbookmark(u._id.toString()).then(t => {
+        res.status(204).json({});
+      }).catch(err => res.status(500).json({ message: err }));
+    }).catch(err => res.status(500).json({ message: err }));
+  }
+
+  /**
+   * Response user's permission
+   *
+   * @param {Object} req - HTTP request.
+   * @param {Object} res - HTTP response.
+   * @static
+   */
+  static getPermission({ user: { permission } }, res) {
+    res.status(200).json({ permission: permission });
+  }
+
+  /**
+   * Set user's permission
+   *
+   * @param {Object} req - HTTP request.
+   * @param {Object} res - HTTP response.
+   * @static
+   */
+  static setPermission({ body, user }, res) {
+    user.permission = body.permission;
+    user.save().then(u => {
+      res.status(204).json({});
+    }).catch(err => res.status(500).json({ message: err }));
   }
 
   /**
@@ -94,11 +248,11 @@ export default class UserController {
    */
   static findUserById(req, res, next, id) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).send({ message: 'User ID is invalid' });
+      return res.status(400).json({ message: 'User ID is invalid' });
     }
 
-    User.findById(id).select('_id joined profile preference').exec()
-      .then(user => (req.user = user) ? next() : res.status(404).send({ message: 'User is not found' }))
+    User.findById(id).select('-hash -salt').exec()
+      .then(user => (req.user = user) ? next() : res.status(404).json({ message: 'User is not found' }))
       .catch(err => next(err));
   }
 }

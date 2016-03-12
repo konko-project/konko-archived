@@ -1,8 +1,12 @@
 'use strict';
 
 import mongoose from 'mongoose';
+import utils from '../../../configs/utils';
 const Topic = mongoose.model('Topic');
+const Comment = mongoose.model('Comment');
 const Panel = mongoose.model('Panel');
+const User = mongoose.model('User');
+const Core = mongoose.model('Core');
 
 /**
  * Controller that process topic request.
@@ -18,33 +22,56 @@ export default class TopicController {
   constructor() {}
 
   /**
+   * Update Topic Schema so that it meets the limit config from Core settings.
+   *
+   * @param {Object} res - HTTP response.
+   * @returns {Response} Response 500 if error exist.
+   */
+  static updateSchema(res) {
+    Core.find().then(cores => {
+      let { post: { topic: { title, content } } } = cores[0];
+      Topic.schema.path('title', {
+        type: String,
+        required: '{PATH} is required',
+        minlength: title.min,
+        maxlength: title.max,
+      });
+      Topic.schema.path('content', {
+        type: String,
+        required: '{PATH} is required',
+        unique: true,
+        minlength: content.min,
+        maxlength: content.max,
+      });
+    }).catch(err => res.status(500).json({ message: err }));
+  }
+
+  /**
    * Get a topic then populates it, response as json.
    *
    * @param {Object} req - HTTP request.
    * @param {Object} res - HTTP response.
    * @static
    */
-  static get(req, res) {
-    req.topic.view()
-      .then(topic => {
-        topic.populate('panel', '_id name')
-          .populate({
-            path: 'author',
-            select: '_id profile',
-            populate: {
-              path: 'profile',
-              model: 'Profile',
-              select: 'username avatar',
-            },
-          }, (err, topic) => {
-            if (err) {
-              return res.status(500).send({ message: err });
-            }
+  static get({ topic }, res) {
+    topic.view().then(topic => {
+      topic.populate('panel', '_id name')
+        .populate({
+          path: 'author',
+          select: '_id profile',
+          populate: {
+            path: 'profile',
+            model: 'Profile',
+            select: 'username avatar',
+          },
+        }, (err, topic) => {
+          if (err) {
+            return res.status(500).json({ message: err });
+          }
 
-            res.json(topic);
-          });
-      })
-      .catch(err => res.status(500).send({ message: err }));
+          res.status(200).json(topic);
+        });
+    }).catch(err => res.status(500).json({ message: err }));
   }
 
   /**
@@ -55,31 +82,27 @@ export default class TopicController {
    * @param {nextCallback} next - A callback to run.
    * @static
    */
-  static list(req, res, next) {
+  static list({ query, sanitizeQuery, _sort }, res, next) {
     let select = {};
     let sort = {};
     let optional = '';
-    if (req.query && req.query.userId) {
-      select = { author: req.query.userId };
+    sanitizeQuery('offset').toInt();
+    sanitizeQuery('limit').toInt();
+    query.limit = query.limit || 20;
+    if (query && query.userId) {
+      select = { author: query.userId };
       optional = 'content panel';
-      sort = { date: -1 };
-    } else if (req.query && req.query.panelId) {
-      select = { panel: req.query.panelId };
+      sort = _sort;  // { date: -1 }
+    } else if (query && query.panelId) {
+      select = { panel: query.panelId };
       optional = 'lastReplyDate';
-      sort = { lastReplyDate: -1 };
+      sort = _sort; // { lastReplyDate: -1 }
     } else {
-      return res.status(400).send('Bad Request');
-    }
-
-    req.sanitizeQuery('offset').toInt();
-    req.sanitizeQuery('limit').toInt();
-
-    if (req.query.limit === 0) {
-      req.query.limit = 20;
+      return res.status(400).json({ message: 'Bad Request' });
     }
 
     Topic.find(select, '_id author title date replies views lastReplies ' + optional)
-      .lean().sort(sort).skip(req.query.offset).limit(req.query.limit)
+      .lean().sort(sort).skip(query.offset).limit(query.limit)
       .populate('panel', '_id name')
       .populate({
         path: 'author',
@@ -103,9 +126,7 @@ export default class TopicController {
             select: 'username avatar',
           },
         },
-      }).exec()
-      .then(topics => res.json(topics))
-      .catch(err => next(err));
+      }).exec().then(topics => res.status(200).json(topics)).catch(err => next(err));
   }
 
   /**
@@ -116,38 +137,31 @@ export default class TopicController {
    * @param {nextCallback} next - A callback to run.
    * @static
    */
-  static create(req, res, next) {
-    req.checkBody('title', 'Title cannot be empty!').notEmpty();
-    req.checkBody('content', 'Cannot post a empty topic!').notEmpty();
-    req.checkQuery('panelId', 'Panel ID is not presented!').notEmpty();
-    var errors = req.validationErrors();
+  static create({ checkBody, checkQuery, validationErrors, body, query, payload }, res, next) {
+    TopicController.updateSchema(res);
+    checkBody('title', 'Title cannot be empty!').notEmpty();
+    checkBody('content', 'Cannot post a empty topic!').notEmpty();
+    checkQuery('panelId', 'Panel ID is not presented!').notEmpty();
+    let errors = validationErrors();
     if (errors) {
-      return res.status(400).send(errors);
+      return res.status(400).json({ message: errors });
     }
 
-    Topic.create()
-      .then(topic => {
-        topic.author = req.payload;
-        Panel.findById(mongoose.Types.ObjectId(req.query.panelId)).exec()
-          .then(panel => {
-            topic.panel = panel;
-            topic.save()
-              .then(topic => {
-                panel.last.shift();
-                panel.last.push(topic);
-                panel.save()
-                  .then(panel => {
-                    panel.addtopic()
-                      .then(panel => res.json(topic))
-                      .catch(err => next(err));
-                  })
-                  .catch(err => next(err));
-              })
-              .catch(err => next(err));
-          })
-          .catch(err => next(err));
-      })
-      .catch(err => next(err));
+    Topic.create(body).then(topic => {
+      Panel.findById(mongoose.Types.ObjectId(query.panelId)).exec().then(panel => {
+        if (!panel) {
+            return res.status(404).json({ message: 'Panel not found' });
+        }
+
+        topic.author = payload;
+        topic.panel = panel;
+        topic.save().then(topic => {
+          panel.last.shift();
+          panel.last.push(topic);
+          panel.addtopic().then(panel => res.status(201).json(topic)).catch(err => next(err));
+        }).catch(err => next(err));
+      }).catch(err => next(err));
+    }).catch(err => next(err));
   }
 
   /**
@@ -157,16 +171,21 @@ export default class TopicController {
    * @param {Object} res - HTTP response.
    * @static
    */
-  static update(req, res) {
-    let topic = req.topic;
-    topic.title = req.body.title || topic.title;
-    topic.content = req.body.content || topic.content;
-    topic.updated.date = Date.now();
-    topic.updated.by = req.payload.username;
+  static update({ checkBody, validationErrors, body, topic, payload }, res) {
+    TopicController.updateSchema(res);
+    checkBody('title', 'Title cannot be empty!').notEmpty();
+    checkBody('content', 'Cannot post a empty topic!').notEmpty();
+    let errors = validationErrors();
+    if (errors) {
+      return res.status(400).json({ message: errors });
+    }
 
+    utils.partialUpdate(body, topic, 'title', 'content');
+    topic.updated.date = Date.now();
+    topic.updated.by = payload.profile.username;
     topic.save()
-      .then(topic => res.json(topic))
-      .catch(err => res.status(500).send({ message: err }));
+      .then(topic => res.status(200).json(topic))
+      .catch(err => res.status(500).json({ message: err }));
   }
 
   /**
@@ -176,38 +195,111 @@ export default class TopicController {
    * @param {Object} res - HTTP response.
    * @static
    */
-  static delete(req, res) {
-    let user = req.payload;
-
-    req.topic.remove()
-      .then(() => res.status(200).send({ message: 'ok' }))
-      .catch(err => res.status(500).send({ message: err }));
+  static delete({ topic }, res) {
+    Comment.remove({ topic: topic }).then(() => {
+      topic.remove()
+        .then(res.status(200).json({ message: 'ok' }))
+        .catch(err => res.status(500).json({ message: err }));
+    }).catch(err => res.status(500).json({ message: err }));
   }
 
   /**
-   * Calls model Topic method that doing upvate
+   * Calls model Topic method that doing like
    *
    * @param {Object} req - HTTP request.
    * @param {Object} res - HTTP response.
    * @param {nextCallback} next - A callback to run.
+   * @static
    */
-  static upvote(req, res, next) {
-    req.topic.upvote()
-      .then(topic => res.json(topic))
-      .catch(err => next(err));
+  static like({ topic, payload }, res, next) {
+    if (topic.likes.indexOf(payload._id) >= 0) {
+      return res.status(403).json({ message: 'Forbidden' });
+    } else {
+      topic.like(payload._id)
+        .then(topic => res.status(204).json({}))
+        .catch(err => next(err));
+    }
   }
 
   /**
-   * Calls model Topic method that doing downvote
+   * Calls model Topic method that doing un-like
    *
    * @param {Object} req - HTTP request.
    * @param {Object} res - HTTP response.
    * @param {nextCallback} next - A callback to run.
+   * @static
    */
-  static downvote(req, res, next) {
-    req.topic.downvote()
-      .then(topic => res.json(topic))
-      .catch(err => next(err));
+  static unlike({ topic, payload }, res, next) {
+    if (topic.likes.indexOf(payload._id) < 0) {
+      return res.status(204).json({});
+    } else {
+      topic.unlike(payload._id)
+        .then(topic => res.status(204).json({}))
+        .catch(err => next(err));
+    }
+  }
+
+  /**
+   * Calls model Topic mothed that doing bookmark
+   *
+   * @param {Object} req - HTTP request.
+   * @param {Object} res - HTTP response.
+   * @param {nextCallback} next - A callback to run.
+   * @static
+   */
+  static bookmark({ topic, payload }, res, next) {
+    if (topic.bookmarks.indexOf(payload._id) >= 0){
+      return res.status(403).json({ message: 'Forbidden' });
+    } else {
+      User.findById(payload._id).then(user => {
+        if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+        }
+        topic.bookmark(payload._id).then(topic => {
+          user.bookmarks.push(topic);
+          user.save().then(user => res.status(204).json({}))
+            .catch(err => res.status(500).json({ message: err }));
+        }).catch(err => res.status(500).json({ message: err }));
+      }).catch(err => res.status(500).json({ message: err }));
+    }
+  }
+
+  /**
+   * Check if topic is bookmarked.
+   *
+   * @param {Object} req - HTTP request.
+   * @param {Object} res - HTTP response.
+   * @param {nextCallback} next - A callback to run.
+   * @static
+   */
+  static bookmarked({ topic, payload }, res, next) {
+    return topic.bookmarks.indexOf(payload._id) < 0 ? res.status(404).json({}) : res.status(204).json({});
+  }
+
+  /**
+   * Calls model Topic method that doing un-bookmark
+   *
+   * @param {Object} req - HTTP request.
+   * @param {Object} res - HTTP response.
+   * @param {nextCallback} next - A callback to run.
+   * @static
+   */
+  static unbookmark({ topic, payload }, res, next) {
+    User.findById(payload._id).then(user => {
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      user.bookmarks.remove(topic);
+      user.save().then(user => {
+        if (topic.bookmarks.indexOf(payload._id) < 0) {
+          return res.status(204).json({});
+        } else {
+          topic.unbookmark(payload._id)
+            .then(topic => res.status(204).json({}))
+            .catch(err => next(err));
+        }
+      }).catch(err => res.status(500).json({ message: err }));
+    }).catch(err => res.status(500).json({ message: err }));
   }
 
   /**
@@ -221,14 +313,12 @@ export default class TopicController {
    */
   static findTopicById(req, res, next, id) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).send({
-        message: 'Comment ID is invalid',
-      });
+      return res.status(400).json({ message: 'Topic ID is invalid' });
     }
 
     Topic.findById(id)
-      .select(req.query.fields ? req.query.fields.join(' ') : '').exec()
-      .then(topic => (req.topic = topic) ? next() : res.status(404).send({ message: 'Topic is not found' }))
+      .select(req._fields ? req._fields + ' views' : '').exec()
+      .then(topic => (req.topic = topic) ? next() : res.status(404).json({ message: 'Topic is not found' }))
       .catch(err => next(err));
   }
 }
