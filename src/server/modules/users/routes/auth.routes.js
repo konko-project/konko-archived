@@ -13,16 +13,16 @@ import auth from '../controllers/auth.controller';
 export default app => {
   const JWT_AUTH = jwt({ secret: app.get('secret'), userProperty: 'payload' });
 
-  app.route('/api/auth/register')
+  app.route('/api/v1/auth/register')
     .post(auth.register(app));
 
-  app.route('/api/auth/login')
+  app.route('/api/v1/auth/login')
     .post(auth.login(app));
 
-  app.route('/api/auth/sync')
+  app.route('/api/v1/auth/sync')
     .get(JWT_AUTH, auth.sync(app));
 
-  app.route('/api/verify/:token')
+  app.route('/api/v1/verify/:token')
     .get(auth.verify);
 
   app.param('token', auth.findToken);
