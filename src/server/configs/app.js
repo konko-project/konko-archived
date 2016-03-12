@@ -45,7 +45,10 @@ export default dirname => {
 
   // express/app setup
   app.use(favicon(path.join(STATICS.shared.root, 'favicon.ico')));
-  app.use(morgan('dev'));
+  if (process.env.NODE_ENV !== 'test') {
+    app.use(morgan('dev'));
+  }
+
   utils.validCookieSecret(SECRETS.cookieSecret, true);
   app.use(cookieParser(SECRETS.cookieSecret));
   app.use(bodyParser.json());
@@ -60,6 +63,7 @@ export default dirname => {
 
     level: 9,
   }));
+  app.enable('trust proxy');
 
   // setup static directories
   statics(app, STATICS, CLIENT);
@@ -90,6 +94,7 @@ export default dirname => {
   });
 
   // set routes
+  app.use(utils.quering);
   routes(app, SERVER);
 
   // error handler
