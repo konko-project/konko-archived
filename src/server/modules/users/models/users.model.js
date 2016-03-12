@@ -3,6 +3,7 @@
 import mongoose from 'mongoose';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
+const permissions = 'admin user banned guest'.split(' ');
 
 /**
  * Mongoose schema of user.
@@ -16,7 +17,8 @@ const userSchema = new mongoose.Schema({
   salt: { type: String },
   joined: { type: Date, default: Date.now },
   verified: { type: Boolean, default: false },
-  permission: { type: String, default: 'user' },
+  permission: { type: String, enum: permissions, default: 'user' },
+  bookmarks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Topic' }],
 });
 
 /**
@@ -59,7 +61,6 @@ userSchema.methods.login = function () {
 userSchema.methods.generateJWT = function (app) {
   return jwt.sign({
     _id: this._id,
-    email: this.email,
     joined: this.joined,
     permission: this.permission,
     verified: this.verified,
