@@ -36,7 +36,7 @@ export default class CategoryController {
         maxlength: max,
       });
     }).catch(err => {
-      res.status(500).send({ message: err });
+      res.status(500).json({ message: err });
     });
   }
 
@@ -71,10 +71,10 @@ export default class CategoryController {
       },
     }, (err, category) => {
       if (err) {
-        return res.status(500).send({ message: err });
+        return res.status(500).json({ message: err });
       }
 
-      res.json(category);
+      res.status(200).json(category);
     });
   }
 
@@ -86,7 +86,7 @@ export default class CategoryController {
    * @static
    */
   static list(req, res) {
-    Category.find().lean().sort('-order')
+    Category.find().select(req._fields).sort(req._sort).lean()
       .populate({
         path: 'panels',
         select: '_id name order description last topics comments',
@@ -106,8 +106,8 @@ export default class CategoryController {
           },
         },
       }).exec()
-      .then(categories => res.json(categories))
-      .catch(err => res.status(500).send({ message: err }));
+      .then(categories => res.status(200).json(categories))
+      .catch(err => res.status(500).json({ message: err }));
   }
 
   /**
@@ -123,13 +123,10 @@ export default class CategoryController {
     req.checkBody('name', 'Category name cannot be empty!').notEmpty();
     let errors = req.validationErrors();
     if (errors) {
-      return res.status(400).send({ message: errors });
+      return res.status(400).json({ message: errors });
     }
-
-    let user = req.payload;
-
     Category.create(req.body)
-      .then(category => res.json(category))
+      .then(category => res.status(201).json(category))
       .catch(err => next(err));
   }
 
@@ -142,12 +139,17 @@ export default class CategoryController {
    * @param {Object} res - HTTP response.
    * @static
    */
-  static update({ body, category, payload: user }, res) {
+  static update({ checkBody, validationErrors, body, category }, res) {
     CategoryController.updateSchema(res);
+    checkBody('name', 'Category name cannot be empty!').notEmpty();
+    let errors = validationErrors();
+    if (errors) {
+      return res.status(400).json({ message: errors });
+    }
     utils.partialUpdate(body, category, 'name', 'order');
     category.save()
-      .then(category => res.json(category))
-      .catch(err => res.status(500).send({ message: err }));
+      .then(category => res.status(200).json(category))
+      .catch(err => res.status(500).json({ message: err }));
   }
 
   /**
@@ -160,14 +162,11 @@ export default class CategoryController {
    * @static
    */
   static delete({ body, category, user }, res) {
-    Panel.find({ category: category }).then(panels => {
-      panels.forEach(panel => {
-        panel.remove().catch(err => res.status(500).send({ message: err }));
-      });
+    Panel.remove({ category: category }).then(() => {
       category.remove()
-        .then(() => res.status(200).send({ message: 'ok' }))
-        .catch(err => res.status(500).send({ message: err }));
-    }).catch(err => res.status(500).send({ message: err }));
+        .then(() => res.status(200).json({ message: `${category.name} has been removed.` }))
+        .catch(err => res.status(500).json({ message: err }));
+    }).catch(err => res.status(500).json({ message: err }));
   }
 
   /**
@@ -181,11 +180,10 @@ export default class CategoryController {
    */
   static findCategoryById(req, res, next, id) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).send({ message: 'Category ID is invalid' });
+      return res.status(400).json({ message: 'Category ID is invalid' });
     }
-
-    Category.findById(id).exec()
-      .then(category =>  (req.category = category) ? next() : res.status(404).send({ message: 'Category is not found' }))
+    Category.findById(id).select(req._fields).sort(req._sort).exec()
+      .then(category => (req.category = category) ? next() : res.status(404).json({ message: 'Category is not found' }))
       .catch(err => next(err));
   }
 }
