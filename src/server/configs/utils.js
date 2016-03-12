@@ -1,6 +1,7 @@
 'use strict';
 
 import glob from 'glob';
+import mongoose from 'mongoose';
 
 /**
  * Konko server utilities.
@@ -14,6 +15,85 @@ export default class Utilities {
    * @constructs
    */
   constructor() {}
+
+  /**
+   * Helper to record X-Rate-Limit-* in production mode.
+   *
+   * @param {Object} req - HTTP request.
+   * @param {Object} res - HTTP response.
+   * @param {nextCallback} next - A callback to run.
+   * @returns {nextCallback} Call next middleware.
+   */
+  static throttle(req, res, next) {
+    if (process.env.NODE_ENV !== 'production') {
+      return next();
+    }
+
+    const RateLimit = mongoose.model('RateLimit');
+    let ip = req.headers['x-forwarded-for'] ||
+             req.connection.remoteAddress ||
+             req.socket.remoteAddress ||
+             req.connection.socket.remoteAddress;
+    console.log(req.ip, req.ips);
+    console.log(req.connection.remoteAddress);
+    console.log(ip);
+    RateLimit.findOneAndUpdate({ ip: ip }, { $inc: { hits: 1 } }, { upsert: false })
+      .exec().then(rateLimit => {
+        if (!rateLimit) {
+          RateLimit.create({ ip: ip }).then(rateLimit => {
+            let reset = 10 * 60 * 1000 - (new Date().getTime() - rateLimit.expiresAt.getTime());
+            res.set('X-Rate-Limit-Limit', 600);
+            res.set('X-Rate-Limit-Remaining', 600 - rateLimit.hits);
+            res.set('X-Rate-Limit-Reset', reset);
+            req.rateLimit = rateLimit;
+            return next();
+          }).catch(err => {
+            res.statusCode = 500;
+            return next(err);
+          });
+        } else {
+          let reset = 10 * 60 * 1000 - (new Date().getTime() - rateLimit.expiresAt.getTime());
+          res.set('X-Rate-Limit-Limit', 600);
+          res.set('X-Rate-Limit-Remaining', 600 - rateLimit.hits);
+          res.set('X-Rate-Limit-Reset', reset);
+          req.rateLimit = rateLimit;
+          if (rateLimit.hits > 600) {
+            return res.status(429).json({ message: 'Too Many Requests' });
+          } else {
+            return next();
+          }
+        }
+      }).catch(err => {
+        res.statusCode = 500;
+        return next(err);
+      });
+  }
+
+  /**
+   * Helper to process quering string
+   *
+   * @param {Object} req - HTTP request.
+   * @param {Object} res - HTTP response.
+   * @param {nextCallback} next - A callback to run.
+   * @returns {nextCallback} Call next middleware.
+   */
+  static quering(req, res, next) {
+    req._fields = '';
+    req._sort = {};
+    if (req.query && req.query.sort) {
+      for (let s of req.query.sort) {
+        if (s.charAt(0) === '-') {
+          req._sort[s.substr(1)] = -1;
+        } else {
+          req._sort[s] = 1;
+        }
+      }
+    }
+    if (req.query && req.query.fields) {
+      req._fields = req.query.fields.replace(',', ' ');
+    }
+    return next();
+  }
 
   /**
    * Validate a cookie secret if a default one, custom one, or null
@@ -117,7 +197,16 @@ export default class Utilities {
    */
   static partialUpdate(data, obj, ...props) {
     for (let prop of props) {
-      obj[prop] = data[prop] || obj[prop];
+      if(data.hasOwnProperty(prop)) {
+        obj[prop] = data[prop];
+      }
     }
   }
 }
+
+/**
+ * Callback that calls next middleware.
+ *
+ * @callback nextCallback
+ * @param {Object} error - Error, if has any.
+ */
