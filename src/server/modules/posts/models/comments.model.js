@@ -16,27 +16,26 @@ const commentSchema = new mongoose.Schema({
     by: { type: String, default: null },
     date: { type: Date, default: Date.now },
   },
-  upvotes: { type: Number, default: 0 },
-  downvotes: { type: Number, default: 0 },
+  likes: [{ type: String }],
 });
 
 /**
- * Increment upvote number by one.
+ * Stores the user's id who like this comment.
  *
  * @returns {Promise} The promise of this updated comment.
  */
-commentSchema.methods.upvote = function () {
-  this.upvotes += 1;
+commentSchema.methods.like = function (uid) {
+  this.likes.push(uid);
   return this.save();
 };
 
 /**
- * Increment downvote number by one.
+ * Removes the user's id who un-like this comment.
  *
  * @returns {Promise} The promise of this updated comment.
  */
-commentSchema.methods.downvote = function () {
-  this.downvotes += 1;
+commentSchema.methods.unlike = function (uid) {
+  this.likes.splice(this.likes.indexOf(uid), 1);
   return this.save();
 };
 

@@ -8,7 +8,7 @@ import mongoose from 'mongoose';
  */
 const topicSchema = new mongoose.Schema({
   author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  content: { type: String, required: '{PATH} is required' },
+  content: { type: String, required: '{PATH} is required', unique: true },
   comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
   date: { type: Date, default: Date.now },
   title: { type: String, required: '{PATH} is required' },
@@ -18,11 +18,11 @@ const topicSchema = new mongoose.Schema({
   },
   views: { type: Number, default: 0 },
   replies: { type: Number, default: 0 },
-  upvotes: { type: Number, default: 0 },
-  downvotes: { type: Number, default: 0 },
   panel: { type: mongoose.Schema.Types.ObjectId, ref: 'Panel' },
   lastReplies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
   lastReplyDate: { type: Date, default: Date.now },
+  likes: [{ type: String }],
+  bookmarks: [{ type: String }],
 });
 
 /**
@@ -46,22 +46,42 @@ topicSchema.methods.reply = function () {
 };
 
 /**
- * Increment upvote number by one.
+ * Stores the user's id who like this topic.
  *
  * @returns {Promise} The promise of this updated topic.
  */
-topicSchema.methods.upvote = function () {
-  this.upvotes += 1;
+topicSchema.methods.like = function (uid) {
+  this.likes.push(uid);
   return this.save();
 };
 
 /**
- * Increment downvote number by one.
+ * Removes the user's id who un-like this topic.
  *
  * @returns {Promise} The promise of this updated topic.
  */
-topicSchema.methods.downvote = function () {
-  this.downvotes += 1;
+topicSchema.methods.unlike = function (uid) {
+  this.likes.splice(this.likes.indexOf(uid), 1);
+  return this.save();
+};
+
+/**
+ * Stores the user's id who bookmark this topic.
+ *
+ * @returns {Promise} The promise of this updated topic.
+ */
+topicSchema.methods.bookmark = function (uid) {
+  this.bookmarks.push(uid);
+  return this.save();
+};
+
+/**
+ * Removes the user's id who un-bookmark this topic.
+ *
+ * @returns {Promise} The promise of this updated topic.
+ */
+topicSchema.methods.unbookmark = function (uid) {
+  this.bookmarks.splice(this.bookmarks.indexOf(uid), 1);
   return this.save();
 };
 
