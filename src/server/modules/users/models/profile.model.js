@@ -11,10 +11,12 @@ const profileSchema = new mongoose.Schema({
   username: { type: String, unique: true, required: '{PATH} is required' },
   avatar: { type: String, default: 'style/core/images/users/default.png' },
   banner: { type: String, default: null },
+  tagline: { type: String, default: null },
   gender: { type: String, enum: genders, default: 'None' },
   dob: { type: Date },
   tokenLive: { type: String, default: '24h' },
   lastLogin: { type: Date, default: Date.now },
+  lastOnline: { type: Date, default: Date.now },
 });
 
 mongoose.model('Profile', profileSchema);
