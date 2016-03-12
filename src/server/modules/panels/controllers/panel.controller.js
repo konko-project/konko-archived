@@ -3,6 +3,7 @@
 import mongoose from 'mongoose';
 import utils from '../../../configs/utils';
 const Panel = mongoose.model('Panel');
+const Category = mongoose.model('Category');
 const Core = mongoose.model('Core');
 
 /**
@@ -39,7 +40,7 @@ export default class PanelController {
         minlength: description.min,
         maxlength: description.max,
       });
-    }).catch(err => res.status(500).send({ message: err }));
+    }).catch(err => res.status(500).json({ message: err }));
   }
 
   /**
@@ -49,8 +50,8 @@ export default class PanelController {
    * @param {Object} res - HTTP response.
    * @static
    */
-  static get(req, res) {
-    req.panel.populate('parent', '_id name')
+  static get({ panel }, res) {
+    panel.populate('parent', '_id name')
       .populate({
         path: 'children',
         select: '_id name description order topics comments',
@@ -59,10 +60,9 @@ export default class PanelController {
         },
       }, (err, panel) => {
         if (err) {
-          res.status(500).send({ message: err });
+          return res.status(500).json({ message: err });
         }
-
-        res.json(req.panel);
+        res.status(200).json(panel);
       });
   }
 
@@ -74,14 +74,14 @@ export default class PanelController {
    * @static
    */
   static list(req, res) {
-    Panel.find().lean().sort('name')
+    Panel.find().select(req._fields).sort(req._sort).lean()
       .populate({
         path: 'children',
         select: '_id name',
         options: { sort: { order: -1 } },
       }).exec()
-      .then(panels => res.json(panels))
-      .catch(err => res.status(500).send({ message: err }));
+      .then(panels => res.status(200).json(panels))
+      .catch(err => res.status(500).json({ message: err }));
   }
 
   /**
@@ -97,34 +97,30 @@ export default class PanelController {
     req.checkBody('name', 'Panel name cannot be empty!').notEmpty();
     var errors = req.validationErrors();
     if (errors) {
-      return res.status(400).send({ message: errors });
+      return res.status(400).json({ message: errors });
     }
-
-    let user = req.payload;
-
-    Panel.create(req.body)
-      .then(panel => {
-        if (req.category) {
-          panel.category = req.category;
-          panel.save().then(panel => {
-            req.category.panels.push(panel);
-            req.category.save()
-              .then(category => res.json(panel))
-              .catch(err => next(err));
-          }).catch(err => next(err));
-        } else if (req.panel) {
-          panel.parent = req.panel;
-          panel.category = req.panel.category;
-          panel.save().then(panel => {
-            req.panel.children.push(panel);
-            req.panel.save()
-              .then(_panel => res.json(panel))
-              .catch(err => next(err));
-          }).catch(err => next(err));
-        } else {
-          res.status(400).send({ message: 'Error: Missing Category or Parent' });
-        }
-      }).catch(err => res.status(500).send({ message: err }));
+    Panel.create(req.body).then(panel => {
+      if (req.panel) {
+        panel.parent = req.panel;
+        panel.category = req.category;
+        panel.save().then(panel => {
+          req.panel.children.push(panel);
+          req.panel.save()
+            .then(_panel => res.status(201).json(panel))
+            .catch(err => next(err));
+        }).catch(err => next(err));
+      } else if (req.category) {
+        panel.category = req.category;
+        panel.save().then(panel => {
+          req.category.panels.push(panel);
+          req.category.save()
+            .then(category => res.status(201).json(panel))
+            .catch(err => next(err));
+        }).catch(err => next(err));
+      } else {
+        res.status(400).json({ message: 'Missing Category or Parent' });
+      }
+    }).catch(err => res.status(500).json({ message: err }));
   }
 
   /**
@@ -136,12 +132,17 @@ export default class PanelController {
    * @param {Object} res - HTTP response.
    * @static
    */
-  static update({ body, panel, payload: user }, res) {
+  static update({ checkBody, validationErrors, body, panel }, res) {
     PanelController.updateSchema(res);
+    checkBody('name', 'Panel name cannot be empty!').notEmpty();
+    var errors = validationErrors();
+    if (errors) {
+      return res.status(400).json({ message: errors });
+    }
     utils.partialUpdate(body, panel, 'name', 'order', 'description');
     panel.save()
-      .then(panel => res.json(panel))
-      .catch(err => res.status(500).send({ message: err }));
+      .then(panel => res.status(200).json(panel))
+      .catch(err => res.status(500).json({ message: err }));
   }
 
   /**
@@ -152,28 +153,25 @@ export default class PanelController {
    * @param {Object} user - The current user.
    * @static
    */
-  static delete({ body, panel, user }, res) {
+  static delete({ body, category, panel, user }, res) {
     let panels = [panel];
-
     const cb = p => {
       panels.push(p);
     };
-
     const errorCB = err => {
-      return res.status(500).send({ message: err });
+      return res.status(500).json({ message: err });
     };
-
     while (panels.length) {
       let _panel = panels.shift();
       for (let child of _panel.children) {
-        Panel.findOne(child)
-          .then(cb).catch(errorCB);
+        Panel.findOne(child).then(cb).catch(errorCB);
       }
-
-      _panel.remove().then().catch(errorCB);
+      _panel.remove().catch(errorCB);
     }
-
-    res.status(200).send({ message: 'ok' });
+    category.panels.remove(panel);
+    category.save()
+      .then(cate => res.status(200).json({ message: `${panel.name} and its children have been removed.` }))
+      .catch(err => res.status(500).json({ message: err }));
   }
 
   /**
@@ -187,15 +185,11 @@ export default class PanelController {
    */
    static findPanelById(req, res, next, id) {
      if (!mongoose.Types.ObjectId.isValid(id)) {
-       return res.status(400).send({
-         message: 'Category ID is invalid',
-       });
+       return res.status(400).json({ message: 'Category ID is invalid' });
      }
-
      Panel.findById(id)
-      .select(req.query.fields ? req.query.fields.join(' ') : '')
-      .exec()
-      .then(panel => (req.panel = panel) ? next() : res.status(404).send({ message: 'Panel is not found' }))
+      .select(req._fields).sort(req._sort).exec()
+      .then(panel => (req.panel = panel) ? next() : res.status(404).json({ message: 'Panel is not found' }))
       .catch(err => next(err));
    }
 }
