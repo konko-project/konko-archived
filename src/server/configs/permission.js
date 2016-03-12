@@ -14,7 +14,82 @@ export default class PermissionMiddleware {
   constructor() {}
 
   /**
+   * Helper that routes to the correct permission validator.
+   *
+   * @param {String} permission - Permission that need to be validate.
+   * @param {String} model - Optional, if need to specify a model in req.
+   *                         Required for validating author of an document.
+   * @returns {Function} Validator that validates the permission.
+   */
+  static get(permission, model = null) {
+    return (req, res, next) => {
+      if(model) {
+        req._docs = req[model];
+      }
+      PermissionMiddleware[permission](req, res, next);
+    };
+  }
+
+  /**
+   * Helper for validating user's permission to be Owner of certain docs.
+   * Only Owner can access, even though they are banned.
+   * Better to use on a private link, such user profile.
+   * Should be run after JWT for proper usage.
+   *
+   * @param {Object} req - HTTP request.
+   * @param {Object} res - HTTP response.
+   * @param {nextCallback} next - A callback to run.
+   * @returns {nextCallback|Response} Call next if user is the owner, response 401 otherwise, or 400 if JWT payload is not presented.
+   */
+  static allowOwner({ payload, _docs: { author }, user }, res, next) {
+    if (!payload) {
+      return res.status(400).send({ message: 'Missing user token.' });
+    } else if (!author && !user) {
+      return res.status(400).send({ message: 'Document does not have an owner,' });
+    } else if (author) {  // author will be string of ObjectId already
+      return author.equals(payload._id) ? next() : res.status(401).send({ message: 'Unauthorized' });
+    } else if (user) {
+      return user._id.equals(payload._id) ? next() : res.status(401).send({ message: 'Unauthorized' });
+    } else {
+      return res.status(500).send({ message: 'Unknown error.' });
+    }
+  }
+
+  /**
+   * Helper for validating user's permission to be Owner of certain docs or an Admin.
+   * A banned owner will not grant permission, then only admin can access.
+   * Better to use on a public link, such as topic or comment.
+   * Should be run after JWT for proper usage.
+   *
+   * @param {Object} req - HTTP request.
+   * @param {Object} res - HTTP response.
+   * @param {nextCallback} next - A callback to run.
+   * @returns {nextCallback|Response} Call next if user is the owner or admin,
+   *          response 401 otherwise, especially when owner is banned,
+   *          or 400 if JWT payload is not presented.
+   */
+  static allowAdminOwner({ payload, _docs: { author }, user }, res, next) {
+    if (!payload) {
+      return res.status(400).send({ message: 'Missing user token.' });
+    } else if (!author && !user) {
+      return res.status(400).send({ message: 'Document does not have an owner,' });
+    } else if (payload.permission === 'admin') {
+      return next();
+    } else if (payload.permission === 'banned') {
+      return res.status(401).send({ message: 'Unauthorized' });
+    } else if (author) {  // author will be string of ObjectId already
+      return author.equals(payload._id) ? next() : res.status(401).send({ message: 'Unauthorized' });
+    } else if (user) {
+      return user._id.equals(payload._id) ? next() : res.status(401).send({ message: 'Unauthorized' });
+    } else {
+      return res.status(500).send({ message: 'Unknown error.' });
+    }
+  }
+
+  /**
    * Helper for validating user's permission to be Admin.
+   * Only Admin will grant permission to access.
+   * Better to use on a system link, such as site settings.
    * Should be run after JWT for proper usage.
    *
    * @param {Object} req - HTTP request.
@@ -34,6 +109,7 @@ export default class PermissionMiddleware {
 
   /**
    * Helper for validating user's permission to be anything except Guest and Banned.
+   * Only Admin and non-banned user (include unverified users) can access.
    * Should be run after JWT for proper usage.
    *
    * @param {Object} req - HTTP request.
@@ -53,6 +129,7 @@ export default class PermissionMiddleware {
 
   /**
    * Helper for validating user's permission to be anything except Guest.
+   * Only registered user can access.
    * Should be run after JWT for proper usage.
    *
    * @param {Object} req - HTTP request.
@@ -72,6 +149,7 @@ export default class PermissionMiddleware {
 
   /**
    * Helper for validating user's permission to be anything.
+   * Everybody can access.
    * Should be run after JWT for proper usage.
    *
    * @param {Object} req - HTTP request.
@@ -89,6 +167,7 @@ export default class PermissionMiddleware {
 
   /**
    * Helper for rejecting everything.
+   * Nobody can access, including admin, use responsibly.
    * Should be run after JWT for proper usage.
    *
    * @see {@link allowAdmin} for allowing admin only.
@@ -103,6 +182,7 @@ export default class PermissionMiddleware {
 
   /**
    * Helper for rejecting Banned user and normal User.
+   * User will not grant permission, but guest and admin can access.
    * Should be run after JWT for proper usage.
    *
    * @param {Object} req - HTTP request.
@@ -122,6 +202,7 @@ export default class PermissionMiddleware {
 
   /**
    * Helper for rejecting Banned user.
+   * Only banned user cannot access.
    * Should be run after JWT for proper usage.
    *
    * @param {Object} req - HTTP request.
@@ -141,6 +222,7 @@ export default class PermissionMiddleware {
 
   /**
    * Helper for rejecting Guest.
+   * Only guest cannot access.
    * Should be run after JWT for proper usage.
    *
    * @see {@link allowRegistered} for allowing registered user only.
