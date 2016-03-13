@@ -240,6 +240,7 @@ module.exports = grunt => {
   grunt.task.registerTask('test-server', 'Start the test server.', () => {
     const done = grunt.task.current.async();
     process.env.NODE_ENV = 'test';
+    process.env.PORT = 3001;
     const Server = require(path.resolve(SERVER.build.paths.root, 'configs', 'server')).default;
     const server = new Server(path.resolve(SERVER.build.paths.root));
     server.start(done);
