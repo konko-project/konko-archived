@@ -40,10 +40,10 @@ export default app => {
   const profileAUpload = new app.multer(app, storage, null, { fileSize: 2 * 1024 * 1024 });
   const profileBUpload = new app.multer(app, storage, null, { fileSize: 5 * 1024 * 1024 });
 
-  app.route('/api/upload/avatar')
+  app.route('/api/v1/upload/avatar')
     .post(JWT_AUTH, profileAUpload.single('avatar'), upload.profileUpload);
 
-  app.route('/api/upload/banner')
+  app.route('/api/v1/upload/banner')
     .post(JWT_AUTH, profileBUpload.single('banner'), upload.profileUpload);
 };
 
