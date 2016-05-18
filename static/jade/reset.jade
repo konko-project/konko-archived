@@ -1,0 +1,14 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible' content='IE=edge,chrome=1')
+    title= subject
+  body
+    h1 Here is your verification code for resetting password.
+    p: b= token
+    br
+    p You can either copy and paste this code, or use the link below to reset your password.
+    p: a(href='#{url}' )= url
+    
+    p: small *This code or link only valid for #{ttl} hours.
