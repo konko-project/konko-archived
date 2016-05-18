@@ -14,6 +14,8 @@ const coreSchema = new mongoose.Schema({
     logo: { type: String, default: 'styles/core/images/brand.png' },
     since: { type: Date, default: Date.now },
     public: { type: Boolean, default: true },
+  },
+  admin: {
     email: { type: String, unique: true, lowercase: true },
   },
   global: {
@@ -22,13 +24,15 @@ const coreSchema = new mongoose.Schema({
     compression: { type: Number, min: -1, max: 9, default: 9 },
   },
   mailer: {
-    from: { type: String, unique: true, lowercase: true },
+    method: { type: String, enum: ['sendmail', 'stmp', 'ses'],  default: 'sendmail' },
+    from: { type: String, unique: true, lowercase: true, default: 'noreply@konko.project' },
     host: { type: String, unique: true },
     secure: { type: Boolean, default: true },
     port: { type: Number, default: 465 },
-    method: { type: String, default: 'SMTP' },
     user: { type: String, unique: true },
     password: { type: String, unique: true },
+    ses_keyId: { type: String, unique: true },
+    ses_secret: { type: String, unique: true },
   },
   style: [
     {
@@ -51,6 +55,7 @@ const coreSchema = new mongoose.Schema({
       welcomeMessage: { type: String },
     },
     password: {
+      resetEmailSubject: { type: String, default: 'Reset your password' },
       regex: { type: String, default: '(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\\!\\@\\#\\$\\%\\^\\&\\*\\_\\ ]).{8,32}' },
       min: { type: Number, default: 8 },
       max: { type: Number, default: 32 },
