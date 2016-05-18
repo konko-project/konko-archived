@@ -4,11 +4,16 @@ bower_components
 
 # Compiled directory
 build
-dist/server
-dist/client
+dist
 
 # Compiled vendors
-public/libs
+static/libs/vendors.*
+
+# Upload directory
+static/uploads
 
 # Debug log from npm
 npm-debug.log
+
+# Test outputs
+test/outputs
