@@ -43,15 +43,15 @@ export default class PermissionMiddleware {
    */
   static allowOwner({ payload, _docs: { author }, user }, res, next) {
     if (!payload) {
-      return res.status(400).send({ message: 'Missing user token.' });
+      return res.status(400).json({ message: 'Missing user token.' });
     } else if (!author && !user) {
-      return res.status(400).send({ message: 'Document does not have an owner,' });
+      return res.status(400).json({ message: 'Document does not have an owner,' });
     } else if (author) {  // author will be string of ObjectId already
-      return author.equals(payload._id) ? next() : res.status(401).send({ message: 'Unauthorized' });
+      return author.equals(payload._id) ? next() : res.status(401).json({ message: 'Unauthorized' });
     } else if (user) {
-      return user._id.equals(payload._id) ? next() : res.status(401).send({ message: 'Unauthorized' });
+      return user._id.equals(payload._id) ? next() : res.status(401).json({ message: 'Unauthorized' });
     } else {
-      return res.status(500).send({ message: 'Unknown error.' });
+      return res.status(500).json({ message: 'Unknown error.' });
     }
   }
 
@@ -70,19 +70,19 @@ export default class PermissionMiddleware {
    */
   static allowAdminOwner({ payload, _docs: { author }, user }, res, next) {
     if (!payload) {
-      return res.status(400).send({ message: 'Missing user token.' });
+      return res.status(400).json({ message: 'Missing user token.' });
     } else if (!author && !user) {
-      return res.status(400).send({ message: 'Document does not have an owner,' });
+      return res.status(400).json({ message: 'Document does not have an owner,' });
     } else if (payload.permission === 'admin') {
       return next();
     } else if (payload.permission === 'banned') {
-      return res.status(401).send({ message: 'Unauthorized' });
+      return res.status(401).json({ message: 'Unauthorized' });
     } else if (author) {  // author will be string of ObjectId already
-      return author.equals(payload._id) ? next() : res.status(401).send({ message: 'Unauthorized' });
+      return author.equals(payload._id) ? next() : res.status(401).json({ message: 'Unauthorized' });
     } else if (user) {
-      return user._id.equals(payload._id) ? next() : res.status(401).send({ message: 'Unauthorized' });
+      return user._id.equals(payload._id) ? next() : res.status(401).json({ message: 'Unauthorized' });
     } else {
-      return res.status(500).send({ message: 'Unknown error.' });
+      return res.status(500).json({ message: 'Unknown error.' });
     }
   }
 
@@ -99,9 +99,9 @@ export default class PermissionMiddleware {
    */
   static allowAdmin({ payload }, res, next) {
     if (!payload) {
-      return res.status(400).send({ message: 'Missing user token.' });
+      return res.status(400).json({ message: 'Missing user token.' });
     } else if (payload.permission !== 'admin') {
-      return res.status(401).send({ message: 'Only admin can access.' });
+      return res.status(401).json({ message: 'Only admin can access.' });
     } else {
       next();
     }
@@ -119,9 +119,9 @@ export default class PermissionMiddleware {
    */
   static allowUser({ payload }, res, next) {
     if (!payload) {
-      return res.status(400).send({ message: 'Missing user token.' });
+      return res.status(400).json({ message: 'Missing user token.' });
     } else if (payload.permission === 'guest' || payload.permission === 'banned') {
-      return res.status(401).send({ message: 'Only valid user can access.' });
+      return res.status(401).json({ message: 'Only valid user can access.' });
     } else {
       next();
     }
@@ -139,9 +139,9 @@ export default class PermissionMiddleware {
    */
   static allowRegistered({ payload }, res, next) {
     if (!payload) {
-      return res.status(400).send({ message: 'Missing user token.' });
+      return res.status(400).json({ message: 'Missing user token.' });
     } else if (payload.permission === 'guest') {
-      return res.status(401).send({ message: 'Only registered user can access.' });
+      return res.status(401).json({ message: 'Only registered user can access.' });
     } else {
       next();
     }
@@ -159,7 +159,7 @@ export default class PermissionMiddleware {
    */
   static allowAll({ payload }, res, next) {
     if (!payload) {
-      return res.status(400).send({ message: 'Missing user token.' });
+      return res.status(400).json({ message: 'Missing user token.' });
     } else {
       next();
     }
@@ -177,7 +177,7 @@ export default class PermissionMiddleware {
    * @returns {Response} Always response 401.
    */
   static denyAll({ payload }, res, next) {
-    return res.status(401).send({ message: 'Nobody is allowed' });
+    return res.status(401).json({ message: 'Nobody is allowed' });
   }
 
   /**
@@ -192,9 +192,9 @@ export default class PermissionMiddleware {
    */
   static denyUser({ payload }, res, next) {
     if (!payload) {
-      return res.status(400).send({ message: 'Missing user token.' });
+      return res.status(400).json({ message: 'Missing user token.' });
     } else if (payload.permission === 'banned' || payload.permission === 'user') {
-      return res.status(401).send({ message: 'User is not allowed.' });
+      return res.status(401).json({ message: 'User is not allowed.' });
     } else {
       next();
     }
@@ -212,9 +212,9 @@ export default class PermissionMiddleware {
    */
   static denyBanned({ payload }, res, next) {
     if (!payload) {
-      return res.status(400).send({ message: 'Missing user token.' });
+      return res.status(400).json({ message: 'Missing user token.' });
     } else if (payload.permission === 'banned') {
-      return res.status(401).send({ message: 'Banned user is not allowed.' });
+      return res.status(401).json({ message: 'Banned user is not allowed.' });
     } else {
       next();
     }
@@ -233,9 +233,9 @@ export default class PermissionMiddleware {
    */
   static denyGuest({ payload }, res, next) {
     if (!payload) {
-      return res.status(400).send({ message: 'Missing user token.' });
+      return res.status(400).json({ message: 'Missing user token.' });
     } else if (payload.permission === 'guest') {
-      return res.status(401).send({ message: 'Guest is not allowed.' });
+      return res.status(401).json({ message: 'Guest is not allowed.' });
     } else {
       next();
     }
