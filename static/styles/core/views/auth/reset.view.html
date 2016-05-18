@@ -1,0 +1,27 @@
+<div class="container">
+  <form class="" id="resetConfirmForm" name="resetConfirmForm" role="form">
+    <fieldset class="form-group">
+      <div class="form-heading">
+        <h2>Reset Password</h2>
+        <p>You are about to reset your password.<br />Please enter your email to receive an verification code.</p>
+      </div>
+      <label for="reset__email" class="sr-only">Email Address</label>
+      <input type="email" name="email" data-ng-disabled="vm.hasCode" class="form-control form-control-lg" id="reset__email" data-ng-model="vm.data.email" placeholder="Enter your email" autofocus lowercase required>
+      <label for="reset__code" class="sr-only">Verification Code</label>
+      <input type="text" name="code" data-ng-disabled="vm.verified" data-ng-if="vm.hasCode" class="form-control form-control-lg" id="reset__code" data-ng-model="vm.data.code" placeholder="Enter the verification code" required>
+      <label for="reset__pass" class="sr-only">New Password</label>
+      <input type="password" name="password" pattern="{{vm.regex}}" data-ng-if="vm.verified" class="form-control form-control-lg" id="reset__pass" data-ng-model="vm.data.pass" placeholder="Enter your new password" required>
+      <label for="reset__pass_confirm" class="sr-only">Password Confirmation</label>
+      <input type="password" name="password_confirm" data-ng-if="vm.verified" class="form-control form-control-lg" id="reset__pass_confirm" data-ng-model="vm.data.pass2" placeholder="...and again" required>
+      <div class="alert alert-success alert-dismissible fade in" role="alert" data-ng-if="vm.hasCode || vm.error || vm.verified" data-ng-class="{'alert-success': vm.hasCode || vm.verified, 'alert-danger': vm.error}">
+        <button type="button" class="close m-t-0" data-dismiss="alert" aria-label="Close">
+          <span class="f-s-1-5" aria-hidden="true">&times;</span>
+        </button>
+        <div data-ng-bind-html="vm.message"></div>
+      </div>
+      <button type="button" data-ng-if="!vm.hasCode" class="btn btn-large btn-primary btn-block" data-ng-class="{disabled: !vm.data.email && resetConfirmForm.$error}" data-ng-click="vm.getVerificationCode(resetConfirmForm.$valid)">Get verification code</button>
+      <button type="button" data-ng-if="vm.hasCode && !vm.verified" class="btn btn-large btn-primary btn-block" data-ng-class="{disabled: !vm.data.code && resetConfirmForm.$error}" data-ng-click="vm.verify(resetConfirmForm.$valid)">Verify</button>
+      <button type="button" data-ng-if="vm.verified" class="btn btn-large btn-primary btn-block" data-ng-class="{disabled: vm.data.pass2 != vm.data.pass || !resetConfirmForm.$valid}" data-ng-click="vm.reset(resetConfirmForm.$valid)">Reset</button>
+    </fieldset>
+  </form>
+</div>
