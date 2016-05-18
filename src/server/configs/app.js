@@ -9,12 +9,10 @@ import methodOverride from 'method-override';
 import path from 'path';
 import csrf from 'csurf';
 import passport from 'passport';
-import mailer from 'express-mailer';
 import compression from 'compression';
 import validator from 'express-validator';
 
 import statics from './statics';
-import _mailer from './mailer';
 import _passport from './passport';
 import routes from './routes';
 import error from './error';
@@ -74,10 +72,6 @@ export default dirname => {
 
   // multer
   app.multer = multer;
-
-  // Express mailer
-  utils.hasExpressMailerConfiguration(path.join(SERVER.build.paths.root, 'configs', '*.js'), true);
-  _mailer(app, mailer);
 
   // JWT
   utils.validJwtSecret(SECRETS.jwtSecret, true);
