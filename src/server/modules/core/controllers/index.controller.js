@@ -1,5 +1,8 @@
 'use strict';
 
+import mongoose from 'mongoose';
+const Core = mongoose.model('Core');
+
 /**
  * Controller that process index request.
  *
@@ -20,11 +23,36 @@ export default class IndexController {
    * @param {Object} res - HTTP response.
    */
   static index(req, res) {
-    res.render('index', {
-      title: 'Konko Project',
-      description: 'MEAN stack based forum',
-      protocol: req.protocol,
-      host: req.get('host'),
-    });
+    Core.find().then(cores => {
+      if (cores && cores.length) {
+        let core = cores[0];
+        res.render('index', {
+          title: core.basic.title,
+          description: core.basic.description,
+          keywords: core.basic.keywords,
+          logo: core.basic.logo,
+          since: core.basic.since,
+          protocol: req.protocol,
+          host: req.get('host'),
+        });
+      } else {
+        res.redirect('/setup');
+      }
+    }).catch(err => res.status(500).json({ message: err }));
+  }
+
+  static setup(req, res) {
+    Core.find().then(cores => {
+      if (cores && cores.length) {
+        res.redirect('/');
+      } else {
+        res.render('setup', {
+          title: 'Setup - Konko Project',
+          description: 'Setting up new Konko',
+          protocol: req.protocol,
+          host: req.get('host'),
+        });
+      }
+    }).catch(err => res.status(500).json({ message: err }));
   }
 }
