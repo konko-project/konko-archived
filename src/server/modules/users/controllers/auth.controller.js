@@ -206,6 +206,9 @@ export default class AuthenticationController {
           if (!token) {
             return res.status(404).json({ message: 'Verification code is expired or invalid.' });
           }
+          if (req.body.email && req.body.email !== token.user.email) {
+            return res.status(401).json({ message: 'Account verification failed.' });
+          }
           Core.findOne().then(core => {
             if (!core) {
               return res.status(500).json({ message: 'Core is not defined.' });
