@@ -2,6 +2,7 @@
 
 import passport from 'passport';
 import mongoose from 'mongoose';
+import Mailer from '../../../configs/mailer';
 const Core = mongoose.model('Core');
 const User = mongoose.model('User');
 const Profile = mongoose.model('Profile');
@@ -112,23 +113,28 @@ export default class AuthenticationController {
               Preference.create().then(preference => {
                 user.preference = preference;
                 user.save().then(user => {
-                  if (core.registration.email.verification && process.env.NODE_ENV !== 'test') {
+                  if (!req.body.core && core.registration.email.verification && process.env.NODE_ENV !== 'test') {
                     VerificationToken.create({ user: user }).then(token => {
-                      const doc = {
+                      let mailer = new Mailer(app, core);
+                      let mailData = {
                         email: user.email,
                         url: req.protocol + '://' + req.get('host') +
                               '/verify/' + token.token,
                       };
-                      app.mailer.send('jade/activate', {
-                        to: user.email,
-                        subject: core.registration.email.verificationSubject,
-                        doc: doc,
-                      }, err => {
-                        return err ? res.status(500).json(err) : res.status(201).json({ token: user.generateJWT(app) });
+                      mailer.compileJade('activate', mailData, (err, html) => {
+                        if (err) {
+                          return res.status(500).json({ message: err });
+                        }
+                        mailer.sendMail(user.email, core.registration.email.verificationSubject, html, (err, info) => {
+                          return err ? res.status(500).json({ message: err }) : res.status(201).json({ token: user.generateJWT(app) });
+                        });
                       });
                     }).catch(err => next(err));
                   } else {
-                    user.verify = true;
+                    if (req.body.core) {
+                      user.permission = 'admin';
+                    }
+                    user.verified = true;
                     user.save().then(user => {
                       res.status(201).json({ token: user.generateJWT(app) });
                     }).catch(err => next(err));
@@ -172,6 +178,94 @@ export default class AuthenticationController {
           return res.status(401).json(info);
         }
       })(req, res, next);
+    };
+  }
+
+  /**
+   * Resetting a user's password
+   *
+   * @param {Object} app - Express app.
+   * @returns {Function} A function that actually process the request.
+   */
+  static resetPass(app) {
+    return (req, res, next) => {
+      if (req.body.pass) {
+        User.findOne({ email: req.body.email }).then(user => {
+          if (!user) {
+            return res.status(500).json({ message: 'User is not found.' });
+          } else if (req.body.pass !== req.body.pass2) {
+            return res.status(400).json({ message: 'Passwords are not match.' });
+          }
+          user.setPassword(req.body.pass);
+          user.save().then(user => {
+            return res.status(200).end();
+          }).catch(err => next(err));
+        }).catch(err => next(err));
+      } else if (req.body.code) {
+        VerificationToken.findOne({ token: req.body.code }).populate('user', 'email').then(token => {
+          if (!token) {
+            return res.status(404).json({ message: 'Verification code is expired or invalid.' });
+          }
+          Core.findOne().then(core => {
+            if (!core) {
+              return res.status(500).json({ message: 'Core is not defined.' });
+            }
+            return res.status(200).json({ regex: core.registration.password.regex, email: token.user.email });
+          }).catch(err => next(err));
+        }).catch(err => next(err));
+      } else if (req.body.email) {
+        User.findOne({email: req.body.email}).then(user => {
+          if (!user) {
+            return res.status(404).json({ message: 'User with this Email is not exist.' });
+          }
+          VerificationToken.create({ user: user }).then(token => {
+            Core.findOne().then(core => {
+              if (!core) {
+                return res.status(500).json({ message: 'Core setting is missing, please contact admin.' });
+              }
+              let mailer = new Mailer(app, core);
+              let mailData = {
+                email: user.email,
+                token: token.token,
+                url: req.protocol + '://' + req.get('host') +
+                      '/reset/' + token.token,
+                ttl: core.registration.email.ttl / 60,
+              };
+              mailer.compileJade('reset', mailData, (err, html) => {
+                if (err) {
+                  return res.status(500).json({ message: err });
+                }
+                mailer.sendMail(user.email, core.registration.password.resetEmailSubject, html, (err, info) => {
+                  return err ? res.status(500).json({ message: err }) : res.status(201).json({ message: 'Password reset verification code is sent.' });
+                });
+              });
+            }).catch(err => next(err));
+          }).catch(err => next(err));
+        }).catch(err => next(err));
+      } else {
+        return res.status(400).json({ message: 'User email is missing.' });
+      }
+    };
+  }
+
+  /**
+   * Response a guest account
+   *
+   * @param {Object} app - Express app.
+   * @returns {Function} A function that actually process the request.
+   */
+  static getGuest(app) {
+    return (req, res, next) => {
+      let guestProfile = new Profile({ username: 'Guest', tokenLive: '99999h' });
+      let guestPreference = new Preference();
+      let guest = new User({
+        email: 'guest@konko',
+        profile: guestProfile,
+        preference: guestPreference,
+        verified: false,
+        permission: 'guest',
+      });
+      return res.status(200).json({ token: guest.generateJWT(app) });
     };
   }
 
