@@ -1,0 +1,28 @@
+<div class="container">
+    <form class="setup-form" id="setupForm" name="setupForm" role="form" data-ng-submit="vm.save(setupForm.$valid)" autocomplete="off">
+        <div class="form-heading">
+            <h2>Setup Your Konko</h2>
+        </div>
+        <fieldset class="form-group" data-ng-class="{'has-success': vm.core.basic.title}">
+            <label for="core_title">Site Title</label>
+            <input name="title" class="form-control" data-ng-class="{'form-control-success': vm.core.basic.title}" id="core_title" data-ng-model="vm.core.basic.title" placeholder="Enter the title for your Konko" autofocus required>
+        </fieldset>
+        <fieldset class="form-group"  data-ng-class="{'has-success': vm.core.basic.description}">
+            <label for="core_description">Site Description</label>
+            <input name="description" class="form-control" data-ng-class="{'form-control-success': vm.core.basic.description}" id="core_description" data-ng-model="vm.core.basic.description" placeholder="...and the description">
+        </fieldset>
+        <fieldset class="form-group" data-ng-class="{'has-warning': setupForm.$error.email, 'has-success': vm.admin.email && !setupForm.$error.email}">
+            <label for="core__admin_email">Admin Email Address</label>
+            <input type="email" name="email" class="form-control" data-ng-class="{'form-control-warning': setupForm.$error.email, 'form-control-success': vm.admin.email && !setupForm.$error.email}" id="core__email" data-ng-model="vm.admin.email" placeholder="Enter admin's email" lowercase required>
+        </fieldset>
+        <fieldset class="form-group" data-ng-class="{'has-warning': setupForm.$error.pattern, 'has-success': vm.admin.password && !setupForm.$error.pattern}">
+            <label for="core__admin_password">Admin Password</label>
+            <input type="password" name="password" pattern="{{vm.passRegExp}}" title="{{vm.passRegExpTitle}}" class="form-control" data-ng-class="{'form-control-warning': setupForm.$error.pattern, 'form-control-success': vm.admin.email && !setupForm.$error.pattern}" id="core__password" data-ng-model="vm.admin.password" placeholder="Enter password" required>
+        </fieldset>
+        <fieldset class="form-group" data-ng-class="{'has-danger': vm.admin.password2 != vm.admin.password, 'has-success': vm.admin.password && vm.admin.password2 == vm.admin.password}">
+            <label for="core__admin_password_confirm">Password Confirmation</label>
+            <input type="password" name="password2" class="form-control" data-ng-class="{'form-control-danger': vm.admin.password2 != vm.admin.password, 'form-control-success': vm.admin.password && vm.admin.password2 == vm.admin.password}" id="core__password_confirm" data-ng-model="vm.admin.password2" placeholder="Confirm your password" required>
+        </fieldset>
+        <button type="submit" class="btn btn-large btn-primary btn-block" data-ng-class="{disabled: !setupForm.$valid || vm.admin.password2 != vm.admin.password}">Save</button>
+    </form>
+</div>
