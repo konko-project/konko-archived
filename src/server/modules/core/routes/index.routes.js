@@ -11,11 +11,12 @@ import index from '../controllers/index.controller';
  */
 export default app => {
 
-  app.route('/:url(api|modules|lib)/*').get((req, res) => {
+  app.route('/:url(api|libs|javascripts|css|favicons)/*').get((req, res) => {
     res.status(404).json({
       messages: 'Not Found!',
     });
   });
 
+  app.route('/setup').get(index.setup);
   app.route('/*').get(index.index);
 };
