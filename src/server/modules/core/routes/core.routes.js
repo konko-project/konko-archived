@@ -15,10 +15,12 @@ export default app => {
   const JWT_AUTH = jwt({ secret: app.get('secret'), userProperty: 'payload' });
 
   app.route('/api/v1/core')
-    .get(core.basic)
+    .get(JWT_AUTH, permission.get('allowAll'), core.getFields)
     .post(core.create);
 
   app.route('/api/v1/core/:coreId')
     .get(JWT_AUTH, permission.get('allowAdmin'), core.get)
     .put(JWT_AUTH, permission.get('allowAdmin'), core.update);
+
+  app.param('coreId', core.findCoreById);
 };
