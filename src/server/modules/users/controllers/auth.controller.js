@@ -213,7 +213,7 @@ export default class AuthenticationController {
             if (!core) {
               return res.status(500).json({ message: 'Core is not defined.' });
             }
-            return res.status(200).json({ regex: core.registration.password.regex, email: token.user.email });
+            return res.status(200).json({ passCfg: core.registration.password, email: token.user.email });
           }).catch(err => next(err));
         }).catch(err => next(err));
       } else if (req.body.email) {
