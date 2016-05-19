@@ -19,7 +19,7 @@ const coreSchema = new mongoose.Schema({
     email: { type: String, unique: true, lowercase: true },
   },
   global: {
-    installed: { type: Boolean, default: false },
+    installed: { type: Boolean, default: true },
     language: { type: String, lowercase: true, default: 'en-us' },
     compression: { type: Number, min: -1, max: 9, default: 9 },
   },
