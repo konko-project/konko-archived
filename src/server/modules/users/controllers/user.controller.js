@@ -60,7 +60,7 @@ export default class UserController {
   static get(req, res) {
     req.user.populate('profile preference', (err, user) => {
       if (err) {
-        return res.status(500).json(err);
+        return res.status(500).json({ message: err });
       }
       res.status(200).json(user);
     });
