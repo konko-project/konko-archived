@@ -78,67 +78,72 @@ export default class AuthenticationController {
           return res.status(503).json({ message: core.registration.message });
         }
         req.checkBody('email', 'Invalid Email').isEmail();
-        req.checkBody('password', 'Empty Password').notEmpty();
         let errors = req.validationErrors();
         if (errors) {
-          return res.status(400).json({ message: errors });
+          return res.status(400).json({ message: errors[0].msg });
         }
 
         let password = req.body.password;
-        if (!RegExp(core.registration.password.regex).test(password)) {
+        if (!password || !RegExp(core.registration.password.regex).test(password)) {
           return res.status(400).json({ message: 'Password does not meet the requirement.' });
         }
-        User.create(req.body).then(user => {
-          let username = user.email.replace(/\@.*/g, '');
-          const usernameGen = username => {
-            return new Promise(resolve => {
-              Profile.findOne({ username: username }).then(profile => {
-                if (profile) {
-                  let timestamp = Date.now().toString();
-                  username += timestamp.substring(timestamp.length - 6);
-                  resolve([username, false]);
-                } else {
-                  resolve([username, true]);
-                }
-              });
-            }).then(values => {
-              let [username, done] = values;
-              return done ? username : usernameGen(username);
-            });
-          };
-          usernameGen(username).then(username => {
-            user.setPassword(password);
-            Profile.create({ username: username }).then(profile => {
-              user.profile = profile;
-              Preference.create().then(preference => {
-                user.preference = preference;
-                user.save().then(user => {
-                  if (!req.body.core && core.registration.email.verification && process.env.NODE_ENV !== 'test') {
-                    VerificationToken.create({ user: user }).then(token => {
-                      let mailer = new Mailer(app, core);
-                      let mailData = {
-                        email: user.email,
-                        url: req.protocol + '://' + req.get('host') +
-                              '/verify/' + token.token,
-                      };
-                      mailer.compileJade('activate', mailData, (err, html) => {
-                        if (err) {
-                          return res.status(500).json({ message: err });
-                        }
-                        mailer.sendMail(user.email, core.registration.email.verificationSubject, html, (err, info) => {
-                          return err ? res.status(500).json({ message: err }) : res.status(201).json({ token: user.generateJWT(app) });
-                        });
-                      });
-                    }).catch(err => next(err));
+
+        User.findOne({ email: req.body.email }).then(user => {
+          if (user) {
+            return res.status(400).json({ message: 'User already existed with this email.' });
+          }
+
+          User.create(req.body).then(user => {
+            let username = user.email.replace(/\@.*/g, '');
+            const usernameGen = username => {
+              return new Promise(resolve => {
+                Profile.findOne({ username: username }).then(profile => {
+                  if (profile) {
+                    let timestamp = Date.now().toString();
+                    username += timestamp.substring(timestamp.length - 6);
+                    resolve([username, false]);
                   } else {
-                    if (req.body.core) {
-                      user.permission = 'admin';
-                    }
-                    user.verified = true;
-                    user.save().then(user => {
-                      res.status(201).json({ token: user.generateJWT(app) });
-                    }).catch(err => next(err));
+                    resolve([username, true]);
                   }
+                });
+              }).then(([username, done]) => {
+                return done ? username : usernameGen(username);
+              });
+            };
+            usernameGen(username).then(username => {
+              user.setPassword(password);
+              Profile.create({ username: username }).then(profile => {
+                user.profile = profile;
+                Preference.create().then(preference => {
+                  user.preference = preference;
+                  user.save().then(user => {
+                    if (!req.body.core && core.registration.email.verification && process.env.NODE_ENV !== 'test') {
+                      VerificationToken.create({ user: user }).then(token => {
+                        let mailer = new Mailer(app, core);
+                        let mailData = {
+                          email: user.email,
+                          url: req.protocol + '://' + req.get('host') +
+                                '/verify/' + token.token,
+                        };
+                        mailer.compileJade('activate', mailData, (err, html) => {
+                          if (err) {
+                            return res.status(500).json({ message: err });
+                          }
+                          mailer.sendMail(user.email, core.registration.email.verificationSubject, html, (err, info) => {
+                            return err ? res.status(500).json({ message: err }) : res.status(201).json({ token: user.generateJWT(app) });
+                          });
+                        });
+                      }).catch(err => next(err));
+                    } else {
+                      if (req.body.core) {
+                        user.permission = 'admin';
+                      }
+                      user.verified = true;
+                      user.save().then(user => {
+                        res.status(201).json({ token: user.generateJWT(app) });
+                      }).catch(err => next(err));
+                    }
+                  }).catch(err => next(err));
                 }).catch(err => next(err));
               }).catch(err => next(err));
             }).catch(err => next(err));
