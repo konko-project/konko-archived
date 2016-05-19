@@ -10,7 +10,7 @@
       <label for="reset__code" class="sr-only">Verification Code</label>
       <input type="text" name="code" data-ng-disabled="vm.verified" data-ng-if="vm.hasCode" class="form-control form-control-lg" id="reset__code" data-ng-model="vm.data.code" placeholder="Enter the verification code" required>
       <label for="reset__pass" class="sr-only">New Password</label>
-      <input type="password" name="password" pattern="{{vm.regex}}" data-ng-if="vm.verified" class="form-control form-control-lg" id="reset__pass" data-ng-model="vm.data.pass" placeholder="Enter your new password" required>
+      <input type="password" name="password" pattern="{{vm.corePassCfg.regex}}" title="{{vm.corePassCfg.title}}" data-ng-if="vm.verified" class="form-control form-control-lg" id="reset__pass" data-ng-model="vm.data.pass" placeholder="Enter your new password" required>
       <label for="reset__pass_confirm" class="sr-only">Password Confirmation</label>
       <input type="password" name="password_confirm" data-ng-if="vm.verified" class="form-control form-control-lg" id="reset__pass_confirm" data-ng-model="vm.data.pass2" placeholder="...and again" required>
       <div class="alert alert-success alert-dismissible fade in" role="alert" data-ng-if="vm.hasCode || vm.error || vm.verified" data-ng-class="{'alert-success': vm.hasCode || vm.verified, 'alert-danger': vm.error}">
@@ -19,9 +19,9 @@
         </button>
         <div data-ng-bind-html="vm.message"></div>
       </div>
-      <button type="button" data-ng-if="!vm.hasCode" class="btn btn-large btn-primary btn-block" data-ng-class="{disabled: !vm.data.email && resetConfirmForm.$error}" data-ng-click="vm.getVerificationCode(resetConfirmForm.$valid)">Get verification code</button>
-      <button type="button" data-ng-if="vm.hasCode && !vm.verified" class="btn btn-large btn-primary btn-block" data-ng-class="{disabled: !vm.data.code && resetConfirmForm.$error}" data-ng-click="vm.verify(resetConfirmForm.$valid)">Verify</button>
-      <button type="button" data-ng-if="vm.verified" class="btn btn-large btn-primary btn-block" data-ng-class="{disabled: vm.data.pass2 != vm.data.pass || !resetConfirmForm.$valid}" data-ng-click="vm.reset(resetConfirmForm.$valid)">Reset</button>
+      <button type="submit" data-ng-if="!vm.hasCode" class="btn btn-large btn-primary btn-block" data-ng-class="{disabled: !vm.data.email && resetConfirmForm.$error}" data-ng-click="vm.getVerificationCode(resetConfirmForm.$valid)">Get verification code</button>
+      <button type="submit" data-ng-if="vm.hasCode && !vm.verified" class="btn btn-large btn-primary btn-block" data-ng-class="{disabled: !vm.data.code && resetConfirmForm.$error}" data-ng-click="vm.verify(resetConfirmForm.$valid)">Verify</button>
+      <button type="submit" data-ng-if="vm.verified" class="btn btn-large btn-primary btn-block" data-ng-class="{disabled: vm.data.pass2 != vm.data.pass || !resetConfirmForm.$valid}" data-ng-click="vm.reset(resetConfirmForm.$valid)">Reset</button>
     </fieldset>
   </form>
 </div>
