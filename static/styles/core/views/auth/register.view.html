@@ -3,18 +3,21 @@
         <div class="form-heading">
             <h2>New User</h2>
         </div>
+        <div class="alert alert-danger" role="alert" data-ng-if="vm.error">
+          {{vm.error}}
+        </div>
         <fieldset class="form-group">
             <label for="register__email">Email Address</label>
             <input type="email" name="email" class="form-control" id="register__email" data-ng-model="vm.user.email" placeholder="Enter email" autofocus lowercase required>
         </fieldset>
         <fieldset class="form-group">
             <label for="register__password">Password</label>
-            <input type="password" name="password" class="form-control" id="register__password" data-ng-model="vm.user.password" placeholder="Enter password" required></input>
+            <input type="password" name="password" pattern="{{vm.configs.registration.password.regex}}" title="{{vm.configs.registration.password.title}}" class="form-control" id="register__password" data-ng-model="vm.user.password" placeholder="Enter password" required>
         </fieldset>
         <fieldset class="form-group">
             <label for="register__password_confirm">Password Confirmation</label>
-            <input type="password" name="password2" class="form-control" id="register__password_confirm" data-ng-model="vm.user.password2" placeholder="Confirm your password" required></input>
+            <input type="password" name="password2" class="form-control" id="register__password_confirm" data-ng-model="vm.user.password2" placeholder="Confirm your password" required>
         </fieldset>
-        <button type="submit" class="btn btn-large btn-primary btn-block">Register</button>
+        <button type="submit" class="btn btn-large btn-primary btn-block" data-ng-class="{disabled: !registerForm.$valid}">Register</button>
     </form>
-</div> 
+</div>
