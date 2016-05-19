@@ -57,6 +57,7 @@ const coreSchema = new mongoose.Schema({
     password: {
       resetEmailSubject: { type: String, default: 'Reset your password' },
       regex: { type: String, default: '(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\\!\\@\\#\\$\\%\\^\\&\\*\\_\\ ]).{8,32}' },
+      title: { type: String, default: 'Must contains 8 to 32 characters, including at least 1 digit, 1 lower case letter, 1 upper case letter, and 1 of the following special characters. (!, @, #, $, %, ^, &, *, _, )' },
       min: { type: Number, default: 8 },
       max: { type: Number, default: 32 },
       capital: { type: Boolean, default: true },
