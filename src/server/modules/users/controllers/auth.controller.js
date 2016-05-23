@@ -297,9 +297,21 @@ export default class AuthenticationController {
           .then(user => {
             req.token.remove()
               .then(() => res.status(200).json({ message: 'ok' }))
-              .catch(err => res.status(500).json(err));
-          }).catch(err => res.status(500).json(err));
-      }).catch(err => res.status(500).json(err));
+              .catch(err => res.status(500).json({ message: err }));
+          }).catch(err => res.status(500).json({ message: err }));
+      }).catch(err => res.status(500).json({ message: err }));
+  }
+
+  static validatePassword(req, res) {
+    User.findById(req.payload).exec().then(user => {
+      if (!user) {
+        return res.status(404).json({ message: 'User does not exist.' });
+      } else if (user.validPassword(req.body.adminPass)) {
+        return res.status(200).json({ message: 'ok.' });
+      } else {
+        return res.status(401).json({ message: 'Cannot confirm your identity.' });
+      }
+    }).catch(err => res.status(500).json({ message: err }));
   }
 
   /**
