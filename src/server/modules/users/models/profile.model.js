@@ -9,7 +9,7 @@ const genders = 'Neutrois Male Female Bigender None'.split(' ');
  */
 const profileSchema = new mongoose.Schema({
   username: { type: String, unique: true, required: '{PATH} is required' },
-  avatar: { type: String, default: 'style/core/images/users/default.png' },
+  avatar: { type: String, default: null },
   banner: { type: String, default: null },
   tagline: { type: String, default: null },
   gender: { type: String, enum: genders, default: 'None' },
@@ -18,5 +18,21 @@ const profileSchema = new mongoose.Schema({
   lastLogin: { type: Date, default: Date.now },
   lastOnline: { type: Date, default: Date.now },
 });
+
+profileSchema.methods.generateAvatar = function (username) {
+  const colors = ['5600FF', '0CDBE8', '5EFF00', 'E8A408', 'FF190D'];
+  let size = 512;
+  let meta = 'data:image/svg+xml;base64,';
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" height="${size}" width="${size}">
+              <circle cx="${size/2}" cy="${size/2}" r="${size/2}" fill="#${colors[Math.floor(Math.random() * 5)]}"/>
+              <text x="50%" y="50%" dy="180px" style="
+                font-family: Arial Black;
+                font-size: ${size}px;
+                fill: white;"
+              text-anchor="middle">${username[0].toUpperCase()}</text>
+            </svg>`;
+  this.avatar = meta + new Buffer(svg).toString('base64');
+  return this.save();
+};
 
 mongoose.model('Profile', profileSchema);
