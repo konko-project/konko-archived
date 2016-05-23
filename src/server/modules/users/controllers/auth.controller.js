@@ -113,36 +113,38 @@ export default class AuthenticationController {
             usernameGen(username).then(username => {
               user.setPassword(password);
               Profile.create({ username: username }).then(profile => {
-                user.profile = profile;
-                Preference.create().then(preference => {
-                  user.preference = preference;
-                  user.save().then(user => {
-                    if (!req.body.core && core.registration.email.verification && process.env.NODE_ENV !== 'test') {
-                      VerificationToken.create({ user: user }).then(token => {
-                        let mailer = new Mailer(app, core);
-                        let mailData = {
-                          email: user.email,
-                          url: req.protocol + '://' + req.get('host') +
-                                '/verify/' + token.token,
-                        };
-                        mailer.compileJade('activate', mailData, (err, html) => {
-                          if (err) {
-                            return res.status(500).json({ message: err });
-                          }
-                          mailer.sendMail(user.email, core.registration.email.verificationSubject, html, (err, info) => {
-                            return err ? res.status(500).json({ message: err }) : res.status(201).json({ token: user.generateJWT(app) });
+                profile.generateAvatar(username).then(profile => {
+                  user.profile = profile;
+                  Preference.create().then(preference => {
+                    user.preference = preference;
+                    user.save().then(user => {
+                      if (!req.body.core && core.registration.email.verification && process.env.NODE_ENV !== 'test') {
+                        VerificationToken.create({ user: user }).then(token => {
+                          let mailer = new Mailer(app, core);
+                          let mailData = {
+                            email: user.email,
+                            url: req.protocol + '://' + req.get('host') +
+                                  '/verify/' + token.token,
+                          };
+                          mailer.compileJade('activate', mailData, (err, html) => {
+                            if (err) {
+                              return res.status(500).json({ message: err });
+                            }
+                            mailer.sendMail(user.email, core.registration.email.verificationSubject, html, (err, info) => {
+                              return err ? res.status(500).json({ message: err }) : res.status(201).json({ token: user.generateJWT(app) });
+                            });
                           });
-                        });
-                      }).catch(err => next(err));
-                    } else {
-                      if (req.body.core) {
-                        user.permission = 'admin';
+                        }).catch(err => next(err));
+                      } else {
+                        if (req.body.core) {
+                          user.permission = 'admin';
+                        }
+                        user.verified = true;
+                        user.save().then(user => {
+                          res.status(201).json({ token: user.generateJWT(app) });
+                        }).catch(err => next(err));
                       }
-                      user.verified = true;
-                      user.save().then(user => {
-                        res.status(201).json({ token: user.generateJWT(app) });
-                      }).catch(err => next(err));
-                    }
+                    }).catch(err => next(err));
                   }).catch(err => next(err));
                 }).catch(err => next(err));
               }).catch(err => next(err));
