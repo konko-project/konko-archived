@@ -56,6 +56,12 @@ export default class CoreController {
    * @static
    */
   static create(req, res, next) {
+    req.checkBody('admin.email', 'Invalid admin email.').isEmail();
+    let errors = req.validationErrors();
+    if (errors) {
+      return res.status(400).json({ message: errors[0].msg });
+    }
+
     Core.find().then(([core, ...rest]) => {
       if (core && core.global.installed) {
         res.status(400).json({ message: 'Bad Request!' });
