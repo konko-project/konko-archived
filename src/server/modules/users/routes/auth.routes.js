@@ -3,6 +3,7 @@
 import jwt from 'express-jwt';
 import auth from '../controllers/auth.controller';
 import utils from '../../../configs/utils';
+import permission from '../../../configs/permission';
 
 /**
  * Auth routing.
@@ -24,13 +25,16 @@ export default app => {
     .get(auth.getGuest(app));
 
   app.route('/api/v1/auth/sync')
-    .get(JWT_AUTH, auth.sync(app));
+    .get(utils.throttle, JWT_AUTH, permission.get('allowAll'), auth.sync(app));
 
   app.route('/api/v1/verify/:token')
-    .get(auth.verify);
+    .get(utils.throttle, auth.verify);
 
   app.route('/api/v1/auth/reset')
-    .post(utils.throttle, auth.resetPass(app));
+    .post(utils.throttle, JWT_AUTH, permission.get('allowAll'), auth.resetPass(app));
+
+  app.route('/api/v1/auth/confirm')
+    .post(utils.throttle, JWT_AUTH, permission.get('allowAdmin'), auth.validatePassword);
 
   app.param('token', auth.findToken);
 };
