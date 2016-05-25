@@ -96,6 +96,8 @@ export default class AuthenticationController {
           User.create(req.body).then(user => {
             let username = user.email.replace(/\@.*/g, '');
             const usernameGen = username => {
+              let regex = new RegExp(core.profile.username.forbidden.join('|') || '(?!)');
+              username = regex.test(username) ? new Buffer(username).toString('base64') : username;
               return new Promise(resolve => {
                 Profile.findOne({ username: username }).then(profile => {
                   if (profile) {
