@@ -22,9 +22,25 @@ const coreSchema = new mongoose.Schema({
     installed: { type: Boolean, default: true },
     language: { type: String, lowercase: true, default: 'en-us' },
     compression: { type: Number, min: -1, max: 9, default: 9 },
+    tos: { type: String },
+    navbar: {
+      navs: [
+        {
+          name: { type: String, required: '{PATH} is required' },
+          url: { type: String, required: '{PATH} is required' },
+          order: { type: Number, min: 0 },
+        }
+      ],
+    },
+    styles: [
+      {
+        name: { type: String, unique: true, required: '{PATH} is required' },
+        root: { type: String, unique: true, required: '{PATH} is required' },
+      },
+    ],
   },
   mailer: {
-    method: { type: String, enum: ['sendmail', 'stmp', 'ses'],  default: 'sendmail' },
+    method: { type: String, enum: ['sendmail', 'smtp', 'ses'],  default: 'sendmail' },
     from: { type: String, unique: true, lowercase: true, default: 'noreply@konko.project' },
     host: { type: String, unique: true },
     secure: { type: Boolean, default: true },
@@ -34,19 +50,9 @@ const coreSchema = new mongoose.Schema({
     ses_keyId: { type: String, unique: true },
     ses_secret: { type: String, unique: true },
   },
-  style: [
-    {
-      name: { type: String, unique: true, required: '{PATH} is required', default: 'Konko' },
-      root: { type: String, unique: true, required: '{PATH} is required', default: 'styles/core' },
-    },
-  ],
-  navbar: {
-    navs: [{ name: { type: String }, url: { type: String }, order: { type: Number, min: 0 } }],
-  },
   registration: {
     public: { type: Boolean, default: true },
-    message: { type: String },
-    tos: { type: String },
+    message: { type: String, default: 'Registration is closed by admin.' },
     email: {
       verification: { type: Boolean, default: true },
       verificationSubject: { type: String, default: 'Welcome!' },
