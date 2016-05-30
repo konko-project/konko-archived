@@ -67,14 +67,15 @@ export default class PanelController {
   }
 
   /**
-   * Query all panels then populates them, response as json.
+   * Query all panels or panels in a category then populates them, response as json.
    *
    * @param {Object} req - HTTP request.
    * @param {Object} res - HTTP response.
    * @static
    */
   static list(req, res) {
-    Panel.find().select(req._fields).sort(req._sort).lean()
+    let cate = req.category ? { category: req.category } : {};
+    Panel.find(cate).select(req._fields).sort(req._sort).lean()
       .populate({
         path: 'children',
         select: '_id name',
@@ -139,7 +140,7 @@ export default class PanelController {
     if (errors) {
       return res.status(400).json({ message: errors });
     }
-    utils.partialUpdate(body, panel, 'name', 'order', 'description');
+    utils.partialUpdate(body, panel, 'name', 'order', 'description', 'logo');
     panel.save()
       .then(panel => res.status(200).json(panel))
       .catch(err => res.status(500).json({ message: err }));
