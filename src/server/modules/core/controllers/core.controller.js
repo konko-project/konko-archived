@@ -1,6 +1,7 @@
 'use strict';
 
 import mongoose from 'mongoose';
+import utils from '../../../configs/utils';
 const Core = mongoose.model('Core');
 
 /**
@@ -71,15 +72,19 @@ export default class CoreController {
         if (errors) {
           return res.status(400).json({ message: errors });
         }
-        Core.create(req.body)
-          .then(core => res.status(201).json(core))
-          .catch(err => next(err));
+        Core.create(req.body).then(core => {
+          core.global.styles.push({ name: 'Konko', root: 'styles/core' });
+          core.save().then(core => res.status(201).json(core)).catch(err => next(err));
+        }).catch(err => next(err));
       }
     }).catch(err => next(err));
   }
 
-  static update(req, res) {
-
+  static update({ body, core, _fields }, res) {
+    utils.partialUpdate(body, core, _fields);
+    core.save()
+      .then(panel => res.status(200).json(panel))
+      .catch(err => res.status(500).json({ message: err }));
   }
 
   /**
