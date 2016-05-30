@@ -15,6 +15,9 @@ import permission from '../../../configs/permission';
 export default app => {
   const JWT_AUTH = jwt({ secret: app.get('secret'), userProperty: 'payload' });
 
+  app.route('/api/v1/panels')
+    .get(JWT_AUTH, permission.get('allowAdmin'), panels.list);
+
   app.route('/api/v1/categories')
     .get(JWT_AUTH, permission.get('allowAll'), categories.list)
     .post(JWT_AUTH, permission.get('allowAdmin'), categories.create);
