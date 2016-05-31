@@ -67,7 +67,7 @@ export default class UserController {
   }
 
   /**
-   * List all users
+   * List all users or conditionally
    *
    * @param {Object} req - HTTP request.
    * @param {Object} res - HTTP response.
@@ -75,9 +75,27 @@ export default class UserController {
    * @static
    */
   static list(req, res, next) {
-    User.find().select(req._fields + ' -hash -salt').sort(req._sort).exec()
-      .then(users => res.status(200).json(users))
-      .catch(err => next(err));
+    let keyword = req.query.search;
+    let option = {};
+    req.checkQuery('search', '').isEmail();
+    if (keyword) {
+      if (mongoose.Types.ObjectId.isValid(keyword)) {
+        option = { _id: keyword };
+      } else if (!req.validationErrors()) {
+        option = { email: keyword };
+      } else {
+        Profile.findOne({ username: keyword }).then(profile => {
+          User.find({ profile: profile }).populate('profile').select(req._fields).sort(req._sort).exec().then(users => {
+            res.status(200).json(users);
+          }).catch(err => next(err));
+        }).catch(err => next(err));
+        return;
+      }
+    }
+
+    User.find(option).populate('profile').select(req._fields).sort(req._sort).exec().then(users => {
+      res.status(200).json(users);
+    }).catch(err => next(err));
   }
 
   /**
