@@ -117,7 +117,7 @@ export default class AuthenticationController {
               Profile.create({ username: username }).then(profile => {
                 profile.generateAvatar(username).then(profile => {
                   user.profile = profile;
-                  Preference.create().then(preference => {
+                  Preference.create({}).then(preference => {
                     user.preference = preference;
                     user.save().then(user => {
                       if (!req.body.core && core.registration.email.verification && process.env.NODE_ENV !== 'test') {
