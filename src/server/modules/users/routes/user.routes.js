@@ -20,11 +20,12 @@ export default app => {
     .get(JWT_AUTH, permission.get('allowAdmin'), user.list);
 
   app.route('/api/v1/users/:userId')
-    .get(JWT_AUTH, permission.get('allowOwner', 'user'), user.get);
+    .get(JWT_AUTH, permission.get('allowOwner', 'user'), user.get)
+    .put(JWT_AUTH, permission.get('allowAdmin', 'user'), user.update);
 
   app.route('/api/v1/users/:userId/profile')
     .get(JWT_AUTH, permission.get('allowUser'), user.getProfile)
-    .put(JWT_AUTH, permission.get('allowOwner', 'user'), user.updateProfile);
+    .put(JWT_AUTH, permission.get('allowAdminOwner', 'user'), user.updateProfile);
 
   app.route('/api/v1/users/:userId/preference')
     .get(JWT_AUTH, permission.get('allowOwner', 'user'), user.getPreference)
