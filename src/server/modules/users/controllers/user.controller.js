@@ -99,6 +99,22 @@ export default class UserController {
   }
 
   /**
+   * Update user
+   *
+   * @param {Object} req - HTTP request.
+   * @param {Object} res - HTTP response.
+   * @static
+   */
+  static update({ body, user }, res) {
+    User.findById(user).then(user => {
+      utils.partialUpdate(body, user, 'permission', 'verified');
+      user.save()
+        .then(user => res.status(200).json(user))
+        .catch(err => res.status(500).json({ message: err }));
+    }).catch(err => res.status(500).json({ message: err }));
+  }
+
+  /**
    * Response a user's profile
    *
    * @param {Object} req - HTTP request.
