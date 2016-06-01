@@ -19,6 +19,12 @@ const profileSchema = new mongoose.Schema({
   lastOnline: { type: Date, default: Date.now },
 });
 
+/**
+ * Generate a default avatar
+ *
+ * @param {String} username - Username
+ * @returns {Object} The updated profile
+ */
 profileSchema.methods.generateAvatar = function (username) {
   const colors = ['5600FF', '0CDBE8', '5EFF00', 'E8A408', 'FF190D'];
   let size = 512;
@@ -32,6 +38,16 @@ profileSchema.methods.generateAvatar = function (username) {
               text-anchor="middle">${username[0].toUpperCase()}</text>
             </svg>`;
   this.avatar = meta + new Buffer(svg).toString('base64');
+  return this.save();
+};
+
+/**
+ * Update user's last online time.
+ *
+ * @returns {Object} The updated profile
+ */
+profileSchema.methods.online = function () {
+  this.lastOnline = new Date();
   return this.save();
 };
 
