@@ -32,13 +32,17 @@ export default class PermissionMiddleware {
    */
   static get(permission, model = null) {
     return (req, res, next) => {
-      User.findById(req.payload).then(user => {
-        req.payload.permission = user.permission;
-        if(model) {
-          req._docs = req[model];
-        }
+      if (req.payload.permission === 'guest') {
         PermissionMiddleware[permission](req, res, next);
-      }).catch(err => res.status(500).json({ message: err }));
+      } else {
+        User.findById(req.payload).then(user => {
+          req.payload.permission = user.permission;
+          if(model) {
+            req._docs = req[model];
+          }
+          PermissionMiddleware[permission](req, res, next);
+        }).catch(err => res.status(500).json({ message: err }));
+      }
     };
   }
 
