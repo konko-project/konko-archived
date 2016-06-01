@@ -11,6 +11,7 @@ import csrf from 'csurf';
 import passport from 'passport';
 import compression from 'compression';
 import validator from 'express-validator';
+import jwt from 'express-jwt';
 
 import statics from './statics';
 import _passport from './passport';
@@ -86,6 +87,13 @@ export default dirname => {
     res.cookie('csrfToken', req.csrfToken());
     return next();
   });
+
+  // check site publicity
+  app.use(jwt({
+    secret: app.get('secret'),
+    credentialsRequired: false,
+    userProperty: 'payload',
+  }), utils.public);
 
   // set routes
   app.use(utils.quering);
