@@ -137,14 +137,18 @@ export default class UserController {
    */
   static updateProfile({ body, user: { profile } }, res) {
     UserController.updateSchema(res);
-    Profile.findById(profile)
-      .then(profile => {
+    Profile.findOne({ username: body.username }).then(p => {
+      if (p && !p.equals(profile)) {
+        return res.status(500).json({ message: 'This username is already used.' });
+      }
+      Profile.findById(profile).then(profile => {
         utils.partialUpdate(body, profile, 'username', 'tagline', 'gender', 'dob', 'tokenLive');
         profile.save()
           .then(profile => res.status(200).json(profile))
           .catch(err => res.status(500).json({ message: err }));
-      })
-      .catch(err => res.status(500).json({ message: err }));
+      }).catch(err => res.status(500).json({ message: err }));
+    }).catch(err => res.status(500).json({ message: err }));
+
   }
 
   /**
