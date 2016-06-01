@@ -48,7 +48,8 @@ userSchema.methods.validPassword = function (password) {
  * @returns {Promise} Updated user.
  */
 userSchema.methods.login = function () {
-  this.profile.lastLogin = Date.now();
+  this.profile.lastLogin = new Date();
+  this.profile.save();
   return this.save();
 };
 
