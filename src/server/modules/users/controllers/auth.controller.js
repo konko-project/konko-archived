@@ -325,9 +325,11 @@ export default class AuthenticationController {
   static sync(app) {
     return (req, res, next) => {
       User.findById(req.payload)
-        .populate('profile preference').exec()
-        .then(user => {
-          return res.status(200).json({ token: user.generateJWT(app) });
+        .populate('profile preference').exec().then(user => {
+          user.profile.online().then(profile => {
+            user.profile = profile;
+            user.save().then(user => res.status(200).json({ token: user.generateJWT(app) })).catch(err => next(err));
+          }).catch(err => next(err));
         }).catch(err => next(err));
     };
   }
