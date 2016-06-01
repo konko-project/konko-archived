@@ -1,5 +1,8 @@
 'use strict';
 
+import mongoose from 'mongoose';
+const User = mongoose.model('User');
+
 const Unknown = 'Unknown error.';
 const MissingToken = 'Missing user token.';
 const MissingOwner = 'Onwer type is missing for the document.';
@@ -19,7 +22,8 @@ export default class PermissionMiddleware {
   constructor() {}
 
   /**
-   * Helper that routes to the correct permission validator.
+   * Helper update user's permission then
+   * routes to the correct permission validator.
    *
    * @param {String} permission - Permission that need to be validate.
    * @param {String} model - Optional, if need to specify a model in req.
@@ -28,10 +32,13 @@ export default class PermissionMiddleware {
    */
   static get(permission, model = null) {
     return (req, res, next) => {
-      if(model) {
-        req._docs = req[model];
-      }
-      PermissionMiddleware[permission](req, res, next);
+      User.findById(req.payload).then(user => {
+        req.payload.permission = user.permission;
+        if(model) {
+          req._docs = req[model];
+        }
+        PermissionMiddleware[permission](req, res, next);
+      }).catch(err => res.status(500).json({ message: err }));
     };
   }
 
