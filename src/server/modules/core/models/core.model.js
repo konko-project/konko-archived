@@ -21,8 +21,6 @@ const coreSchema = new mongoose.Schema({
   global: {
     installed: { type: Boolean, default: true },
     language: { type: String, lowercase: true, default: 'en-us' },
-    compression: { type: Number, min: -1, max: 9, default: 9 },
-    tos: { type: String },
     navbar: {
       navs: [
         {
