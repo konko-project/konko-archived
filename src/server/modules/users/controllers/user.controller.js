@@ -39,7 +39,7 @@ export default class UserController {
             let regex = new RegExp(username.forbidden.join('|') || '(?!)');
             return !regex.test(v);
           },
-          message: '"{VALUE}" is not a valid username!',
+          message: '{VALUE} is not a valid username or not allowed!',
         }
       });
       Profile.schema.path('tagline', {
@@ -135,7 +135,7 @@ export default class UserController {
    * @param {Object} res - HTTP response.
    * @static
    */
-  static updateProfile({ body, user: { profile } }, res) {
+  static updateProfile({ body, user: { profile }, payload }, res) {
     UserController.updateSchema(res);
     Profile.findOne({ username: body.username }).then(p => {
       if (p && !p.equals(profile)) {
@@ -143,6 +143,10 @@ export default class UserController {
       }
       Profile.findById(profile).then(profile => {
         utils.partialUpdate(body, profile, 'username', 'tagline', 'gender', 'dob', 'tokenLive');
+        let error = profile.validateSync();
+        if (error.errors.username.message) {
+          return res.status(500).json({ message: error.errors.username.message });
+        }
         profile.save()
           .then(profile => res.status(200).json(profile))
           .catch(err => res.status(500).json({ message: err }));
