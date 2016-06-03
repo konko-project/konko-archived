@@ -43,7 +43,7 @@ export default class AuthenticationController {
               let regex = new RegExp(profile.username.forbidden.join('|') || '(?!)');
               return !regex.test(v);
             },
-            message: '"{VALUE}" is not a valid username!',
+            message: '{VALUE} is not a valid username!',
           }
         });
         User.schema.path('email', {
@@ -57,7 +57,7 @@ export default class AuthenticationController {
               let regex = new RegExp(r, 'g');
               return !regex.test(v);
             },
-            message: '"{VALUE}" is not a valid Email!',
+            message: '{VALUE} is not allowed to register!',
           }
         });
         resolve(cores[0]);
@@ -93,9 +93,22 @@ export default class AuthenticationController {
             return res.status(400).json({ message: 'User already existed with this email.' });
           }
 
+          user = new User();
+          user.email = req.body.email;
+          let error = user.validateSync();
+          if (error.errors.email.message) {
+            return res.status(400).json({ message: error.errors.email.message });
+          }
+
           User.create(req.body).then(user => {
             let username = user.email.replace(/\@.*/g, '');
             const usernameGen = username => {
+              if (username.length < core.profile.username.min) {
+                username += username[0].repeat(core.profile.username.min);
+              }
+              if (username.length > core.profile.username.max) {
+                username = username.substring(0, core.profile.username.max);
+              }
               let regex = new RegExp(core.profile.username.forbidden.join('|') || '(?!)');
               username = regex.test(username) ? new Buffer(username).toString('base64') : username;
               return new Promise(resolve => {
