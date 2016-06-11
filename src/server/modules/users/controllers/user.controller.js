@@ -57,8 +57,8 @@ export default class UserController {
    * @param {Object} res - HTTP response.
    * @static
    */
-  static get(req, res) {
-    req.user.populate('profile preference', (err, user) => {
+  static get({ user }, res) {
+    user.populate('profile preference', (err, user) => {
       if (err) {
         return res.status(500).json({ message: err });
       }
@@ -75,16 +75,16 @@ export default class UserController {
    * @static
    */
   static list(req, res, next) {
-    let keyword = req.query.search;
+    let q = req.query.search;
     let option = {};
     req.checkQuery('search', '').isEmail();
-    if (keyword) {
-      if (mongoose.Types.ObjectId.isValid(keyword)) {
-        option = { _id: keyword };
+    if (q) {
+      if (mongoose.Types.ObjectId.isValid(q)) {
+        option = { _id: q };
       } else if (!req.validationErrors()) {
-        option = { email: keyword };
+        option = { email: q };
       } else {
-        Profile.findOne({ username: keyword }).then(profile => {
+        Profile.findOne({ username: q }).then(profile => {
           User.find({ profile: profile }).populate('profile').select(req._fields).sort(req._sort).exec().then(users => {
             res.status(200).json(users);
           }).catch(err => next(err));
@@ -142,9 +142,9 @@ export default class UserController {
         return res.status(500).json({ message: 'This username is already used.' });
       }
       Profile.findById(profile).then(profile => {
-        utils.partialUpdate(body, profile, 'username', 'tagline', 'gender', 'dob', 'tokenLive');
+        utils.partialUpdate(body, profile, 'username', 'tagline', 'gender', 'dob', 'tokenLive', 'avatar', 'banner');
         let error = profile.validateSync();
-        if (error.errors.username.message) {
+        if (error && error.errors.username.message) {
           return res.status(500).json({ message: error.errors.username.message });
         }
         profile.save()
@@ -293,7 +293,8 @@ export default class UserController {
       return res.status(400).json({ message: 'User ID is invalid' });
     }
 
-    User.findById(id).select('-hash -salt').exec()
+    let select = id === req.payload._id ? '-hash -salt' : '-email -hash -salt';
+    User.findById(id).select(select).exec()
       .then(user => (req.user = user) ? next() : res.status(404).json({ message: 'User is not found' }))
       .catch(err => next(err));
   }
