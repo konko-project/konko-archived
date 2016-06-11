@@ -50,7 +50,7 @@ export default class CategoryController {
   static get(req, res) {
     req.category.populate({
       path: 'panels',
-      select: '_id name order description topics comments last',
+      select: '_id name order description topics comments last logo',
       populate: {
         path: 'last',
         model: 'Topic',
@@ -89,7 +89,7 @@ export default class CategoryController {
     Category.find().select(req._fields).sort(req._sort).lean()
       .populate({
         path: 'panels',
-        select: '_id name order description last topics comments',
+        select: '_id name order description last topics comments logo',
         populate: {
           path: 'last',
           model: 'Topic',
