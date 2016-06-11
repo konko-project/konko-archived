@@ -28,22 +28,24 @@ export default class TopicController {
    * @returns {Response} Response 500 if error exist.
    */
   static updateSchema(res) {
-    Core.find().then(cores => {
-      let { post: { topic: { title, content } } } = cores[0];
-      Topic.schema.path('title', {
-        type: String,
-        required: '{PATH} is required',
-        minlength: title.min,
-        maxlength: title.max,
-      });
-      Topic.schema.path('content', {
-        type: String,
-        required: '{PATH} is required',
-        unique: true,
-        minlength: content.min,
-        maxlength: content.max,
-      });
-    }).catch(err => res.status(500).json({ message: err }));
+    return new Promise((resolve, reject) => {
+      Core.find().then(cores => {
+        let { post: { topic: { title, content } } } = cores[0];
+        Topic.schema.path('title', {
+          type: String,
+          required: '{PATH} is required',
+          minlength: title.min,
+          maxlength: title.max,
+        });
+        Topic.schema.path('content', {
+          type: String,
+          required: '{PATH} is required',
+          minlength: content.min,
+          maxlength: content.max,
+        });
+        resolve(cores[0]);
+      }).catch(err => res.status(500).json({ message: err }));
+    }).then(core => core);
   }
 
   /**
@@ -58,11 +60,11 @@ export default class TopicController {
       topic.populate('panel', '_id name')
         .populate({
           path: 'author',
-          select: '_id profile',
+          select: '_id profile permission',
           populate: {
             path: 'profile',
             model: 'Profile',
-            select: 'username avatar',
+            select: 'username avatar tagline',
           },
         }, (err, topic) => {
           if (err) {
@@ -85,48 +87,79 @@ export default class TopicController {
   static list({ query, sanitizeQuery, _sort }, res, next) {
     let select = {};
     let sort = {};
-    let optional = '';
+    let project = {
+      _id: 1,
+      title: 1,
+      date: 1,
+      views: 1,
+      lastReplies: '$comments',
+      replies: { $size: '$comments' },
+      lastReplyDate: 1,
+      author: 1,
+    };
     sanitizeQuery('offset').toInt();
     sanitizeQuery('limit').toInt();
     query.limit = query.limit || 20;
+    query.offset = query.offset || 0;
     if (query && query.userId) {
-      select = { author: query.userId };
-      optional = 'content panel';
-      sort = _sort;  // { date: -1 }
+      select = { author: mongoose.Types.ObjectId(query.userId) };
+      project.content = 1;
+      project.panel = 1;
+      sort = _sort || { date: -1 };
     } else if (query && query.panelId) {
-      select = { panel: query.panelId };
-      optional = 'lastReplyDate';
-      sort = _sort; // { lastReplyDate: -1 }
+      select = { panel: mongoose.Types.ObjectId(query.panelId) };
+      project.lastReplyDate = 1;
+      sort = _sort || { lastReplyDate: 1 };
     } else {
       return res.status(400).json({ message: 'Bad Request' });
     }
 
-    Topic.find(select, '_id author title date replies views lastReplies ' + optional)
-      .lean().sort(sort).skip(query.offset).limit(query.limit)
-      .populate('panel', '_id name')
-      .populate({
-        path: 'author',
-        select: '_id profile',
-        populate: {
-          path: 'profile',
-          model: 'Profile',
-          select: 'username avatar',
-        },
-      })
-      .populate({
-        path: 'lastReplies',
-        select: '_id date short author',
-        populate: {
-          path: 'author',
-          model: 'User',
-          select: '_id profile',
-          populate: {
-            path: 'profile',
-            model: 'Profile',
-            select: 'username avatar',
-          },
-        },
-      }).exec().then(topics => res.status(200).json(topics)).catch(err => next(err));
+    Core.findOne().then(({ post: { topic: { lastReplyLength } } }) => {
+      Topic.aggregate([
+        { $match: select },
+        { $sort: sort },
+        { $skip: query.offset },
+        { $limit: query.limit },
+        { $project: project },
+      ]).exec().then(topics => {
+        Topic.populate(topics, {
+          path: 'panel',
+          select: '_id name',
+        }).then(topics => {
+          Topic.populate(topics, {
+            path: 'author',
+            select: '_id profile',
+            populate: {
+              path: 'profile',
+              model: 'Profile',
+              select: 'username avatar',
+            },
+          }).then(topics => {
+            Topic.populate(topics, {
+              path: 'lastReplies',
+              model: 'Comment',
+              select: '_id date short author',
+              populate: {
+                path: 'author',
+                model: 'User',
+                select: '_id profile',
+                populate: {
+                  path: 'profile',
+                  model: 'Profile',
+                  select: 'username avatar',
+                },
+              },
+              options: {
+                sort: { date: -1 },
+                limit: lastReplyLength,
+              }
+            }).then(topics => {
+              res.status(200).json(topics);
+            }).catch(err => next(err));
+          }).catch(err => next(err));
+        }).catch(err => next(err));
+      }).catch(err => next(err));
+    }).catch(err => next(err));
   }
 
   /**
@@ -138,27 +171,28 @@ export default class TopicController {
    * @static
    */
   static create({ checkBody, checkQuery, validationErrors, body, query, payload }, res, next) {
-    TopicController.updateSchema(res);
-    checkBody('title', 'Title cannot be empty!').notEmpty();
-    checkBody('content', 'Cannot post a empty topic!').notEmpty();
-    checkQuery('panelId', 'Panel ID is not presented!').notEmpty();
-    let errors = validationErrors();
-    if (errors) {
-      return res.status(400).json({ message: errors });
-    }
+    TopicController.updateSchema(res).then(core => {
+      checkBody('title', 'Title cannot be empty!').notEmpty();
+      checkBody('content', 'Cannot post a empty topic!').notEmpty();
+      checkQuery('panelId', 'Panel ID is not presented!').notEmpty();
+      let errors = validationErrors();
+      if (errors) {
+        return res.status(400).json({ message: errors });
+      }
 
-    Topic.create(body).then(topic => {
-      Panel.findById(mongoose.Types.ObjectId(query.panelId)).exec().then(panel => {
-        if (!panel) {
-            return res.status(404).json({ message: 'Panel not found' });
-        }
+      Topic.create(body).then(topic => {
+        Panel.findById(mongoose.Types.ObjectId(query.panelId)).exec().then(panel => {
+          if (!panel) {
+              return res.status(404).json({ message: 'Panel not found' });
+          }
 
-        topic.author = payload;
-        topic.panel = panel;
-        topic.save().then(topic => {
-          panel.last.shift();
-          panel.last.push(topic);
-          panel.addtopic().then(panel => res.status(201).json(topic)).catch(err => next(err));
+          topic.author = payload;
+          topic.panel = panel;
+          topic.save().then(topic => {
+            panel.last.shift();
+            panel.last.push(topic);
+            panel.addtopic().then(panel => res.status(201).json(topic)).catch(err => next(err));
+          }).catch(err => next(err));
         }).catch(err => next(err));
       }).catch(err => next(err));
     }).catch(err => next(err));
@@ -172,20 +206,21 @@ export default class TopicController {
    * @static
    */
   static update({ checkBody, validationErrors, body, topic, payload }, res) {
-    TopicController.updateSchema(res);
-    checkBody('title', 'Title cannot be empty!').notEmpty();
-    checkBody('content', 'Cannot post a empty topic!').notEmpty();
-    let errors = validationErrors();
-    if (errors) {
-      return res.status(400).json({ message: errors });
-    }
+    TopicController.updateSchema(res).then(core => {
+      checkBody('title', 'Title cannot be empty!').notEmpty();
+      checkBody('content', 'Cannot post a empty topic!').notEmpty();
+      let errors = validationErrors();
+      if (errors) {
+        return res.status(400).json({ message: errors });
+      }
 
-    utils.partialUpdate(body, topic, 'title', 'content');
-    topic.updated.date = Date.now();
-    topic.updated.by = payload.profile.username;
-    topic.save()
-      .then(topic => res.status(200).json(topic))
-      .catch(err => res.status(500).json({ message: err }));
+      utils.partialUpdate(body, topic, 'title', 'content');
+      topic.updated.date = Date.now();
+      topic.updated.by = payload.profile.username;
+      topic.save()
+        .then(topic => res.status(200).json(topic))
+        .catch(err => res.status(500).json({ message: err }));
+    }).catch(err => res.status(500).json({ message: err }));
   }
 
   /**
