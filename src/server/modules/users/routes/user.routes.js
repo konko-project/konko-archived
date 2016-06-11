@@ -14,32 +14,32 @@ import utils from '../../../configs/utils';
  * @param {Object} app - Express app.
  */
 export default app => {
-  const JWT_AUTH = jwt({ secret: app.get('secret'), userProperty: 'payload' });
+  const JWT = jwt({ secret: app.get('secret'), userProperty: 'payload' });
 
   app.route('/api/v1/users')
-    .get(JWT_AUTH, permission.get('allowAdmin'), user.list);
+    .get(JWT, permission.get('allowAdmin'), user.list);
 
   app.route('/api/v1/users/:userId')
-    .get(JWT_AUTH, permission.get('allowOwner', 'user'), user.get)
-    .put(JWT_AUTH, permission.get('allowAdmin', 'user'), user.update);
+    .get(JWT, permission.get('allowUser', 'user'), user.get)
+    .put(JWT, permission.get('allowAdmin', 'user'), user.update);
 
   app.route('/api/v1/users/:userId/profile')
-    .get(JWT_AUTH, permission.get('allowUser'), user.getProfile)
-    .put(JWT_AUTH, permission.get('allowAdminOwner', 'user'), user.updateProfile);
+    .get(JWT, permission.get('allowUser'), user.getProfile)
+    .put(JWT, permission.get('allowAdminOwner', 'user'), user.updateProfile);
 
   app.route('/api/v1/users/:userId/preference')
-    .get(JWT_AUTH, permission.get('allowOwner', 'user'), user.getPreference)
-    .put(JWT_AUTH, permission.get('allowOwner', 'user'), user.updatePreference);
+    .get(JWT, permission.get('allowOwner', 'user'), user.getPreference)
+    .put(JWT, permission.get('allowOwner', 'user'), user.updatePreference);
 
   app.route('/api/v1/users/:userId/bookmarks')
-    .get(JWT_AUTH, permission.get('allowUser'), user.getBookmarks);
+    .get(JWT, permission.get('allowUser'), user.getBookmarks);
 
   app.route('/api/v1/users/:userId/bookmarks/:topicId')
-    .delete(utils.throttle, JWT_AUTH, permission.get('allowOwner', 'user'), user.removeBookmark);
+    .delete(utils.throttle, JWT, permission.get('allowOwner', 'user'), user.removeBookmark);
 
   app.route('/api/v1/users/:userId/permission')
-    .get(utils.throttle, JWT_AUTH, permission.get('allowAll'), user.getPermission)
-    .put(JWT_AUTH, permission.get('allowAdmin'), user.setPermission);
+    .get(utils.throttle, JWT, permission.get('allowAll'), user.getPermission)
+    .put(JWT, permission.get('allowAdmin'), user.setPermission);
 
   app.param('userId', user.findUserById);
   app.param('topicId', topics.findTopicById);
