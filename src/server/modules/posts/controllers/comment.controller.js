@@ -27,15 +27,18 @@ export default class CommentController {
    * @returns {Response} Response 500 if error exist.
    */
   static updateSchema(res) {
-    Core.find().then(cores => {
-      let { post: { comment: { content } } } = cores[0];
-      Comment.schema.path('content', {
-        type: String,
-        required: '{PATH} is required',
-        minlength: content.min,
-        maxlength: content.max,
-      });
-    }).catch(err => res.status(500).json({ message: err }));
+    return new Promise((resolve, reject) => {
+      Core.find().then(cores => {
+        let { post: { comment: { content } } } = cores[0];
+        Comment.schema.path('content', {
+          type: String,
+          required: '{PATH} is required',
+          minlength: content.min,
+          maxlength: content.max,
+        });
+        resolve(cores[0]);
+      }).catch(err => res.status(500).json({ message: err }));
+    }).then(core => core);
   }
 
   /**
@@ -85,11 +88,11 @@ export default class CommentController {
       .populate({
         path: 'author',
         model: 'User',
-        select: '_id profile',
+        select: '_id profile permission',
         populate: {
           path: 'profile',
           model: 'Profile',
-          select: 'username avatar',
+          select: 'username avatar tagline',
         },
       }).exec()
       .then(comments => res.status(200).json(comments))
@@ -105,29 +108,21 @@ export default class CommentController {
    * @static
    */
   static create({ checkBody, validationErrors, body, topic, payload }, res, next) {
-    CommentController.updateSchema(res);
-    checkBody('content', 'Empty comment!').notEmpty();
-    let errors = validationErrors();
-    if (errors) {
-      return res.status(400).json({ message: errors });
-    }
+    CommentController.updateSchema(res).then(({ post: { comment: { short: { max } } } }) => {
+      checkBody('content', 'Empty comment!').notEmpty();
+      let errors = validationErrors();
+      if (errors) {
+        return res.status(400).json({ message: 'Cannot post a empty comment.' });
+      }
 
-    Comment.create(body).then(comment => {
-      Core.find().then(([{ post: { topic: { lastReplyLength }, comment: { short: { max } } } }, ...rest]) => {
+      Comment.create(body).then(comment => {
         comment.short = comment.content.length <= max ? comment.content : new RegExp(`(^.{0,${max}}(?=[ ]))|(^.{0,${max}}(?=.))`, 'g').exec(comment.content)[0] + '...';
         comment.topic = topic;
         comment.author = payload;
         comment.save().then(comment => {
           topic.comments.push(comment);
-
-          // storing last 3 recent comments
-          topic.lastReplies.unshift(comment);
-          if (topic.lastReplies.length > lastReplyLength) {
-            topic.lastReplies.pop();
-          }
-
           topic.lastReplyDate = comment.date;
-            topic.reply().then(topic => {
+            topic.save().then(topic => {
               Panel.findById(topic.panel).then(panel => {
                 panel.addComment().then(panel => res.status(201).json(comment))
                   .catch(err => next(err));
