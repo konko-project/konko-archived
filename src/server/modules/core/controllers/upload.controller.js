@@ -20,18 +20,11 @@ export default class UploadController {
    * @param {Object} res - HTTP response.
    * @param {nextCallback} next - A callback to run.
    * @returns An HTTP response.
+   * @static
    */
   static profileUpload(req, res, next) {
-    if (req.payload._id !== req.body.userId) {
-      return res.status(401).send({
-        message: 'Unauthorized',
-      });
-    }
-
     let url = '/uploads/users/' + req.payload._id + '/' + req.file.fieldname + '/' + req.file.filename;
-    return res.status(200).send({
-      url: url,
-    });
+    return res.status(200).send({ url: url });
   }
 }
 
