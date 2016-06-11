@@ -8,22 +8,22 @@ import mongoose from 'mongoose';
  */
 const topicSchema = new mongoose.Schema({
   author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  content: { type: String, required: '{PATH} is required', unique: true },
+  content: { type: String, required: '{PATH} is required' },
   comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
   date: { type: Date, default: Date.now },
-  title: { type: String, required: '{PATH} is required' },
+  title: { type: String, required: '{PATH} is required'},
   updated: {
     by: { type: String, default: null },
     date: { type: Date, default: Date.now },
   },
   views: { type: Number, default: 0 },
-  replies: { type: Number, default: 0 },
   panel: { type: mongoose.Schema.Types.ObjectId, ref: 'Panel' },
-  lastReplies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
   lastReplyDate: { type: Date, default: Date.now },
   likes: [{ type: String }],
   bookmarks: [{ type: String }],
 });
+
+topicSchema.index({ title: 'text', content: 'text' });
 
 /**
  * Increment view number by one.
@@ -32,16 +32,6 @@ const topicSchema = new mongoose.Schema({
  */
 topicSchema.methods.view = function () {
   this.views += 1;
-  return this.save();
-};
-
-/**
- * Increment reply number by one.
- *
- * @returns {Promise} The promise of this updated topic.
- */
-topicSchema.methods.reply = function () {
-  this.replies += 1;
   return this.save();
 };
 
