@@ -96,7 +96,7 @@ export default class AuthenticationController {
           user = new User();
           user.email = req.body.email;
           let error = user.validateSync();
-          if (error.errors.email.message) {
+          if (error && error.errors.email.message) {
             return res.status(400).json({ message: error.errors.email.message });
           }
 
@@ -281,7 +281,7 @@ export default class AuthenticationController {
    */
   static getGuest(app) {
     return (req, res, next) => {
-      let guestProfile = new Profile({ username: 'Guest', tokenLive: '99999h' });
+      let guestProfile = new Profile({ username: 'Guest', tokenLive: '30d' });
       let guestPreference = new Preference();
       let guest = new User({
         email: 'guest@konko',
