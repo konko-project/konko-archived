@@ -17,20 +17,20 @@ export default app => {
   const JWT_AUTH = jwt({ secret: app.get('secret'), userProperty: 'payload' });
 
   app.route('/api/v1/topics')
-    .get(JWT_AUTH, permission.get('allowRegistered'), topics.list)
+    .get(JWT_AUTH, permission.get('allowAll'), topics.list)
     .post(JWT_AUTH, permission.get('allowUser'), topics.create);
 
   app.route('/api/v1/topics/:topicId')
-    .get(JWT_AUTH, permission.get('allowUser'), topics.get)
+    .get(JWT_AUTH, permission.get('allowAll'), topics.get)
     .put(JWT_AUTH, permission.get('allowAdminOwner', 'topic'), topics.update)
     .delete(JWT_AUTH, permission.get('allowAdmin'), topics.delete);
 
   app.route('/api/v1/topics/:topicId/comments')
-    .get(JWT_AUTH, permission.get('allowUser'), comments.list)
+    .get(JWT_AUTH, permission.get('allowAll'), comments.list)
     .post(JWT_AUTH, permission.get('allowUser'), comments.create);
 
   app.route('/api/v1/topics/:topicId/comments/:commentId')
-    .get(JWT_AUTH, permission.get('allowUser'), comments.get)
+    .get(JWT_AUTH, permission.get('allowAll'), comments.get)
     .put(JWT_AUTH, permission.get('allowAdminOwner', 'comment'), comments.update)
     .delete(JWT_AUTH, permission.get('allowAdmin'), comments.delete);
 
