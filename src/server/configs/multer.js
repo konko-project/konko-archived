@@ -25,7 +25,7 @@ export default (app, dest, filename = null, limits = null, fileFilter = null) =>
                   destination: dest,
                 }) : require(path.join(app.pwd, 'configurations', 'statics')).uploads.root;
 
-  return limits && fileFilter ? multer({ storage: storage, limits: limits, fileFilter: fileFilter }) :
+  return limits && fileFilter ? multer({ storage: storage, fileFilter: fileFilter, limits: limits }) :
          limits ? multer({ storage: storage, limits: limits }) :
          fileFilter ? multer({ storage: storage, fileFilter: fileFilter }) : multer({ storage: storage });
 };
