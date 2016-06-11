@@ -18,6 +18,9 @@ export default app => {
   app.route('/api/v1/panels')
     .get(JWT_AUTH, permission.get('allowAdmin'), panels.list);
 
+  app.route('/api/v1/panels/:panelId')
+    .get(JWT_AUTH, permission.get('allowAll'), panels.get);
+
   app.route('/api/v1/categories')
     .get(JWT_AUTH, permission.get('allowAll'), categories.list)
     .post(JWT_AUTH, permission.get('allowAdmin'), categories.create);
