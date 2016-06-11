@@ -1,5 +1,6 @@
 'use strict';
 
+import _ from 'lodash';
 import mongoose from 'mongoose';
 import utils from '../../../configs/utils';
 const Panel = mongoose.model('Panel');
@@ -54,7 +55,22 @@ export default class PanelController {
     panel.populate('parent', '_id name')
       .populate({
         path: 'children',
-        select: '_id name description order topics comments',
+        select: '_id name description order topics comments logo last',
+        populate: {
+          path: 'last',
+          model: 'Topic',
+          select: '_id title date author',
+          populate: {
+            path: 'author',
+            model: 'User',
+            select: '_id profile',
+            populate: {
+              path: 'profile',
+              model: 'Profile',
+              select: 'username avatar',
+            },
+          },
+        },
         options: {
           sort: { order: -1 },
         },
@@ -127,13 +143,15 @@ export default class PanelController {
   /**
    * Update a panel with values from request body, if has any.
    *
+   * @param {Function} checkBody - Function that checks the request body.
+   * @param {Function} validationErrors - Function that returns the error from the validation.
    * @param {Object} body - HTTP request body.
    * @param {Object} panel - The requested panel object.
-   * @param {Object} user - The current user.
+   * @param {Object} category - The category where the panel is in.
    * @param {Object} res - HTTP response.
    * @static
    */
-  static update({ checkBody, validationErrors, body, panel }, res) {
+  static update({ checkBody, validationErrors, body, panel, category }, res) {
     PanelController.updateSchema(res);
     checkBody('name', 'Panel name cannot be empty!').notEmpty();
     var errors = validationErrors();
