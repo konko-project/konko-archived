@@ -29,7 +29,7 @@ export default app => {
     .get(JWT_AUTH, permission.get('allowAll'), comments.list)
     .post(JWT_AUTH, permission.get('allowUser'), comments.create);
 
-  app.route('/api/v1/topics/:topicId/comments/:commentId')
+  app.route('/api/v1(/topics/:topicId)?/comments/:commentId')
     .get(JWT_AUTH, permission.get('allowAll'), comments.get)
     .put(JWT_AUTH, permission.get('allowAdminOwner', 'comment'), comments.update)
     .delete(JWT_AUTH, permission.get('allowAdmin'), comments.delete);
@@ -37,7 +37,7 @@ export default app => {
   app.route('/api/v1/topics/:topicId/like')
     .put(utils.throttle, JWT_AUTH, permission.get('allowUser'), topics.like)
     .delete(utils.throttle, JWT_AUTH, permission.get('allowUser'), topics.unlike);
-  app.route('/api/v1/topics/:topicId/comments/:commentId/like')
+  app.route('/api/v1(/topics/:topicId)?/comments/:commentId/like')
     .put(utils.throttle, JWT_AUTH, permission.get('allowUser'), comments.like)
     .delete(utils.throttle, JWT_AUTH, permission.get('allowUser'), comments.unlike);
 
