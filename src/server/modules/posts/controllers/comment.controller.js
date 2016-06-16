@@ -1,5 +1,6 @@
 'use strict';
 
+import _ from 'lodash';
 import mongoose from 'mongoose';
 import utils from '../../../configs/utils';
 const Comment = mongoose.model('Comment');
@@ -73,16 +74,15 @@ export default class CommentController {
    * @param {Object} res - HTTP response.
    * @static
    */
-  static list({ sanitizeQuery, validationErrors, query, topic }, res) {
-    sanitizeQuery('offset').toInt();
-    sanitizeQuery('limit').toInt();
-    let errors = validationErrors();
-    if (errors) {
-      return res.status(400).json({ message: errors });
-    }
+  static list({ sanitizeQuery, query, topic, payload }, res) {
+    sanitizeQuery('page').toInt();
 
-    query.limit = query.limit || 20;
-    Comment.find({ topic: topic._id }, '-short', { skip: query.offset, limit: query.limit })
+    let page = {};
+    page.page = query.page || 1;
+    page.size = payload.preference.commentListLimit;
+    page.offset = (page.page - 1) * page.size;
+    page.tid = topic._id;
+    Comment.find({ topic: topic._id }, '-short', { skip: page.offset, limit: page.size })
       .lean().sort('-date')
       .populate('topic', '_id')
       .populate({
@@ -95,8 +95,13 @@ export default class CommentController {
           select: 'username avatar tagline',
         },
       }).exec()
-      .then(comments => res.status(200).json(comments))
-      .catch(err => res.status(500).json({ message: err }));
+      .then(comments => {
+        Comment.count({ topic: topic._id }).then(count => {
+          page.pages = Math.ceil(count / page.size);
+          page.comments = comments;
+          res.status(200).json(page);
+        }).catch(err => res.status(500).json({ message: err }));
+      }).catch(err => res.status(500).json({ message: err }));
   }
 
   /**
@@ -140,20 +145,26 @@ export default class CommentController {
    * @param {Object} res - HTTP response.
    * @static
    */
-  static update({ checkBody, validationErrors, body, comment, payload }, res) {
-    CommentController.updateSchema(res);
-    checkBody('content', 'Cannot post a empty comment!').notEmpty();
-    let errors = validationErrors();
-    if (errors) {
-      return res.status(400).json({ message: errors });
-    }
+  static update({ checkBody, validationErrors, body, topic, comment, payload }, res) {
+    CommentController.updateSchema(res).then(core => {
+      checkBody('content', 'Cannot post a empty comment!').notEmpty();
+      let errors = validationErrors();
+      if (errors) {
+        return res.status(400).json({ message: errors });
+      }
 
-    utils.partialUpdate(body, comment, 'content');
-    comment.updated.date = Date.now();
-    comment.updated.by = payload.profile.username;
-    comment.save()
-      .then(comment => res.status(200).json(comment))
-      .catch(err => res.status(500).json({ message: err }));
+      let page = { size: payload.preference.commentListLimit };
+      Comment.find({ topic: topic._id }).lean().sort('-date').exec().then(comments => {
+        page.page = Math.floor(_.findIndex(comments, c => c._id.equals(comment._id)) / page.size) + 1;
+        utils.partialUpdate(body, comment, 'content');
+        comment.updated.date = Date.now();
+        comment.updated.by = payload.profile.username;
+        comment.save().then(comment => {
+          page.comment = comment;
+          res.status(200).json(page);
+        }).catch(err => res.status(500).json({ message: err }));
+      }).catch(err => res.status(500).json({ message: err }));
+    }).catch(err => res.status(500).json({ message: err }));
   }
 
   /**
