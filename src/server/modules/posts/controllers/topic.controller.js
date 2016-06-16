@@ -84,9 +84,9 @@ export default class TopicController {
    * @param {nextCallback} next - A callback to run.
    * @static
    */
-  static list({ query, sanitizeQuery, _sort }, res, next) {
+  static list({ query, sanitizeQuery, _sort, payload }, res, next) {
+    let page = {};
     let select = {};
-    let sort = {};
     let project = {
       _id: 1,
       title: 1,
@@ -97,19 +97,21 @@ export default class TopicController {
       lastReplyDate: 1,
       author: 1,
     };
-    sanitizeQuery('offset').toInt();
-    sanitizeQuery('limit').toInt();
-    query.limit = query.limit || 20;
-    query.offset = query.offset || 0;
-    if (query && query.userId) {
-      select = { author: mongoose.Types.ObjectId(query.userId) };
+    sanitizeQuery('page').toInt();
+    page.page = query.page || 1;
+    page.size = payload.preference.topicListLimit;
+    page.offset = (page.page - 1) * page.size;
+    page.uid = query.uid;
+    page.pid = query.pid;
+    if (page.uid) {
+      select = { author: mongoose.Types.ObjectId(page.uid) };
       project.content = 1;
       project.panel = 1;
-      sort = _sort || { date: -1 };
-    } else if (query && query.panelId) {
-      select = { panel: mongoose.Types.ObjectId(query.panelId) };
+      page.sort = _sort || { date: -1 };
+    } else if (page.pid) {
+      select = { panel: mongoose.Types.ObjectId(page.pid) };
       project.lastReplyDate = 1;
-      sort = _sort || { lastReplyDate: 1 };
+      page.sort = _sort || { lastReplyDate: -1 };
     } else {
       return res.status(400).json({ message: 'Bad Request' });
     }
@@ -117,9 +119,9 @@ export default class TopicController {
     Core.findOne().then(({ post: { topic: { lastReplyLength } } }) => {
       Topic.aggregate([
         { $match: select },
-        { $sort: sort },
-        { $skip: query.offset },
-        { $limit: query.limit },
+        { $sort: page.sort },
+        { $skip: page.offset },
+        { $limit: page.size },
         { $project: project },
       ]).exec().then(topics => {
         Topic.populate(topics, {
@@ -154,7 +156,11 @@ export default class TopicController {
                 limit: lastReplyLength,
               }
             }).then(topics => {
-              res.status(200).json(topics);
+              Topic.count(select).then(count => {
+                page.pages = Math.ceil(count / page.size);
+                page.topics = topics;
+                res.status(200).json(page);
+              }).catch(err => next(err));
             }).catch(err => next(err));
           }).catch(err => next(err));
         }).catch(err => next(err));
