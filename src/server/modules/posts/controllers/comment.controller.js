@@ -207,7 +207,7 @@ export default class CommentController {
    * @param {Object} res - HTTP response.
    * @param {nextCallback} next - A callback to run.
    */
-  static unlike({ comment, payload }, res, next) {
+  static dislike({ comment, payload }, res, next) {
     if (comment.likes.indexOf(payload._id) < 0) {
       return res.status(204).json({});
     } else {

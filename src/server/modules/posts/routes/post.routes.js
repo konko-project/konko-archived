@@ -36,10 +36,10 @@ export default app => {
 
   app.route('/api/v1/topics/:topicId/like')
     .put(utils.throttle, JWT_AUTH, permission.get('allowUser'), topics.like)
-    .delete(utils.throttle, JWT_AUTH, permission.get('allowUser'), topics.unlike);
+    .delete(utils.throttle, JWT_AUTH, permission.get('allowUser'), topics.dislike);
   app.route('/api/v1(/topics/:topicId)?/comments/:commentId/like')
     .put(utils.throttle, JWT_AUTH, permission.get('allowUser'), comments.like)
-    .delete(utils.throttle, JWT_AUTH, permission.get('allowUser'), comments.unlike);
+    .delete(utils.throttle, JWT_AUTH, permission.get('allowUser'), comments.dislike);
 
   app.route('/api/v1/topics/:topicId/bookmark')
     .get(utils.throttle, JWT_AUTH, permission.get('allowUser'), topics.bookmarked)

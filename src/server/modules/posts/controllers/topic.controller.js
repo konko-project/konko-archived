@@ -270,7 +270,7 @@ export default class TopicController {
    * @param {nextCallback} next - A callback to run.
    * @static
    */
-  static unlike({ topic, payload }, res, next) {
+  static dislike({ topic, payload }, res, next) {
     if (topic.likes.indexOf(payload._id) < 0) {
       return res.status(204).json({});
     } else {
