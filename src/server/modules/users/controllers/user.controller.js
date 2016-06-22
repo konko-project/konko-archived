@@ -58,7 +58,19 @@ export default class UserController {
    * @static
    */
   static get({ user }, res) {
-    user.populate('profile preference', (err, user) => {
+    user.populate('profile preference').populate({
+      path: 'bookmarks',
+      select: '_id title author panel date views comments',
+      populate: {
+        path: 'author panel',
+        select: '_id profile name',
+        populate: {
+          path: 'profile',
+          model: 'Profile',
+          select: 'username avatar banner',
+        },
+      },
+    }, (err, user) => {
       if (err) {
         return res.status(500).json({ message: err });
       }
