@@ -195,7 +195,7 @@ export default class CommentController {
       return res.status(403).json({ message: 'Forbidden' });
     } else {
       comment.like(payload._id)
-        .then(comment => res.status(204).json({}))
+        .then(comment => res.status(200).json({ likes: comment.likes }))
         .catch(err => next(err));
     }
   }
@@ -209,10 +209,10 @@ export default class CommentController {
    */
   static dislike({ comment, payload }, res, next) {
     if (comment.likes.indexOf(payload._id) < 0) {
-      return res.status(204).json({});
+      return res.status(200).json({ likes: comment.likes });
     } else {
       comment.unlike(payload._id)
-        .then(comment => res.status(204).json({}))
+        .then(comment => res.status(200).json({ likes: comment.likes }))
         .catch(err => next(err));
     }
   }

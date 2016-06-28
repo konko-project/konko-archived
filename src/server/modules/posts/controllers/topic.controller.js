@@ -257,7 +257,7 @@ export default class TopicController {
       return res.status(403).json({ message: 'Forbidden' });
     } else {
       topic.like(payload._id)
-        .then(topic => res.status(204).json({}))
+        .then(topic => res.status(200).json({ likes: topic.likes }))
         .catch(err => next(err));
     }
   }
@@ -272,10 +272,10 @@ export default class TopicController {
    */
   static dislike({ topic, payload }, res, next) {
     if (topic.likes.indexOf(payload._id) < 0) {
-      return res.status(204).json({});
+      return res.status(200).json({ likes: topic.likes });
     } else {
       topic.unlike(payload._id)
-        .then(topic => res.status(204).json({}))
+        .then(topic => res.status(200).json({ likes: topic.likes }))
         .catch(err => next(err));
     }
   }
@@ -298,7 +298,7 @@ export default class TopicController {
         }
         topic.bookmark(payload._id).then(topic => {
           user.bookmarks.push(topic);
-          user.save().then(user => res.status(204).json({}))
+          user.save().then(user => res.status(200).json({ bookmarks: topic.bookmarks }))
             .catch(err => res.status(500).json({ message: err }));
         }).catch(err => res.status(500).json({ message: err }));
       }).catch(err => res.status(500).json({ message: err }));
@@ -314,7 +314,7 @@ export default class TopicController {
    * @static
    */
   static bookmarked({ topic, payload }, res, next) {
-    return topic.bookmarks.indexOf(payload._id) < 0 ? res.status(404).json({}) : res.status(204).json({});
+    return topic.bookmarks.indexOf(payload._id) < 0 ? res.status(404).json({ message: 'Bookmark not exists for this user.' }) : res.status(204).json({});
   }
 
   /**
@@ -336,7 +336,7 @@ export default class TopicController {
           return res.status(204).json({});
         } else {
           topic.unbookmark(payload._id)
-            .then(topic => res.status(204).json({}))
+            .then(topic => res.status(200).json({ bookmarks: topic.bookmarks }))
             .catch(err => next(err));
         }
       }).catch(err => res.status(500).json({ message: err }));
