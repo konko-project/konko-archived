@@ -128,7 +128,7 @@ export default class AuthenticationController {
             usernameGen(username).then(username => {
               user.setPassword(password);
               Profile.create({ username: username }).then(profile => {
-                profile.generateAvatar(username).then(profile => {
+                profile.generateProfileImages(username).then(profile => {
                   user.profile = profile;
                   Preference.create({}).then(preference => {
                     user.preference = preference;
