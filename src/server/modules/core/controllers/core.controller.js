@@ -5,7 +5,7 @@ import utils from '../../../configs/utils';
 const Core = mongoose.model('Core');
 
 /**
- * Controller that process panel request.
+ * Controller that process core request.
  *
  * @author C Killua
  * @module Konko/Core/Controllers/Core
@@ -80,10 +80,17 @@ export default class CoreController {
     }).catch(err => next(err));
   }
 
+  /**
+   * Update a Core setting with selected fields
+   *
+   * @param {Object} req - HTTP request.
+   * @param {Object} res - HTTP response.
+   * @static
+   */
   static update({ body, core, _fields }, res) {
     utils.partialUpdate(body, core, _fields);
     core.save()
-      .then(panel => res.status(200).json(panel))
+      .then(core => res.status(200).json(core))
       .catch(err => res.status(500).json({ message: err }));
   }
 
