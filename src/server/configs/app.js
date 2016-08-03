@@ -88,6 +88,9 @@ export default dirname => {
     return next();
   });
 
+  // declare content language
+  app.use(utils.setLanguage);
+
   // check site publicity
   app.use(jwt({
     secret: app.get('secret'),
