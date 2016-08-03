@@ -1,8 +1,12 @@
 <div class="cate-panel row" id="panel_{{panel._id}}" ng-cloak>
-    <div class="c-p-info col-xs-9 col-sm-6 col-md-7">
-        <img class="pull-xs-left" data-ng-src="{{panel.logo}}">
+    <div class="c-p-info col-xs-9 col-sm-6 col-md-7 col-lg-8">
         <div class="c-p-name text-truncate">
-            <a ui-sref="panel.view({panelId: panel._id})">{{panel.name}}</a>
+            <a ui-sref="panel.view({panelId: panel._id, categoryId: category._id})">
+              <div data-ng-if="!panel.logo">{{panel.name}}</div>
+              <div data-ng-if="panel.logo">
+                <img alt="{{panel.name}}" data-ng-src="{{panel.logo}}">
+              </div>
+            </a>
             <div class="c-p-desc">
                 <span>{{panel.description}}</span>
             </div>
@@ -17,13 +21,13 @@
             </div>
         </div>
     </div>
-    <div class="c-p-stat col-xs-3 col-sm-2 col-md-2">
+    <div class="c-p-stat col-xs-3 col-sm-2">
         <panel-stat topics="{{panel.topics || 0}}" comments="{{panel.comments || 0}}" pid="{{panel._id}}"></panel-stat>
     </div>
-    <div class="c-p-last hidden-xs-down col-sm-4 col-md-3">
+    <div class="c-p-last hidden-xs-down col-sm-4 col-md-3 col-lg-2">
         <div data-ng-if="panel.last.length">
             <a ui-sref="user.profile.view({userId: panel.last[0].author._id})">
-                <div class="img-circle l-u-avt" data-placement="top" title="{{panel.last[0].author.profile.username}}" style="background: url('{{panel.last[0].author.profile.avatar}}') no-repeat center center" konko-tooltip></div>
+                <div class="img-circle l-u-avt" data-placement="top" title="{{panel.last[0].author.profile.username}}" style="background: #fff url('{{panel.last[0].author.profile.avatar}}') no-repeat center center" konko-tooltip></div>
             </a>
             <div class="c-p-l-info text-truncate">
                 <a ui-sref="topic.view({topicId: panel.last[0]._id})">{{panel.last[0].title}}</a>
@@ -35,9 +39,7 @@
             </div>
         </div>
         <div data-ng-if="!panel.last.length">
-            <div>
-                <pre class="text-truncate">No last activity yet!</pre>
-            </div>
+            <button type="button" class="btn btn-outline-info btn-sm btn-block text-truncate" ui-sref="topic.new({panelId: panel._id, categoryId: category._id})">I'm early, let me make a joke.</button>
         </div>
     </div>
 </div>

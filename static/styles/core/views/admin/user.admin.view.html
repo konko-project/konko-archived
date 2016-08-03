@@ -1,0 +1,105 @@
+<h1>User Settings</h1>
+<form id="coreUserSearchForm" name="coreUserSearchForm" role="form" data-ng-submit="vm.searchUser(s_user)" autocomplete="off">
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="input-group">
+        <span class="input-group-btn">
+          <button class="btn btn-secondary" type="submit">Search</button>
+        </span>
+        <input type="text" class="form-control" placeholder="Find user..." data-ng-model="s_user" required>
+      </div>
+    </div>
+  </div>
+</form>
+<div class="alert alert-danger" role="alert" data-ng-if="vm.uerror">
+  <strong>{{vm.uerror.status}}</strong> {{vm.uerror.statusText}}<br />
+  <span>{{vm.uerror.data.message}}</span>
+</div>
+<div class="alert alert-success" role="alert" data-ng-if="vm.usuccess && !vm.uerror && vm.found.length">
+  <p class="text-xs-center">{{vm.usuccess}}</p>
+</div>
+<div class="m-t-2" data-ng-if="vm.found && vm.found.length" data-ng-repeat="user in vm.found | orderBy: '_id'">
+  <form id="coreUserSettingForm_{{user._id}}" name="coreUserSettingForm_{{user._id}}" role="form" data-ng-submit="vm.updateUser(user)" autocomplete="off">
+    <div class="form-group row">
+      <label for="core__user__{{user._id}}__id" class="col-sm-2 col-form-label">ID</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" id="core__user__{{user._id}}__id" data-ng-model="user._id" placeholder="User ID" readonly>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="core__user__{{user._id}}__email" class="col-sm-2 col-form-label">Email</label>
+      <div class="col-sm-10">
+        <input type="email" class="form-control" id="core__user__{{user._id}}__email" data-ng-model="user.email" placeholder="User email" readonly>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="core__user__{{user._id}}__username" class="col-sm-2 col-form-label">Username</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" id="core__user__{{user._id}}__username" data-ng-model="user.profile.username" placeholder="Username" required>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="core__user__{{user._id}}__permission" class="col-sm-2 col-form-label">Permission</label>
+      <div class="col-sm-10">
+        <div class="custom-cb-wrapper">
+          <label class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="core__user__{{user._id}}__permission__admin" data-ng-model="user.permission" data-ng-true-value="'admin'">
+            <span class="custom-control-indicator"></span>
+            <span class="custom-control-description">Admin</span>
+          </label>
+          <label class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="core__user__{{user._id}}__permission__user" data-ng-model="user.permission" data-ng-true-value="'user'">
+            <span class="custom-control-indicator"></span>
+            <span class="custom-control-description">User</span>
+          </label>
+          <label class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="core__user__{{user._id}}__permission__banned" data-ng-model="user.permission" data-ng-true-value="'banned'">
+            <span class="custom-control-indicator"></span>
+            <span class="custom-control-description">Banned</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="core__user__{{user._id}}__verified" class="col-sm-2 col-form-label">Verified</label>
+      <div class="col-sm-10">
+        <div class="custom-cb-wrapper">
+          <label class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="core__user__{{user._id}}__verified" data-ng-model="user.verified" data-ng-true-value="true" data-ng-false-value="false">
+            <span class="custom-control-indicator"></span>
+            <span class="custom-control-description">User account is verified if checked.</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="core__user__{{user._id}}__token_live" class="col-sm-2 col-form-label">Token Live</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" id="core__user__{{user._id}}__token_live" data-ng-model="user.profile.tokenLive" placeholder="JWT expiration time in second or string describing a time. E.g. 60, '12h', '2 days', '7d'" required>
+        <small id="ttlHelp" class="form-text text-muted">JWT expiration time in second or string describing a time. E.g. 60, '12h', '2 days', '7d'</small>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="core__user__{{user._id}}__joined" class="col-sm-2 col-form-label">Joined</label>
+      <div class="col-sm-10">
+        <input type="datetime-local" class="form-control" id="core__user__{{user._id}}__joined" data-ng-init="joined = Date(user.joined)" data-ng-model="joined" placeholder="User joined date" readonly>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="core__user__{{user._id}}__last_login" class="col-sm-2 col-form-label">Last Login</label>
+      <div class="col-sm-10">
+        <input type="datetime-local" class="form-control" id="core__user__{{user._id}}__last_login" data-ng-init="ll = Date(user.profile.lastLogin)" data-ng-model="ll" placeholder="User last login time" readonly>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="core__user__{{user._id}}__last_online" class="col-sm-2 col-form-label">Last Online</label>
+      <div class="col-sm-10">
+        <input type="datetime-local" class="form-control" id="core__user__{{user._id}}__last_online" data-ng-init="lo = Date(user.profile.lastOnline)" data-ng-model="lo" placeholder="User last online time" readonly>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-large btn-primary btn-block" data-ng-class="{disabled: !coreUserSettingForm_{{user._id}}.$valid}">Save</button>
+  </form>
+</div>
+<div class="alert alert-danger" role="alert" data-ng-if="vm.found && !vm.found.length">
+  <p class="text-xs-center">User does not exist.</p>
+</div>

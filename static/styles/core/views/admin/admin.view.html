@@ -1,0 +1,24 @@
+<div ng-cloak>
+  <div ui-view="sidebar"></div>
+  <div ui-view=""></div>
+</div>
+
+<div class="modal fade" id="adminConfirmation" tabindex="-1" role="dialog" aria-labelledby="admin confirmation modal" aria-hidden="true">
+  <form id="adminValidateForm" name="adminValidateForm" role="form">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Please confirm your identity.</h4>
+        </div>
+        <div class="modal-body input-group">
+          <span class="input-group-addon">&#x0002A;</span>
+          <input type="password" name="password" class="form-control" id="admin__password" data-ng-model="vm.adminPass" placeholder="You password" required>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-warning" data-dismiss="modal" data-ng-click="vm.confirm('close')">Close</button>
+          <button type="submit" class="btn btn-outline-primary" data-ng-class="{disabled: !vm.adminPass}" data-ng-click="vm.confirm('confirm')">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

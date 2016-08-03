@@ -1,0 +1,84 @@
+<h1>Mailer Settings</h1>
+<form id="coreMailerUpdateForm" name="coreMailerUpdateForm" role="form" data-ng-submit="vm.updateCore(coreMailerUpdateForm.$valid, 'mailer')" autocomplete="off">
+  <div class="form-group row">
+    <label for="core__mailer__method" class="col-sm-2 col-form-label">Method</label>
+    <div class="col-sm-10">
+      <div class="custom-rd-wrapper">
+        <label class="custom-control custom-radio">
+          <input type="radio" class="custom-control-input" name="coreMailerMethodOption" id="core__mailer__method__sendmail" data-ng-model="vm.mailer.method" data-ng-value="'sendmail'">
+          <span class="custom-control-indicator"></span>
+          <span class="custom-control-description">SendMail</span>
+        </label>
+        <label class="custom-control custom-radio">
+          <input type="radio" class="custom-control-input" name="coreMailerMethodOption" id="core__mailer__method__smtp" data-ng-model="vm.mailer.method" data-ng-value="'smtp'">
+          <span class="custom-control-indicator"></span>
+          <span class="custom-control-description">SMTP</span>
+        </label>
+        <label class="custom-control custom-radio">
+          <input type="radio" class="custom-control-input" name="coreMailerMethodOption" id="core__mailer__method__ses" data-ng-model="vm.mailer.method" data-ng-value="'ses'">
+          <span class="custom-control-indicator"></span>
+          <span class="custom-control-description">Amazon SES</span>
+        </label>
+      </div>
+      <div class="card card-block">
+        <div class="form-group row">
+          <label for="core__mailer__from" class="col-sm-2 col-form-label">From</label>
+          <div class="col-sm-10">
+            <input type="email" class="form-control" id="core__mailer__from" data-ng-model="vm.mailer.from" placeholder="Site email sender adderss" lowercase required>
+          </div>
+        </div>
+        <div data-ng-if="vm.mailer.method == 'smtp'">
+          <div class="form-group row">
+            <label for="core__mailer__host" class="col-sm-2 col-form-label">Host</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="core__mailer__host" data-ng-model="vm.mailer.host" placeholder="SMTP server hostname or IP">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="core__mailer__port" class="col-sm-2 col-form-label">Port</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="core__mailer__port" data-ng-model="vm.mailer.port" placeholder="SMTP server port">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="core__mailer__secure" class="col-sm-2 col-form-label">Secure</label>
+            <div class="col-sm-10 custom-cb-wrapper">
+              <label class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="core__mailer__secure" data-ng-model="vm.mailer.secure" data-ng-true-value="true" data-ng-false-value="false">
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description">If checked, connection will only use TLS.</span>
+              </label>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="core__mailer__user" class="col-sm-2 col-form-label">User</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="core__mailer__user" data-ng-model="vm.mailer.user" placeholder="SMTP server account">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="core__mailer__password" class="col-sm-2 col-form-label">Password</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="core__mailer__password" data-ng-model="vm.mailer.password" placeholder="Password for the account">
+            </div>
+          </div>
+        </div>
+        <div data-ng-if="vm.mailer.method == 'ses'">
+          <div class="form-group row">
+            <label for="core__mailer__ses_keyId" class="col-sm-2 col-form-label">Key ID</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="core__mailer__ses_keyId" data-ng-model="vm.mailer.ses_keyId" placeholder="AWS access key">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="core__mailer__ses_secret" class="col-sm-2 col-form-label">Secret</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="core__mailer__ses_secret" data-ng-model="vm.mailer.ses_secret" placeholder="AWS secret key">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-large btn-primary btn-block" data-ng-class="{disabled: !coreMailerUpdateForm.$valid}">Update</button>
+</form>

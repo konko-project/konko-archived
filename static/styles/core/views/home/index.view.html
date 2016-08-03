@@ -1,13 +1,16 @@
 <div ng-cloak>
-  <konko-carousel class="konko-carousel">
+  <konko-carousel class="konko-carousel" data-ng-if="vm.slides && vm.slides.length">
     <konko-slide data-ng-repeat="slide in vm.slides track by $index"></konko-slide>
   </konko-carousel>
   <breadcrumb current-name="{{ vm.categories.length > 1 ? null : vm.categories[0].name }}"></breadcrumb>
   <div class="cate-list">
     <ul class="list-unstyled">
-      <li class="konko-cts" data-ng-repeat="category in vm.categories | orderBy: '-order'">
+      <li class="konko-cts" data-ng-repeat="category in vm.categories | orderBy: 'order'">
         <konko-category></konko-category>
       </li>
     </ul>
+  </div>
+  <div class="text-xs-center" data-ng-if="!vm.categories.length">
+    <p>There is no panel exist.</p>
   </div>
 </div>

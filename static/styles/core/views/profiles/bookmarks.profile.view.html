@@ -1,0 +1,36 @@
+<div class="profile-container" data-ng-class="{pushed:vm.showSideBar}">
+  <div class="p-c-inner p-t-2">
+    <div class="card-columns">
+      <div class="p-b-c" data-ng-repeat="bookmark in vm.bookmarks" data-ng-include="'bookmark.html'"></div>
+    </div>
+    <div class="jumbotron" data-ng-if="!vm.bookmarks || !vm.bookmarks.length">
+      <p class="lead text-xs-center">You do not have any bookmark.</p>
+    </div>
+  </div>
+</div>
+
+<script type="text/ng-template" id="bookmark.html">
+  <div class="card">
+    <div class="p-b-a b-b-1-d card-img-top">
+      <a class="img-center" ui-sref="user.profile.view({ userId: bookmark.author._id })">
+        <img data-ng-src="{{bookmark.author.profile.avatar}}" alt="{{bookmark.author.profile.username}} avatar">
+      </a>
+    </div>
+    <div class="card-block">
+      <h4 class="card-title p-b-t">
+        <a ui-sref="topic.view({ topicId: bookmark._id })">{{bookmark.title}}</a>
+      </h4>
+      <p class="card-text">
+        <a ui-sref="panel.view({ panelId: bookmark.panel._id })">{{bookmark.panel.name}}</a>
+      </p>
+    </div>
+    <div class="card-footer text-muted">
+      <div class="flex-container wrap">
+        <span class="t-i-icon " title="Posted at" data-placement="bottom" konko-tooltip>📅 <span class="p-r-1">{{bookmark.date | date : 'MMM d, yyyy'}}</span></span>
+        <span class="t-i-icon" title="Views" data-placement="bottom" konko-tooltip>📖 <span class="p-r-1">{{bookmark.views}}</span></span>
+        <span class="t-i-icon" title="Replies" data-placement="bottom" konko-tooltip>📝 <span>{{bookmark.comments.length}}</span></span>
+      </div>
+      <button type="button" class="btn btn-outline-danger btn-sm btn-block p-b-r" data-ng-if="vm.isMe()" data-ng-click="vm.removeBookmark(bookmark._id)">❌ Remove bookmark</button>
+    </div>
+  </div>
+</script>

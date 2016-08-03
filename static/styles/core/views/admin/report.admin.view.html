@@ -1,0 +1,50 @@
+<h1>Reports</h1>
+<div id="admin__report__accordion" role="tablist" aria-multiselectable="true">
+  <div class="card">
+    <div class="card-block p-x-2 p-y-1" role="tab">
+      <div class="row">
+        <div class="col-xs-2">
+          <h6 class="card-subtitle text-muted">Type</h6>
+        </div>
+        <div class="col-xs-4">
+          <h6 class="card-subtitle text-muted">Informer</h6>
+        </div>
+        <div class="col-xs-5">
+          <h6 class="card-subtitle text-muted">Source</h6>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" data-ng-repeat="report in vm.reports">
+    <div class="card-block" role="tab" id="{{report._id}}">
+      <h5 class="row m-b-0">
+        <div class="col-xs-2">
+          <span class="tag" data-ng-class="{ 'tag-primary': report.type === 'topic', 'tag-info': report.type === 'comment', 'tag-default': report.type !== 'topic' || report.type !== 'comment' }">
+            {{report.type}}
+          </span>
+        </div>
+        <div class="col-xs-4 text-truncate">
+          {{report.reporter.profile.username}}
+        </div>
+        <div class="hidden-sm-down col-md-5 text-truncate">
+          <a href="{{report.url}}" target="_blank">
+            {{report.url}}
+          </a>
+        </div>
+        <div class="hidden-md-up col-xs-5">
+          <a href="{{report.url}}" target="_blank">
+            &#x1f517;
+          </a>
+        </div>
+        <div class="col-xs-1">
+          <a class="c-collapse collapsed" data-toggle="collapse" data-parent="#admin__report__accordion" href="#reason__{{report._id}}" aria-expanded="false" aria-controls="reason__{{report._id}}"></a>
+        </div>
+      </h5>
+      <div id="reason__{{report._id}}" class="m-t-1 card-text collapse" role="tabpanel" aria-labelledby="{{report._id}}">
+        <p>{{report.reason}}</p>
+        <hr>
+        <button class="btn btn-success btn-block" data-ng-click="vm.processReport(report._id)">Done</button>
+      </div>
+    </div>
+  </div>
+</div>

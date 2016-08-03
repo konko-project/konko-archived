@@ -1,10 +1,18 @@
 <div class="flex-1">
-    <div class="btn-group">
-        <button class="btn btn-link btn-sm disabled" type="button" href="" data-ng-click="" data-placement="top" title="Share" konko-tooltip>&#10162;</button>
-    </div>
-    <div class="btn-group" data-ng-if="vm.user && vm.user.verified">
-        <button class="btn btn-link btn-sm disabled" type="button" href="" data-ng-click="" data-placement="top" title="Bookmark" konko-tooltip>&#9734;</button>
-        <button class="btn btn-link btn-sm" type="button" href="" data-ng-click="quote()" data-placement="top" title="Quote" konko-tooltip>&#8220;</button>
-        <button class="btn btn-link btn-sm disabled" type="button" href="" data-ng-click="" data-placement="top" title="Flag" konko-tooltip>&#9873;</button>
-    </div>
+  <div class="btn-group" data-ng-if="vm.canAct()">
+    <button class="btn btn-link btn-sm like" data-ng-class="{liked: liked}" type="button" data-ng-click="like()" data-placement="top" title="{{liked ? 'Liked' : 'Like'}}" konko-tooltip>
+      <span>{{doc.likes.length}}</span>
+    </button>
+    <button class="btn btn-link btn-sm bookmark" data-ng-class="{bookmarked: bookmarked}" type="button" data-ng-if="doc.title" data-ng-click="bookmark()" data-placement="top" title="{{bookmarked ? 'Bookmarked' : 'Bookmark'}}" konko-tooltip>
+      <span>{{doc.bookmarks.length}}</span>
+    </button>
+    <button class="btn btn-link btn-sm quote" type="button" data-ng-click="quote()" data-placement="top" title="Quote" konko-tooltip></button>
+  </div>
+  <div class="btn-group">
+    <button class="btn btn-link btn-sm share disabled" type="button" data-ng-if="doc.title" data-ng-click="share()" data-placement="top" title="Share" konko-tooltip hidden></button>
+    <button class="btn btn-link btn-sm flag" type="button" data-ng-click="report()" data-placement="top" title="Report" konko-tooltip></button>
+  </div>
+  <div class="btn-group" data-ng-if="vm.canEdit(doc.author._id)">
+    <button class="btn btn-link btn-sm edit" type="button" data-ng-click="edit()" data-placement="top" title="Edit" konko-tooltip></button>
+  </div>
 </div>

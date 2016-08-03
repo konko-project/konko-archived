@@ -1,19 +1,21 @@
-<div class="profile-sidebar bg-faded" data-ng-show="vm.showSideBar" data-ng-class="{bg:vm.showSideBg}">
+<div class="profile-sidebar bg-faded b-t-1-d" data-ng-show="vm.showSideBar" data-ng-class="{bg:vm.preference.sideBarBackground}">
   <div class="p-s-menu list-group" data-ng-show="vm.showSideBar">
     <a role="button" ui-sref="user.profile.view" class="list-group-item b-b-1-d">
       {{vm.profile.username}}
     </a>
-    <a role="button" ui-sref="user.profile.edit" class="list-group-item b-b-1-d" data-ng-if="vm.isMe()">
+    <a role="button" ui-sref="user.profile.bookmarks" class="list-group-item b-b-1-d" data-ng-if="vm.isMe()">
+      Bookmarks
+    </a>
+    <a role="button" ui-sref="user.profile.profile" class="list-group-item b-b-1-d" data-ng-if="vm.isMe()" data-ng-click="vm.reset()">
       Edit Profile
     </a>
-    <!-- TODO -->
-    <a role="button" ui-sref="user.profile.setting" class="list-group-item b-b-1-d sr-only" data-ng-if="vm.isMe()">
-      Perference Settings
+    <a role="button" ui-sref="user.profile.preference" class="list-group-item b-b-1-d" data-ng-if="vm.isMe()" data-ng-click="vm.reset()">
+      Edit Perference
     </a>
   </div>
 </div>
-<div class="profile-sidebar-avatar" data-ng-class="{show:vm.showSideBar}">
-  <img data-ng-click="vm.showSideBar=!vm.showSideBar" class="img-circle" data-ng-src="{{vm.profile.avatar}}" alt="{{vm.profile.username}}" title="{{vm.profile.username}}">
+<div class="profile-sidebar-avatar img-circle img-center text-xs-center" data-ng-class="{show:vm.showSideBar}">
+  <img data-ng-click="vm.showSideBar=!vm.showSideBar" data-ng-src="{{vm.profile.avatar}}" alt="{{vm.profile.username}}" title="{{vm.profile.username}}">
 </div>
 <div class="profile-sidebar-avatar-cover" data-ng-class="{hide:vm.showSideBar}">
   <div data-ng-click="vm.showSideBar=!vm.showSideBar" class="img-circle" title="Click to expand menu">
@@ -22,5 +24,18 @@
 </div>
 
 <style type="text/css">
-  .profile-sidebar.bg:before { background-image: url('{{vm.profile.banner}}'); }
+  .profile-sidebar.bg:before {
+    content: '';
+    height:100%;
+    width: 100%;
+    position: absolute;
+    background-image: url({{vm.profile.banner}});
+    background-attachment: local;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-clip: content-box;
+    background-origin: content-box;
+    background-size: cover;
+    opacity: 0.45;
+  }
 </style>

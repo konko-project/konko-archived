@@ -1,16 +1,21 @@
 <div class="editor">
     <div class="editor-title">
         <fieldset class="form-group">
-            <input type="text" name="title" class="form-control" id="editor__title" data-ng-model="title" placeholder="Enter title">
+            <input type="text" pattern="{{tPattern}}" title="{{tTitle}}" name="title" class="form-control" id="editor__title" data-ng-model="title" placeholder="Enter title">
         </fieldset>
     </div>
     <ng-transclude></ng-transclude>
     <div class="editor-toolbar btn-toolbar" role="toolbar" aria-lable="editor toolbar">
-        <div class="btn-group" role="group" aria-lable="...">
+        <div class="btn-group m-l-0" role="group" aria-lable="editor tools list">
             <button type="button" class="btn btn-secondary" data-placement="top" title="bold" data-ng-click="bold()" konko-tooltip><b>B</b></button>
             <button type="button" class="btn btn-secondary" data-placement="top" title="strike" data-ng-click="strike()" konko-tooltip><s>S</s></button>
             <button type="button" class="btn btn-secondary" data-placement="top" title="italic" data-ng-click="italic()" konko-tooltip><i>I</i></button>
+            <button type="button" class="btn btn-secondary" data-placement="top" title="underline" data-ng-click="underline()" konko-tooltip>&lowbar;</button>
+            <button type="button" class="btn btn-secondary" data-placement="top" title="small" data-ng-click="small()" konko-tooltip>&micro;</button>
+            <button type="button" class="btn btn-secondary" data-placement="top" title="size & color" data-ng-click="style()" konko-tooltip>&#x1f5da;</button>
             <button type="button" class="btn btn-secondary" data-placement="top" title="quote" data-ng-click="quote()" konko-tooltip>&#8220;</button>
+            <button type="button" class="btn btn-secondary" data-placement="top" title="link" data-ng-click="link()" konko-tooltip>🔗</button>
+            <button type="button" class="btn btn-secondary" data-placement="top" title="image" data-ng-click="image()" konko-tooltip>🖼</button>
         </div>
         <!-- NEED WORK ON HTML MODE -->
         <label class="c-input c-checkbox" style="display: none;">
@@ -21,11 +26,11 @@
     </div>
     <div class="editor-content">
         <fieldset class="form-group wysiwyg-wrap m-b-2" data-ng-show="toggleHtml">
-            <textarea rows="10" class="form-control"></textarea>
+            <textarea rows="20" class="form-control"></textarea>
             <div class="contenteditable" id="editor__content__wysiwyg" contenteditable="true" data-ng-model="wysiwyg"></div>
         </fieldset>
         <fieldset class="form-group editor-wrap" data-ng-show="!toggleHtml">
-            <textarea rows="10" type="text" name="content" class="form-control" id="editor__content" data-ng-model="content" required></textarea>
+            <textarea maxlength="{{cMax}}" rows="20" type="text" name="content" class="form-control" id="editor__content" data-ng-model="content" required></textarea>
         </fieldset>
     </div>
     <!-- <pre ng-bind-html="wysiwyg"></pre>-->

@@ -1,0 +1,21 @@
+<div class="admin-sidebar bg-faded b-t-1-d" data-ng-show="vm.showSideBar">
+  <div class="a-s-menu list-group" data-ng-show="vm.showSideBar">
+    <a role="button" ui-sref="admin.settings.basic" class="list-group-item b-b-1-d">Basic</a>
+    <a role="button" ui-sref="admin.settings.global" class="list-group-item b-b-1-d">Global</a>
+    <a role="button" ui-sref="admin.settings.mailer" class="list-group-item b-b-1-d">Mailer</a>
+    <a role="button" ui-sref="admin.settings.registration" class="list-group-item b-b-1-d">Registration</a>
+    <a role="button" ui-sref="admin.settings.panel" class="list-group-item b-b-1-d">Panel</a>
+    <a role="button" ui-sref="admin.settings.post" class="list-group-item b-b-1-d">Post</a>
+    <a role="button" ui-sref="admin.settings.profile" class="list-group-item b-b-1-d">Profile</a>
+    <a role="button" ui-sref="admin.settings.user" class="list-group-item b-b-1-d">User</a>
+    <a role="button" ui-sref="admin.settings.reports" class="list-group-item b-b-1-d">Reports</a>
+  </div>
+</div>
+<div class="admin-sidebar-avatar" data-ng-class="{show:vm.showSideBar}">
+  <img data-ng-click="vm.showSideBar=!vm.showSideBar" class="img-circle" data-ng-src="{{vm.adminLogo}}" alt="Admin Settings" title="Admin Settings">
+</div>
+<div class="admin-sidebar-avatar-cover" data-ng-class="{hide:vm.showSideBar}">
+  <div data-ng-click="vm.showSideBar=!vm.showSideBar" class="img-circle" title="Click to expand menu">
+    <span>&ggg;</span>
+  </div>
+</div>

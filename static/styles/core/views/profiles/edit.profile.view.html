@@ -1,23 +1,47 @@
 <div class="profile-container" data-ng-class="{pushed:vm.showSideBar}">
-    <div class="p-c-inner">
-        <div class="p-t-3">
-            <form class="profile-edit-form" id="profileEditForm" name="profileEditForm" role="form" data-ng-submit="vm.update(profileEditForm.$valid)">
-                <div class="input-group">
-                    <span class="input-group-addon" id="username">&Kappa;</span>
-                    <input type="text" class="form-control" placeholder="Username" aria-describedby="username" data-ng-model="vm.profile.username">
-                </div>
-                <div class="input-group">
-                    <span class="input-group-addon" id="dob">&#x1f382;</span>
-                    <input type="date" class="form-control" aria-describedby="Date of Birth" data-ng-model="vm.profile.dob">
-                </div>
-                <div class="input-group">
-                    <span class="input-group-addon" id="gender">&male;</span>
-                    <select class="c-select form-control" aria-describedby="Gender" data-ng-model="vm.profile.gender">
-                        <option data-ng-repeat="option in vm.getGenderList() track by $index" value="{{option}}" data-ng-bind-html="vm.getGenderDisplay(option)"></option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-large btn-primary btn-block">Update</button>
-            </form>
+  <div class="p-c-inner">
+    <div class="p-t-3">
+      <div class="alert alert-danger" role="alert" data-ng-if="vm.error">
+        {{vm.error.message}}
+      </div>
+      <div class="alert alert-success" role="alert" data-ng-if="vm.info && !vm.error">
+        {{vm.info}}
+      </div>
+      <form class="profile-edit-form" id="profileEditForm" name="profileEditForm" role="form" data-ng-submit="vm.updateProfile(profileEditForm.$valid)">
+        <div class="form-group row">
+          <label for="user__profile__username" class="col-sm-2 col-form-label">Username</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="user__profile__username" data-ng-model="vm.profile.username" placeholder="Your username.." required>
+          </div>
         </div>
+        <div class="form-group row">
+          <label for="user__profile__tagline" class="col-sm-2 col-form-label">Tagline</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="user__profile__tagline" data-ng-model="vm.profile.tagline" placeholder="Describe yourself..">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="user__profile__dob" class="col-sm-2 col-form-label">Birthday</label>
+          <div class="col-sm-10">
+            <input type="date" class="form-control" id="user__profile__dob" aria-describedby="Date of Birth" data-ng-model="vm.profile.dob">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="user__profile__gender" class="col-sm-2 col-form-label">Gender</label>
+          <div class="col-sm-10">
+            <select class="custom-select form-control" id="user__profile__gender" aria-describedby="Gender" data-ng-model="vm.profile.gender">
+              <option data-ng-repeat="option in vm.getGenderList()" value="{{option}}" data-ng-bind-html="vm.getGenderDisplay(option)"></option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="user__profile__ttl" class="col-sm-2 col-form-label">Token Time</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="user__profile__ttl" data-ng-model="vm.profile.tokenLive" placeholder="Expiration time in second or string describing a time. E.g. 60, '12h', '2 days', '7d'">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-large btn-primary btn-block">Update</button>
+      </form>
     </div>
+  </div>
 </div>

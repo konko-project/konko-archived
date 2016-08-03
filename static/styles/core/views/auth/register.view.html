@@ -12,12 +12,14 @@
         </fieldset>
         <fieldset class="form-group">
             <label for="register__password">Password</label>
-            <input type="password" name="password" pattern="{{vm.configs.registration.password.regex}}" title="{{vm.configs.registration.password.title}}" class="form-control" id="register__password" data-ng-model="vm.user.password" placeholder="Enter password" required>
+            <input type="password" name="password" data-ng-pattern="vm.core.registration.password.regex" title="{{vm.core.registration.password.title}}" class="form-control" id="register__password" data-ng-model="vm.user.password" placeholder="Enter password" required>
+            <small id="passwordHelp" class="form-text text-muted">{{vm.core.registration.password.title}}</small>
         </fieldset>
         <fieldset class="form-group">
             <label for="register__password_confirm">Password Confirmation</label>
             <input type="password" name="password2" class="form-control" id="register__password_confirm" data-ng-model="vm.user.password2" placeholder="Confirm your password" required>
         </fieldset>
         <button type="submit" class="btn btn-large btn-primary btn-block" data-ng-class="{disabled: !registerForm.$valid}">Register</button>
+        <span>By registering, you agree to {{vm.core.basic.title}}'s <a ui-sref="tos">Privacy Policy and Terms of Use</a>.</span>
     </form>
 </div>

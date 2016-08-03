@@ -1,9 +1,9 @@
 <div ng-cloak>
-  <breadcrumb parent-name="{{ vm.topic.title }}" parent-state="topic.view" parent-params='{"topicId" : "{{ vm.topic._id }}"}' current-name="Reply"></breadcrumb>
+  <breadcrumb parent-name="{{ vm.topic.title }}" parent-state="topic.view" parent-params='{"topicId" : "{{ vm.topic._id }}"}' current-name="Edit Comment"></breadcrumb>
   <form id="newCommentForm" name="newCommentForm" role="form" data-ng-submit="vm.save(newCommentForm.$valid)">
     <konko-editor content-model="vm.comment.content" content-max="vm.core.post.comment.content.max">
       <div class="alert alert-danger" id="editor__error" role="alert" data-ng-if="vm.error">{{vm.error}}</div>
     </konko-editor>
-    <button type="submit" class="btn btn-secondary btn-block">Post Comment</button>
+    <button type="submit" class="btn btn-secondary btn-block">Edit Comment</button>
   </form>
 </div>

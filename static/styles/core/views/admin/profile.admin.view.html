@@ -1,0 +1,100 @@
+<h1>Profile Settings</h1>
+<form id="coreProfileUpdateForm" name="coreProfileUpdateForm" role="form" data-ng-submit="vm.updateCore(coreProfileUpdateForm.$valid, 'profile')" autocomplete="off">
+  <div class="form-group row">
+    <label for="core__profile__username" class="col-sm-2 col-form-label">Username</label>
+    <div class="col-sm-10">
+      <div class="card">
+        <div class="card-block">
+          <div class="row">
+            <label for="core__profile__username" class="col-sm-2 col-form-label">Length</label>
+            <div class="col-sm-10">
+              <div class="input-group">
+                <span class="input-group-addon">Min</span>
+                <input type="number" min="0" id="core__profile__username__min" class="form-control" data-ng-model="vm.profile.username.min" placeholder="Username minimum length" required>
+                <span class="input-group-addon">&mdash;</span>
+                <input type="number" min="1" id="core__profile__username__max" class="form-control" data-ng-model="vm.profile.username.max" placeholder="Username maximum length" required>
+                <span class="input-group-addon">Max</span>
+              </div>
+            </div>
+          </div>
+          <div class="row p-t-2">
+            <label for="core__profile__username__forbidden" class="col-sm-2 col-form-label">Blacklist</label>
+            <div class="col-sm-10">
+              <textarea rows="5" class="form-control" id="core__profile__username__forbidden" data-ng-init="u_blacklist = vm.profile.username.forbidden.join('\n')" data-ng-model="u_blacklist" data-ng-change="vm.profile.username.forbidden = u_blacklist.split('\n')" placeholder="Usernames that are forbidden to used, seperate them by newline."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="core__profile__tagline" class="col-sm-2 col-form-label">Tagline</label>
+    <div class="col-sm-10">
+      <div class="input-group">
+        <input type="number" min="0" id="core__profile__tagline__max" class="form-control" data-ng-model="vm.profile.tagline.max" placeholder="Maximum tagline length" required>
+        <span class="input-group-addon">character(s)</span>
+      </div>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="core__profile__avatar" class="col-sm-2 col-form-label">Avatar</label>
+    <div class="col-sm-10">
+      <div class="card">
+        <div class="card-block">
+          <div class="row">
+            <label for="core__profile__avatar__upload" class="col-sm-2 col-form-label">Upload</label>
+            <div class="col-sm-10">
+              <div class="custom-cb-wrapper">
+                <label class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="core__profile__avatar__upload" data-ng-model="vm.profile.avatar.upload" data-ng-true-value="true" data-ng-false-value="false">
+                  <span class="custom-control-indicator"></span>
+                  <span class="custom-control-description">If checked, Konko allows user to upload their avatar.</span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="row p-t-2">
+            <label for="core__profile__avatar__limit" class="col-sm-2 col-form-label">Size</label>
+            <div class="col-sm-10">
+              <div class="input-group">
+                <input type="number" min="0" id="core__profile__avatar__limit" class="form-control" data-ng-model="vm.profile.avatar.limit" placeholder="Maximum file size of avatar allow to upload in KB." required>
+                <span class="input-group-addon">KB</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="core__profile__banner" class="col-sm-2 col-form-label">Banner</label>
+    <div class="col-sm-10">
+      <div class="card">
+        <div class="card-block">
+          <div class="row">
+            <label for="core__profile__banner__upload" class="col-sm-2 col-form-label">Upload</label>
+            <div class="col-sm-10">
+              <div class="custom-cb-wrapper">
+                <label class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="core__profile__banner__upload" data-ng-model="vm.profile.banner.upload" data-ng-true-value="true" data-ng-false-value="false">
+                  <span class="custom-control-indicator"></span>
+                  <span class="custom-control-description">If checked, Konko allows user to upload their banner.</span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="row p-t-2">
+            <label for="core__profile__banner__limit" class="col-sm-2 col-form-label">Size</label>
+            <div class="col-sm-10">
+              <div class="input-group">
+                <input type="number" min="0" id="core__profile__banner__limit" class="form-control" data-ng-model="vm.profile.banner.limit" placeholder="Maximum file size of banner allow to upload in KB." required>
+                <span class="input-group-addon">KB</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-large btn-primary btn-block" data-ng-class="{disabled: !coreProfileUpdateForm.$valid}">Update</button>
+</form>

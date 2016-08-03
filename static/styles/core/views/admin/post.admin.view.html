@@ -1,0 +1,69 @@
+<h1>Post Settings</h1>
+<form id="corePostUpdateForm" name="corePostUpdateForm" role="form" data-ng-submit="vm.updateCore(corePostUpdateForm.$valid, 'post')" autocomplete="off">
+  <div class="form-group row">
+    <label for="core__post__topic" class="col-sm-2 col-form-label">Topic</label>
+    <div class="col-sm-10 card">
+      <div class="card-block">
+        <div class="form-group row">
+          <label for="core__post__topic__title_length" class="col-sm-2 col-form-label">Title</label>
+          <div class="col-sm-10">
+            <div class="input-group">
+              <span class="input-group-addon">Min</span>
+              <input type="number" min="0" id="core__post__topic__title__min" class="form-control" data-ng-model="vm.post.topic.title.min" placeholder="Title minimum length" required>
+              <span class="input-group-addon">&mdash;</span>
+              <input type="number" min="1" id="core__post__topic__title__max" class="form-control" data-ng-model="vm.post.topic.title.max" placeholder="Title maximum length" required>
+              <span class="input-group-addon">Max</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="core__post__topic__content_length" class="col-sm-2 col-form-label">Content</label>
+          <div class="col-sm-10">
+            <div class="input-group">
+              <span class="input-group-addon">Min</span>
+              <input type="number" min="0" id="core__post__topic__content__min" class="form-control" data-ng-model="vm.post.topic.content.min" placeholder="Content minimum length" required>
+              <span class="input-group-addon">&mdash;</span>
+              <input type="number" min="1" id="core__post__topic__content__max" class="form-control" data-ng-model="vm.post.topic.content.max" placeholder="Content maximum length" required>
+              <span class="input-group-addon">Max</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="core__post__topic__last_length" class="col-sm-2 col-form-label">Last Reply</label>
+          <div class="col-sm-10">
+            <input type="number" min="0" id="core__post__topic__last_length" class="form-control" data-ng-model="vm.post.topic.lastReplyLength" placeholder="The number of recent replies show in topic list." required>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="core__post__comment" class="col-sm-2 col-form-label">Comment</label>
+    <div class="col-sm-10 card">
+      <div class="card-block">
+        <div class="form-group row">
+          <label for="core__post__comment__content_length" class="col-sm-2 col-form-label">Content</label>
+          <div class="col-sm-10">
+            <div class="input-group">
+              <span class="input-group-addon">Min</span>
+              <input type="number" min="0" id="core__post__comment__content__min" class="form-control" data-ng-model="vm.post.comment.content.min" placeholder="Content minimum length" required>
+              <span class="input-group-addon">&mdash;</span>
+              <input type="number" min="1" id="core__post__comment__content__max" class="form-control" data-ng-model="vm.post.comment.content.max" placeholder="Content maximum length" required>
+              <span class="input-group-addon">Max</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="core__post__comment__short__max" class="col-sm-2 col-form-label">Omission</label>
+          <div class="col-sm-10">
+            <div class="input-group">
+              <input type="number" min="0" id="core__post__comment__short__max" class="form-control" data-ng-model="vm.post.comment.short.max" placeholder="The length of the short version of content." required>
+              <span class="input-group-addon">character(s)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-large btn-primary btn-block" data-ng-class="{disabled: !corePostUpdateForm.$valid}">Update</button>
+</form>

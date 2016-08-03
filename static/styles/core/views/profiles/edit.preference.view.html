@@ -1,0 +1,37 @@
+<div class="profile-container" data-ng-class="{pushed:vm.showSideBar}">
+  <div class="p-c-inner">
+    <div class="p-t-3">
+      <div class="alert alert-danger" role="alert" data-ng-if="vm.error">
+        {{vm.error.message}}
+      </div>
+      <div class="alert alert-success" role="alert" data-ng-if="vm.info && !vm.error">
+        {{vm.info}}
+      </div>
+      <form class="preference-edit-form" id="preferenceEditForm" name="preferenceEditForm" role="form" data-ng-submit="vm.updatePreference(preferenceEditForm.$valid)">
+        <div class="form-group row">
+          <label for="user__preference__topicListLimit" class="col-sm-3 col-form-label">Topic List Limit</label>
+          <div class="col-sm-9">
+            <input min="1" type="number" class="form-control" id="user__preference__topicListLimit" data-ng-model="vm.preference.topicListLimit" placeholder="Number of topics list in Panel" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="user__preference__commentListLimit" class="col-sm-3 col-form-label">Comment List Limit</label>
+          <div class="col-sm-9">
+            <input min="1" type="number" class="form-control" id="user__preference__commentListLimit" data-ng-model="vm.preference.commentListLimit" placeholder="Number of comments list in Topic" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="user__preference__sideBarBackground" class="col-sm-3 col-form-label">Show Sidebar Background</label>
+          <div class="col-sm-9 custom-cb-wrapper">
+            <label class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="user__preference__sideBarBackground" data-ng-model="vm.preference.sideBarBackground" data-ng-true-value="true" data-ng-false-value="false">
+              <span class="custom-control-indicator"></span>
+              <span class="custom-control-description">If checked, your banner image will be shown in the sidebar.</span>
+            </label>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-large btn-primary btn-block">Update</button>
+      </form>
+    </div>
+  </div>
+</div>

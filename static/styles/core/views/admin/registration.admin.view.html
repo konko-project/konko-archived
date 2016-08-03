@@ -1,0 +1,112 @@
+<h1>Registration Settings</h1>
+<form id="coreRegistrationUpdateForm" name="coreRegistrationUpdateForm" role="form" data-ng-submit="vm.updateCore(coreRegistrationUpdateForm.$valid, 'registration')" autocomplete="off">
+  <div class="form-group row">
+    <label for="core__registration__public" class="col-sm-2 col-form-label">Open</label>
+    <div class="col-sm-10 custom-cb-wrapper">
+      <label class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" id="core__registration__public" data-ng-model="vm.registration.public" data-ng-true-value="true" data-ng-false-value="false">
+        <span class="custom-control-indicator"></span>
+        <span class="custom-control-description">If checked, registration is open to public.</span>
+      </label>
+    </div>
+  </div>
+  <div class="form-group row" data-ng-if="!vm.registration.public">
+    <label for="core__registration__message" class="col-sm-2 col-form-label">Message</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="core__registration__message" data-ng-model="vm.registration.message" placeholder="Why close registration?">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="core__registration__email__verification" class="col-sm-2 col-form-label">Email Verification</label>
+    <div class="col-sm-10 custom-cb-wrapper">
+      <label class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" id="core__registration__email__verification" data-ng-model="vm.registration.email.verification" data-ng-true-value="true" data-ng-false-value="false">
+        <span class="custom-control-indicator"></span>
+        <span class="custom-control-description">If checked, Konko will send a verification email to user.</span>
+      </label>
+    </div>
+  </div>
+  <div class="form-group row" data-ng-if="vm.registration.email.verification">
+    <label for="core__registration__email__verificationSubject" class="col-sm-2 col-form-label">Email Subject</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="core__registration__email__verificationSubject" data-ng-model="vm.registration.email.verificationSubject" placeholder="Verification email subject">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="core__registration__email__ttl" class="col-sm-2 col-form-label">Verification Time</label>
+    <div class="col-sm-10">
+      <div class="input-group">
+        <input type="number" min="0" class="form-control" data-ng-init="ttl = vm.registration.email.ttl / 60" data-ng-model="ttl" data-ng-change="vm.registration.email.ttl = ttl * 60" placeholder="Valid email verification time period" required>
+        <input type="hidden" id="core__registration__email__ttl" data-ng-model="vm.registration.email.ttl">
+        <span class="input-group-addon">hours</span>
+      </div>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="core__registration__email_welcome" class="col-sm-2 col-form-label">Welcome</label>
+    <div class="col-sm-10 custom-cb-wrapper">
+      <label class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" id="core__registration__email_welcome" data-ng-model="vm.registration.email.welcome" data-ng-true-value="true" data-ng-false-value="false">
+        <span class="custom-control-indicator"></span>
+        <span class="custom-control-description">If checked, Konko will send a welcome message to user upon activate.</span>
+      </label>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="core__registration__email_welcomeMsg" class="col-sm-2 col-form-label">Welcome Message</label>
+    <div class="col-sm-10">
+      <textarea rows="5" class="form-control" id="core__registration__email_welcomeMsg" data-ng-model="vm.registration.email.welcomeMessage" placeholder="Welcome message"></textarea>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="core__registration__password" class="col-sm-2 col-form-label">Password</label>
+    <div class="col-sm-10">
+      <div class="card">
+        <div class="card-block">
+          <div class="input-group">
+            <span class="input-group-addon">Min</span>
+            <input type="number" min="0" id="core__registration__password__min" class="form-control" data-ng-model="vm.registration.password.min" data-ng-change="vm.updatePass()" placeholder="Min" required>
+            <span class="input-group-addon">&mdash;</span>
+            <input type="number" min="1" id="core__registration__password__max" class="form-control" data-ng-model="vm.registration.password.max" data-ng-change="vm.updatePass()" placeholder="Max" required>
+            <span class="input-group-addon">Max</span>
+          </div>
+          <div class="custom-cb-wrapper">
+            <label class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="core__registration__password__lower" data-ng-model="vm.registration.password.lower" data-ng-change="vm.updatePass()" data-ng-true-value="true" data-ng-false-value="false">
+              <span class="custom-control-indicator"></span>
+              <span class="custom-control-description">Lower Case</span>
+            </label>
+            <label class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="core__registration__password__capital" data-ng-model="vm.registration.password.capital" data-ng-change="vm.updatePass()" data-ng-true-value="true" data-ng-false-value="false">
+              <span class="custom-control-indicator"></span>
+              <span class="custom-control-description">Upper Case</span>
+            </label>
+            <label class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="core__registration__password__digit" data-ng-model="vm.registration.password.digit" data-ng-change="vm.updatePass()" data-ng-true-value="true" data-ng-false-value="false">
+              <span class="custom-control-indicator"></span>
+              <span class="custom-control-description">Digit</span>
+            </label>
+            <label class="custom-control custom-checkbox" data-placement="bottom" title="!, @, #, $, %, ^, &, *, _, " konko-tooltip>
+              <input type="checkbox" class="custom-control-input" id="core__registration__password__special" data-ng-model="vm.registration.password.special" data-ng-change="vm.updatePass()" data-ng-true-value="true" data-ng-false-value="false">
+              <span class="custom-control-indicator"></span>
+              <span class="custom-control-description">Special Character</span>
+            </label>
+          </div>
+          <div class="row p-t-2">
+            <label for="core__registration__email__title" class="col-sm-2 col-form-label">Reminder:</label>
+            <div class="col-sm-10">
+              <textarea rows="3" class="form-control" id="core__registration__password_title" data-ng-model="vm.registration.password.title" placeholder="Input field title that remind user password rules" required></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="core__registration__blacklist" class="col-sm-2 col-form-label">Email Blacklist</label>
+    <div class="col-sm-10">
+      <textarea rows="5" class="form-control" id="core__registration__blacklist" data-ng-init="e_blacklist = vm.registration.blacklist.join('\n')" data-ng-model="e_blacklist" data-ng-change="vm.registration.blacklist = e_blacklist.split('\n')" placeholder="Emails that not allow to register, seperate each email or hostname by newline."></textarea>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-large btn-primary btn-block" data-ng-class="{disabled: !coreRegistrationUpdateForm.$valid}">Update</button>
+</form>

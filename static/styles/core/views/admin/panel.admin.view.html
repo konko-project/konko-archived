@@ -1,0 +1,123 @@
+<h1>Panel Settings</h1>
+<form id="corePanelUpdateForm" name="corePanelUpdateForm" role="form" data-ng-submit="vm.updatePanels(corePanelUpdateForm.$valid)" autocomplete="off">
+  <div class="form-group row admin-cate">
+    <div class="v-d-bg" data-ng-repeat="category in vm.categories | orderBy: 'order'" data-ng-class="{ 'p-t-1': $index }">
+      <div class="row">
+        <div class="input-group col-xs-12 a-c-info">
+          <span class="input-group-addon" id="{{category._id}}__name__addon">Category</span>
+          <input type="text" pattern="{{vm.categoryNamePattern}}" title="{{vm.categoryNameTitle}}" class="form-control" id="core__catetory__{{category._id}}__name" data-ng-model="category.name" placeholder="Category name" aria-describedby="{{category._id}}__name__addon" required>
+          <span class="input-group-addon b-x-0" id="{{category._id}}__order__addon">Order</span>
+          <input type="number" min="0" class="form-control" id="core__catetory__{{category._id}}__order" data-ng-model="category.order" placeholder="Category order" aria-describedby="{{category._id}}__order__addon">
+          <span class="input-group-btn" id="{{category._id}}__remove__addon">
+            <button type="button" class="btn btn-outline-danger c-remove" data-ng-click="vm.removeCategory(category)" title="Remove {{category.name}}">&cross;</button>
+          </span>
+          <span class="input-group-btn" id="{{category._id}}__update__addon">
+            <button type="button" class="btn btn-outline-success" data-ng-click="vm.updateCategory(category)" title="Update {{category.name}}">&check;</button>
+          </span>
+        </div>
+      </div>
+      <div class="p-l-1 p-t-1 v-d-bg" data-ng-repeat="panel in vm.panels | orderBy: 'order' | filter: { category: category._id, parent: null }">
+        <div data-ng-include="'corePanelTemplate.html'"></div>
+        <div data-ng-if="panel.children && panel.children.length" data-ng-include="'corePanelsTemplate.html'"></div>
+      </div>
+    </div>
+    <div class="p-t-1">
+      <button type="button" class="btn btn-large btn-info btn-block" data-toggle="modal" data-target="#newCategoryModal">New Category</button>
+      <button type="button" class="btn btn-large btn-info btn-block" data-toggle="modal" data-target="#newPanelModal" data-ng-if="vm.categories && vm.categories.length">New Panel</button>
+    </div>
+  </div>
+</form>
+
+<div class="modal fade" id="newCategoryModal" tabindex="-1" role="dialog" aria-labelledby="newCategory" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">New Category</h4>
+      </div>
+      <form id="coreNewCategoryForm" name="coreNewCategoryForm" role="form" data-ng-submit="vm.newCategory(coreNewCategoryForm.$valid)">
+        <div class="modal-body">
+          <input type="text" pattern="{{vm.categoryNamePattern}}" title="{{vm.categoryNameTitle}}" class="form-control" id="core__catetory__new__name" data-ng-model="vm.n_Category.name" placeholder="Category name" required>
+          <input type="number" min="0" class="form-control" id="core__catetory__new__order" data-ng-model="vm.n_Category.order" placeholder="Category order">
+          <span>The smaller Order number, the higher priority.</span>
+          <div class="alert alert-danger" role="alert" data-ng-if="vm.perror">
+            <strong>{{vm.perror.status}}</strong> {{vm.perror.statusText}}<br />
+            <span>Please check your inputs and make sure no duplicate category name.</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="newPanelModal" tabindex="-1" role="dialog" aria-labelledby="newPanel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">New Panel</h4>
+      </div>
+      <form id="coreNewPanelForm" name="coreNewPanelForm" role="form" data-ng-submit="vm.newPanel(coreNewPanelForm.$valid)">
+        <div class="modal-body">
+          <input type="text" pattern="{{vm.panelNamePattern}}" title="{{vm.panelNameTitle}}" class="form-control" id="core__panel__new__name" data-ng-model="vm.n_Panel.name" placeholder="Panel name" required>
+          <input type="text" pattern="{{vm.panelDescriptionPattern}}" title="{{vm.panelDescriptionTitle}}" class="form-control" id="core__panel__new__description" data-ng-model="vm.n_Panel.description" placeholder="Panel description">
+          <select class="form-control custom-select" data-ng-model="vm.p_parent" required>
+            <option value="">---Category---</option>
+            <option data-ng-repeat="category in vm.categories" value="{{category}}">{{category.name}}</option>
+            <option value="">---Panel---</option>
+            <option data-ng-repeat="panel in vm.panels" value="{{panel}}">{{panel.name}}</option>
+          </select>
+          <input type="text" class="form-control" id="core__panel__new__logo" data-ng-model="vm.n_Panel.logo" placeholder="Panel logo url">
+          <input type="number" min="0" class="form-control" id="core__panel__new__order" data-ng-model="vm.n_Panel.order" placeholder="Panel order">
+          <span>The smaller Order number, the higher priority.</span>
+          <div class="alert alert-danger" role="alert" data-ng-if="vm.perror">
+            <strong>{{vm.perror.status}}</strong> {{vm.perror.statusText}}<br />
+            <span>Please check your inputs and make sure no duplicate panel name.</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script type="text/ng-template" id="corePanelTemplate.html">
+  <div class="row h-d-bg admin-panel">
+    <div class="input-group col-xs-12 a-p-info">
+      <span class="input-group-addon" id="{{panel._id}}__name__addon">Panel</span>
+      <input type="text" pattern="{{vm.panelNamePattern}}" title="{{vm.panelNameTitle}}" class="form-control" id="core__panel__{{panel._id}}__name" data-ng-model="panel.name" placeholder="Panel name" aria-describedby="{{panel._id}}__name__addon" required>
+      <span class="input-group-addon b-x-0" id="{{panel._id}}__order__addon">Order</span>
+      <input type="number" min="0" class="form-control" id="core__panel__{{panel._id}}__order" data-ng-model="panel.order" placeholder="Panel order" aria-describedby="{{panel._id}}__order__addon">
+      <span class="input-group-addon b-x-0" id="{{panel._id}}__logo__addon">Logo Url</span>
+      <input type="text" class="form-control" id="core__panel__{{panel._id}}__logo" data-ng-model="panel.logo" placeholder="Panel logo url" aria-describedby="{{panel._id}}__logo__addon">
+    </div>
+    <div class="input-group col-xs-12 a-p-desc">
+      <span class="input-group-addon" id="{{panel._id}}__description__addon">Description</span>
+      <input type="text" pattern="{{vm.panelDescriptionPattern}}" title="{{vm.panelDescriptionTitle}}" class="form-control" id="core__panel__{{panel._id}}__description" data-ng-model="panel.description" placeholder="Panel description" aria-describedby="{{panel._id}}__description__addon">
+      <span class="input-group-btn" id="{{panel._id}}__remove__addon">
+        <button type="button" class="btn btn-outline-danger p-remove" data-ng-click="vm.removePanel(panel)" title="Remove {{panel.name}}">&cross;</button>
+      </span>
+      <span class="input-group-btn" id="{{panel._id}}__update__addon">
+        <button type="button" class="btn btn-outline-success" data-ng-click="vm.updatePanel(panel)" title="Update {{panel.name}}">&check;</button>
+      </span>
+    </div>
+  </div>
+</script>
+
+<script type="text/ng-template" id="corePanelsTemplate.html">
+  <div class="p-l-1 p-t-1 v-d-bg" data-ng-repeat="panel in vm.panels | orderBy: 'order' | filter: { parent: panel._id }">
+    <div data-ng-include="'corePanelTemplate.html'"></div>
+    <div data-ng-if="panel.children && panel.children.length" data-ng-include="'corePanelsTemplate.html'"></div>
+  </div>
+</script>

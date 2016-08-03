@@ -1,7 +1,10 @@
-<div>
-    <label class="file">
-        <input type="file" id="file" accept="{{accept}}" />
-        <span class="file-custom" data-content="Choose file..."></span>
+<div class="profile-uploader">
+  <div>
+    <label class="custom-file">
+        <input type="file" id="file" class="custom-file-input" accept="{{accept}}"/>
+        <span class="custom-file-control"></span>
     </label>
-    <!-- <small class="text-muted">Max file size: 2MB</small> -->
+    <small class="text-muted">Max file size: {{vm.core.profile[vm.profileImageType].limit}} KB</small>
+  </div>
+  <div class="alert alert-danger upload-error" role="alert" data-ng-if="error || vm.error">{{error || vm.error}}</div>
 </div>
