@@ -1,0 +1,72 @@
+<svg id="background_5600FF" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 800 450">
+    <defs>
+        <style>
+            .cls-5600FF {
+                fill: #5600FF;
+                fill-rule: evenodd;
+            }
+        </style>
+        <symbol id="Konko" data-name="Konko" viewBox="0 0 13.44 15.36">
+            <path class="cls-5600FF" d="M3.84,0H9.6V1H3.84Z" />
+            <path class="cls-5600FF" d="M2.88,1h1v1h-1Z" />
+            <path class="cls-5600FF" d="M9.6,1h1v1h-1Z" />
+            <path class="cls-5600FF" d="M1.92,1.92h1v1h-1Z" />
+            <path class="cls-5600FF" d="M10.56,1.92h1v1h-1Z" />
+            <path class="cls-5600FF" d="M1,2.88h1V4.8H1Z" />
+            <path class="cls-5600FF" d="M3.84,2.88h1v1h-1Z" />
+            <path class="cls-5600FF" d="M8.64,2.88h1v1h-1Z" />
+            <path class="cls-5600FF" d="M11.52,2.88h1V4.8h-1Z" />
+            <path class="cls-5600FF" d="M2.88,3.84h1V6.72h-1Z" />
+            <path class="cls-5600FF" d="M7.68,3.84h1v1h-1Z" />
+            <path class="cls-5600FF" d="M9.6,3.84h1v1h-1Z" />
+            <path class="cls-5600FF" d="M0,4.8H1V7.68h1v1H1v1h1v-1h1v1h1v-1h1v-1h1V9.6h-1v1.92h-1v-1h-1v1h-1v-1H1v1H0Z" />
+            <path class="cls-5600FF" d="M6.72,4.8h1v1h-1Z" />
+            <path class="cls-5600FF" d="M8.64,4.8h1V7.68h-1Z" />
+            <path class="cls-5600FF" d="M10.56,4.8h1V6.72h1V4.8h1v6.72h-1v-1h-1v1h-1v-1h-1v1h-1V9.6h-1v-1H9.6v1h1v-1h1v1h1v-1h-1v-1h-1Z" />
+            <path class="cls-5600FF" d="M5.76,5.76h1V7.68h-1Z" />
+            <path class="cls-5600FF" d="M1.92,6.72h1v1h-1Z" />
+            <path class="cls-5600FF" d="M3.84,6.72h1v1h-1Z" />
+            <path class="cls-5600FF" d="M2.88,7.68h1v1h-1Z" />
+            <path class="cls-5600FF" d="M9.6,7.68h1v1h-1Z" />
+            <path class="cls-5600FF" d="M5.76,9.6H7.68v1.92H5.76Z" />
+            <path class="cls-5600FF" d="M1,11.52h1v1h1v-1h1v1.92H9.6V11.52h1v1h1v-1h1v1.92h-1v1H9.6v1H7.68v-1H5.76v1H3.84v-1H1.92v-1H1Z" />
+        </symbol>
+    </defs>
+    <title>5600FF</title>
+    <use width="13.44" height="15.36" transform="translate(778.81 144.05) scale(1.42)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(666.59 405.91) scale(1.56)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(468.36 284.72) scale(2.2)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(328.96 319.38) scale(2.23)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(595.23 317.4) scale(1.85)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(405.74 93.95) scale(1.97)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(425.11 399.74) scale(1.92)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(60.31 414.21) scale(1.6)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(264.48 105.12) scale(1.92)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(738.32 416.01) scale(1.35)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(45.95 141.78) scale(1.44)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(555.44 398.03) scale(1.77)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(695.17 44.87) scale(1.48)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(723.8 317.5) scale(1.56)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(-18.37 387.82) scale(1.41)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(174.51 352.5) scale(1.88)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(232.65 246.68) scale(2.12)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(671.4 231.17) scale(1.72)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(433.95 -19.68) scale(1.56)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(5.21 67.47) scale(1.24)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(38.49 3.7) scale(1.27)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(695.22 138.38) scale(1.61)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(266.28 404.08) scale(1.68)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(346.41 28.27) scale(1.77)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(219.75 26) scale(1.65)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(602.95 13.83) scale(1.56)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(96.15 23.92) scale(1.36)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(45.59 332.29) scale(1.39)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(530.91 182.76) scale(2.01)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(47.8 246.82) scale(1.55)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(752.72 11.18) scale(1.32)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(158.45 190.99) scale(1.84)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(585.87 99.71) scale(1.77)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(360.81 178.33) scale(2.27)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(489.99 46.89) scale(1.74)" xlink:href="#Konko" />
+    <use width="13.44" height="15.36" transform="translate(144.12 91.77) scale(1.62)" xlink:href="#Konko" />
+</svg>
