@@ -20,24 +20,26 @@ const profileSchema = new mongoose.Schema({
 });
 
 /**
- * Generate a default avatar
+ * Generate a default avatar and banner
  *
  * @param {String} username - Username
  * @returns {Object} The updated profile
  */
-profileSchema.methods.generateAvatar = function (username) {
-  const colors = ['5600FF', '0CDBE8', '5EFF00', 'E8A408', 'FF190D'];
+profileSchema.methods.generateProfileImages = function (username) {
+  const colors = ['5600FF', '0CDBE8', '55E302', 'E8A408', 'FF190D'];
   let size = 512;
   let meta = 'data:image/svg+xml;base64,';
-  let svg = `<svg xmlns="http://www.w3.org/2000/svg" height="${size}" width="${size}">
-              <circle cx="${size/2}" cy="${size/2}" r="${size/2}" fill="#${colors[Math.floor(Math.random() * 5)]}"/>
-              <text x="50%" y="50%" dy="180px" style="
-                font-family: Arial Black;
-                font-size: ${size}px;
-                fill: white;"
-              text-anchor="middle">${username[0].toUpperCase()}</text>
-            </svg>`;
-  this.avatar = meta + new Buffer(svg).toString('base64');
+  let rand = Math.floor(Math.random() * 5);
+  let avatarSvg = `<svg xmlns="http://www.w3.org/2000/svg" height="${size}" width="${size}">
+                    <circle cx="${size/2}" cy="${size/2}" r="${size/2}" fill="#${colors[rand]}"/>
+                    <text x="50%" y="50%" dy="180px" style="
+                      font-family: Arial Black;
+                      font-size: ${size}px;
+                      fill: white;"
+                    text-anchor="middle">${username[0].toUpperCase()}</text>
+                  </svg>`;
+  this.avatar = meta + new Buffer(avatarSvg).toString('base64');
+  this.banner = `/styles/core/images/users/banners/${colors[rand]}.svg`;
   return this.save();
 };
 
