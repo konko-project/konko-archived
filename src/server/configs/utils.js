@@ -17,12 +17,56 @@ export default class Utilities {
   constructor() {}
 
   /**
+   * Declare content language in header for every response
+   *
+   * @param {Object} req - HTTP request.
+   * @param {Object} res - HTTP response.
+   * @param {nextCallback} next - A callback to run.
+   * @returns {nextCallback} Call next middleware.
+   * @static
+   */
+  static setLanguage(req, res, next) {
+    const Core = mongoose.model('Core');
+    Core.findOne().then(core => {
+      if (core) {
+        res.set('Content-Language', core.global.language);
+      } else {
+        res.set('Content-Language', 'en-us');
+      }
+      return next();
+    }).catch(err => next(err));
+  }
+
+  /**
+   * Checks if the site is shut by Admin.
+   *
+   * @param {Object} req - HTTP request.
+   * @param {Object} res - HTTP response.
+   * @param {nextCallback} next - A callback to run.
+   * @returns {nextCallback} Call next middleware.
+   * @static
+   */
+  static public(req, res, next) {
+    if (!req.payload || req.payload.permission === 'admin' || req.url.match('/api/v1/core')) {
+      return next();
+    }
+    const Core = mongoose.model('Core');
+    Core.findOne().then(core => {
+      if (core && !core.basic.public) {
+        return res.status(503).json({ message: 'Site is down.' });
+      }
+      return next();
+    }).catch(err => next(err));
+  }
+
+  /**
    * Helper to record X-Rate-Limit-* in production mode.
    *
    * @param {Object} req - HTTP request.
    * @param {Object} res - HTTP response.
    * @param {nextCallback} next - A callback to run.
    * @returns {nextCallback} Call next middleware.
+   * @static
    */
   static throttle(req, res, next) {
     if (process.env.NODE_ENV !== 'production') {
@@ -34,9 +78,9 @@ export default class Utilities {
              req.connection.remoteAddress ||
              req.socket.remoteAddress ||
              req.connection.socket.remoteAddress;
-    console.log(req.ip, req.ips);
-    console.log(req.connection.remoteAddress);
-    console.log(ip);
+    // console.log(req.ip, req.ips);
+    // console.log(req.connection.remoteAddress);
+    // console.log(ip);
     RateLimit.findOneAndUpdate({ ip: ip }, { $inc: { hits: 1 } }, { upsert: false })
       .exec().then(rateLimit => {
         if (!rateLimit) {
@@ -76,11 +120,13 @@ export default class Utilities {
    * @param {Object} res - HTTP response.
    * @param {nextCallback} next - A callback to run.
    * @returns {nextCallback} Call next middleware.
+   * @static
    */
   static quering(req, res, next) {
     req._fields = '';
-    req._sort = {};
+    req._sort = null;
     if (req.query && req.query.sort) {
+      req._sort = {};
       for (let s of req.query.sort) {
         if (s.charAt(0) === '-') {
           req._sort[s.substr(1)] = -1;
@@ -90,7 +136,7 @@ export default class Utilities {
       }
     }
     if (req.query && req.query.fields) {
-      req._fields = req.query.fields.replace(',', ' ');
+      req._fields = req.query.fields.split(',').join(' ');
     }
     return next();
   }
@@ -101,6 +147,7 @@ export default class Utilities {
    * @param {String} secret - Cookie secret.
    * @param {Boolean} log - Indicates should log to console or not.
    * @returns {Boolean} true if cookie is valid, false otherwise.
+   * @static
    */
   static validCookieSecret(secret, log) {
     if (process.env.NODE_ENV !== 'production') {
@@ -135,6 +182,7 @@ export default class Utilities {
    * @param {String} secret - JWT secret.
    * @param {Boolean} log - Indicates should log to console or not.
    * @returns {Boolean} true if cookie is valid, false otherwise.
+   * @static
    */
   static validJwtSecret(secret, log) {
     if (process.env.NODE_ENV !== 'production') {
@@ -164,36 +212,12 @@ export default class Utilities {
   }
 
   /**
-   * Validate if exist a configuration for Express-Mailer.
-   *
-   * @param {String} path - Path where is the config file located.
-   * @param {Boolean} log - Indicates should log to console or not.
-   * @returns {Boolean} true if has a config file, false otherwise.
-   */
-  static hasExpressMailerConfiguration(path, log) {
-    if (process.env.NODE_ENV !== 'production') {
-      return true;
-    }
-
-    glob.sync(path).forEach(file => {
-      if (file.match(/mailer/gi)) {
-        return true;
-      }
-    });
-    if (log) {
-      console.error('! Express-Mailer configuration is missing.');
-      console.error('! Konko will be running without any email functionality.');
-    }
-
-    return false;
-  }
-
-  /**
    * Update an object with new value if has one.
    *
    * @param {Object} data - An object that stores the new values.
    * @param {Object} obj - The original object.
    * @param {Array} props - An array of object properties that need to be updated.
+   * @static
    */
   static partialUpdate(data, obj, ...props) {
     for (let prop of props) {
