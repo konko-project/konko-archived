@@ -59,11 +59,7 @@ export default class CommentController {
         select: 'username avatar',
       },
     }, (err, comment) => {
-      if (err) {
-        return res.status(500).json({ message: err });
-      }
-
-      res.status(200).json(comment);
+      return err ? res.status(500).json({ message: err }) : res.status(200).json(comment);
     });
   }
 
