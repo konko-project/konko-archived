@@ -47,6 +47,9 @@ export default class Utilities {
    * @static
    */
   static public(req, res, next) {
+    if (process.env.NODE_ENV !== 'production') {
+      return next();
+    }
     if (!req.payload || req.payload.permission === 'admin' || req.url.match('/api/v1/core')) {
       return next();
     }
