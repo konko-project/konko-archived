@@ -73,11 +73,14 @@ export default class CommentController {
   static list({ sanitizeQuery, query, topic, payload }, res) {
     sanitizeQuery('page').toInt();
 
-    let page = {};
-    page.page = query.page || 1;
-    page.size = payload.preference.commentListLimit;
-    page.offset = (page.page - 1) * page.size;
-    page.tid = topic._id;
+    let page = {
+      page: query.page || 1,
+      pages: 0,
+      size: payload.preference.commentListLimit,
+      offset: ((query.page || 1) - 1) * payload.preference.commentListLimit,
+      tid: topic._id,
+      comments: [],
+    };
     Comment.find({ topic: topic._id }, '-short', { skip: page.offset, limit: page.size })
       .lean().sort('-date')
       .populate('topic', '_id')

@@ -85,7 +85,6 @@ export default class TopicController {
    * @static
    */
   static list({ query, sanitizeQuery, _sort, payload }, res, next) {
-    let page = {};
     let select = {};
     let project = {
       _id: 1,
@@ -98,11 +97,16 @@ export default class TopicController {
       author: 1,
     };
     sanitizeQuery('page').toInt();
-    page.page = query.page || 1;
-    page.size = payload.preference.topicListLimit;
-    page.offset = (page.page - 1) * page.size;
-    page.uid = query.uid;
-    page.pid = query.pid;
+    let page = {
+      page: query.page || 1,
+      pages: 0,
+      size: payload.preference.topicListLimit,
+      offset: ((query.page || 1) - 1) * payload.preference.topicListLimit,
+      uid: query.uid,
+      pid: query.pid,
+      sort: {},
+      topics: [],
+    };
     if (page.uid) {
       select = { author: mongoose.Types.ObjectId(page.uid) };
       project.content = 1;
