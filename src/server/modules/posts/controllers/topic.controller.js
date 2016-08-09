@@ -44,7 +44,7 @@ export default class TopicController {
           maxlength: content.max,
         });
         resolve(cores[0]);
-      }).catch(err => res.status(500).json({ message: err }));
+      }).catch(err => res.status(500).sjson({ message: err }));
     }).then(core => core);
   }
 
@@ -68,12 +68,12 @@ export default class TopicController {
           },
         }, (err, topic) => {
           if (err) {
-            return res.status(500).json({ message: err });
+            return res.status(500).sjson({ message: err });
           }
 
-          res.status(200).json(topic);
+          res.status(200).sjson(topic);
         });
-    }).catch(err => res.status(500).json({ message: err }));
+    }).catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -117,7 +117,7 @@ export default class TopicController {
       project.lastReplyDate = 1;
       page.sort = _sort || { lastReplyDate: -1 };
     } else {
-      return res.status(400).json({ message: 'Bad Request' });
+      return res.status(400).sjson({ message: 'Bad Request' });
     }
 
     Core.findOne().then(({ post: { topic: { lastReplyLength } } }) => {
@@ -163,7 +163,7 @@ export default class TopicController {
               Topic.count(select).then(count => {
                 page.pages = Math.ceil(count / page.size);
                 page.topics = topics;
-                res.status(200).json(page);
+                res.status(200).sjson(page);
               }).catch(err => next(err));
             }).catch(err => next(err));
           }).catch(err => next(err));
@@ -187,13 +187,13 @@ export default class TopicController {
       checkQuery('panelId', 'Panel ID is not presented!').notEmpty();
       let errors = validationErrors();
       if (errors) {
-        return res.status(400).json({ message: errors });
+        return res.status(400).sjson({ message: errors });
       }
 
       Topic.create(body).then(topic => {
         Panel.findById(mongoose.Types.ObjectId(query.panelId)).exec().then(panel => {
           if (!panel) {
-              return res.status(404).json({ message: 'Panel not found' });
+              return res.status(404).sjson({ message: 'Panel not found' });
           }
 
           topic.author = payload;
@@ -201,7 +201,7 @@ export default class TopicController {
           topic.save().then(topic => {
             panel.last.shift();
             panel.last.push(topic);
-            panel.addtopic().then(panel => res.status(201).json(topic)).catch(err => next(err));
+            panel.addtopic().then(panel => res.status(201).sjson(topic)).catch(err => next(err));
           }).catch(err => next(err));
         }).catch(err => next(err));
       }).catch(err => next(err));
@@ -221,16 +221,16 @@ export default class TopicController {
       checkBody('content', 'Cannot post a empty topic!').notEmpty();
       let errors = validationErrors();
       if (errors) {
-        return res.status(400).json({ message: errors });
+        return res.status(400).sjson({ message: errors });
       }
 
       utils.partialUpdate(body, topic, 'title', 'content');
       topic.updated.date = Date.now();
       topic.updated.by = payload.profile.username;
       topic.save()
-        .then(topic => res.status(200).json(topic))
-        .catch(err => res.status(500).json({ message: err }));
-    }).catch(err => res.status(500).json({ message: err }));
+        .then(topic => res.status(200).sjson(topic))
+        .catch(err => res.status(500).sjson({ message: err }));
+    }).catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -243,9 +243,9 @@ export default class TopicController {
   static delete({ topic }, res) {
     Comment.remove({ topic: topic }).then(() => {
       topic.remove()
-        .then(res.status(200).json({ message: 'ok' }))
-        .catch(err => res.status(500).json({ message: err }));
-    }).catch(err => res.status(500).json({ message: err }));
+        .then(res.status(200).sjson({ message: 'ok' }))
+        .catch(err => res.status(500).sjson({ message: err }));
+    }).catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -258,10 +258,10 @@ export default class TopicController {
    */
   static like({ topic, payload }, res, next) {
     if (topic.likes.indexOf(payload._id) >= 0) {
-      return res.status(403).json({ message: 'Forbidden' });
+      return res.status(403).sjson({ message: 'Forbidden' });
     } else {
       topic.like(payload._id)
-        .then(topic => res.status(200).json({ likes: topic.likes }))
+        .then(topic => res.status(200).sjson({ likes: topic.likes }))
         .catch(err => next(err));
     }
   }
@@ -276,10 +276,10 @@ export default class TopicController {
    */
   static dislike({ topic, payload }, res, next) {
     if (topic.likes.indexOf(payload._id) < 0) {
-      return res.status(200).json({ likes: topic.likes });
+      return res.status(200).sjson({ likes: topic.likes });
     } else {
       topic.unlike(payload._id)
-        .then(topic => res.status(200).json({ likes: topic.likes }))
+        .then(topic => res.status(200).sjson({ likes: topic.likes }))
         .catch(err => next(err));
     }
   }
@@ -294,18 +294,18 @@ export default class TopicController {
    */
   static bookmark({ topic, payload }, res, next) {
     if (topic.bookmarks.indexOf(payload._id) >= 0){
-      return res.status(403).json({ message: 'Forbidden' });
+      return res.status(403).sjson({ message: 'Forbidden' });
     } else {
       User.findById(payload._id).then(user => {
         if (!user) {
-          return res.status(404).json({ message: 'User not found' });
+          return res.status(404).sjson({ message: 'User not found' });
         }
         topic.bookmark(payload._id).then(topic => {
           user.bookmarks.push(topic);
-          user.save().then(user => res.status(200).json({ bookmarks: topic.bookmarks }))
-            .catch(err => res.status(500).json({ message: err }));
-        }).catch(err => res.status(500).json({ message: err }));
-      }).catch(err => res.status(500).json({ message: err }));
+          user.save().then(user => res.status(200).sjson({ bookmarks: topic.bookmarks }))
+            .catch(err => res.status(500).sjson({ message: err }));
+        }).catch(err => res.status(500).sjson({ message: err }));
+      }).catch(err => res.status(500).sjson({ message: err }));
     }
   }
 
@@ -318,7 +318,7 @@ export default class TopicController {
    * @static
    */
   static bookmarked({ topic, payload }, res, next) {
-    return topic.bookmarks.indexOf(payload._id) < 0 ? res.status(404).json({ message: 'Bookmark not exists for this user.' }) : res.status(204).json({});
+    return topic.bookmarks.indexOf(payload._id) < 0 ? res.status(404).sjson({ message: 'Bookmark not exists for this user.' }) : res.status(204).sjson({});
   }
 
   /**
@@ -332,19 +332,19 @@ export default class TopicController {
   static unbookmark({ topic, payload }, res, next) {
     User.findById(payload._id).then(user => {
       if (!user) {
-        return res.status(404).json({ message: 'User not found' });
+        return res.status(404).sjson({ message: 'User not found' });
       }
       user.bookmarks.remove(topic);
       user.save().then(user => {
         if (topic.bookmarks.indexOf(payload._id) < 0) {
-          return res.status(204).json({});
+          return res.status(204).sjson({});
         } else {
           topic.unbookmark(payload._id)
-            .then(topic => res.status(200).json({ bookmarks: topic.bookmarks }))
+            .then(topic => res.status(200).sjson({ bookmarks: topic.bookmarks }))
             .catch(err => next(err));
         }
-      }).catch(err => res.status(500).json({ message: err }));
-    }).catch(err => res.status(500).json({ message: err }));
+      }).catch(err => res.status(500).sjson({ message: err }));
+    }).catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -358,12 +358,12 @@ export default class TopicController {
    */
   static findTopicById(req, res, next, id) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: 'Topic ID is invalid' });
+      return res.status(400).sjson({ message: 'Topic ID is invalid' });
     }
 
     Topic.findById(id)
       .select(req._fields ? req._fields + ' views' : '').exec()
-      .then(topic => (req.topic = topic) ? next() : res.status(404).json({ message: 'Topic is not found' }))
+      .then(topic => (req.topic = topic) ? next() : res.status(404).sjson({ message: 'Topic is not found' }))
       .catch(err => next(err));
   }
 }

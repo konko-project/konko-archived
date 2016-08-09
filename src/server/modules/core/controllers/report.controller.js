@@ -34,7 +34,7 @@ export default class ReportController {
         select: 'username',
       },
     }, (err, report) => {
-      return err ? res.status(500).json({ message: err }) : res.status(200).json(report);
+      return err ? res.status(500).sjson({ message: err }) : res.status(200).sjson(report);
     });
   }
 
@@ -56,8 +56,8 @@ export default class ReportController {
           select: 'username',
         },
       }).exec()
-      .then(reports => res.status(200).json(reports))
-      .catch(err => res.status(500).json({ message: err }));
+      .then(reports => res.status(200).sjson(reports))
+      .catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -75,11 +75,11 @@ export default class ReportController {
     checkBody('reason', 'Reason of the inappropriate cannot be empty!').notEmpty();
     let errors = validationErrors();
     if (errors) {
-      return res.status(400).json({ message: errors });
+      return res.status(400).sjson({ message: errors });
     }
     Report.create(body).then(report => {
       report.reporter = payload;
-      report.save().then(report => res.status(201).json(report))
+      report.save().then(report => res.status(201).sjson(report))
         .catch(err => next(err));
     }).catch(err => next(err));
   }
@@ -94,8 +94,8 @@ export default class ReportController {
   static update({ body, report, _fields }, res) {
     utils.partialUpdate(body, report, _fields);
     report.save()
-      .then(report => res.status(200).json(report))
-      .catch(err => res.status(500).json({ message: err }));
+      .then(report => res.status(200).sjson(report))
+      .catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -106,8 +106,8 @@ export default class ReportController {
    * @static
    */
   static done({ report }, res) {
-    report.processed().then(report => res.status(200).json(report))
-      .catch(err => res.status(500).json({ message: err }));
+    report.processed().then(report => res.status(200).sjson(report))
+      .catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -121,11 +121,11 @@ export default class ReportController {
    */
   static findReportById(req, res, next, id) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: 'Report ID is invalid' });
+      return res.status(400).sjson({ message: 'Report ID is invalid' });
     }
 
     Report.findById(id).exec()
-      .then(report => (req.report = report) ? next() : res.status(404).json({ message: 'Report is not found.' }))
+      .then(report => (req.report = report) ? next() : res.status(404).sjson({ message: 'Report is not found.' }))
       .catch(err => next(err));
   }
 

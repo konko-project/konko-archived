@@ -38,7 +38,7 @@ export default class CommentController {
           maxlength: content.max,
         });
         resolve(cores[0]);
-      }).catch(err => res.status(500).json({ message: err }));
+      }).catch(err => res.status(500).sjson({ message: err }));
     }).then(core => core);
   }
 
@@ -59,7 +59,7 @@ export default class CommentController {
         select: 'username avatar',
       },
     }, (err, comment) => {
-      return err ? res.status(500).json({ message: err }) : res.status(200).json(comment);
+      return err ? res.status(500).sjson({ message: err }) : res.status(200).sjson(comment);
     });
   }
 
@@ -98,9 +98,9 @@ export default class CommentController {
         Comment.count({ topic: topic._id }).then(count => {
           page.pages = Math.ceil(count / page.size);
           page.comments = comments;
-          res.status(200).json(page);
-        }).catch(err => res.status(500).json({ message: err }));
-      }).catch(err => res.status(500).json({ message: err }));
+          res.status(200).sjson(page);
+        }).catch(err => res.status(500).sjson({ message: err }));
+      }).catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -116,7 +116,7 @@ export default class CommentController {
       checkBody('content', 'Empty comment!').notEmpty();
       let errors = validationErrors();
       if (errors) {
-        return res.status(400).json({ message: 'Cannot post a empty comment.' });
+        return res.status(400).sjson({ message: 'Cannot post a empty comment.' });
       }
 
       Comment.create(body).then(comment => {
@@ -128,7 +128,7 @@ export default class CommentController {
           topic.lastReplyDate = comment.date;
             topic.save().then(topic => {
               Panel.findById(topic.panel).then(panel => {
-                panel.addComment().then(panel => res.status(201).json(comment))
+                panel.addComment().then(panel => res.status(201).sjson(comment))
                   .catch(err => next(err));
               }).catch(err => next(err));
             }).catch(err => next(err));
@@ -149,7 +149,7 @@ export default class CommentController {
       checkBody('content', 'Cannot post a empty comment!').notEmpty();
       let errors = validationErrors();
       if (errors) {
-        return res.status(400).json({ message: errors });
+        return res.status(400).sjson({ message: errors });
       }
 
       let page = { size: payload.preference.commentListLimit };
@@ -160,10 +160,10 @@ export default class CommentController {
         comment.updated.by = payload.profile.username;
         comment.save().then(comment => {
           page.comment = comment;
-          res.status(200).json(page);
-        }).catch(err => res.status(500).json({ message: err }));
-      }).catch(err => res.status(500).json({ message: err }));
-    }).catch(err => res.status(500).json({ message: err }));
+          res.status(200).sjson(page);
+        }).catch(err => res.status(500).sjson({ message: err }));
+      }).catch(err => res.status(500).sjson({ message: err }));
+    }).catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -177,9 +177,9 @@ export default class CommentController {
     topic.comments.remove(comment);
     topic.save().then(topic => {
       comment.remove()
-        .then(() => res.status(200).json({ message: 'ok' }))
-        .catch(err => res.status(500).json({ message: err }));
-    }).catch(err => res.status(500).json({ message: err }));
+        .then(() => res.status(200).sjson({ message: 'ok' }))
+        .catch(err => res.status(500).sjson({ message: err }));
+    }).catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -191,10 +191,10 @@ export default class CommentController {
    */
   static like({ comment, payload }, res, next) {
     if (comment.likes.indexOf(payload._id) >= 0) {
-      return res.status(403).json({ message: 'Forbidden' });
+      return res.status(403).sjson({ message: 'Forbidden' });
     } else {
       comment.like(payload._id)
-        .then(comment => res.status(200).json({ likes: comment.likes }))
+        .then(comment => res.status(200).sjson({ likes: comment.likes }))
         .catch(err => next(err));
     }
   }
@@ -208,10 +208,10 @@ export default class CommentController {
    */
   static dislike({ comment, payload }, res, next) {
     if (comment.likes.indexOf(payload._id) < 0) {
-      return res.status(200).json({ likes: comment.likes });
+      return res.status(200).sjson({ likes: comment.likes });
     } else {
       comment.unlike(payload._id)
-        .then(comment => res.status(200).json({ likes: comment.likes }))
+        .then(comment => res.status(200).sjson({ likes: comment.likes }))
         .catch(err => next(err));
     }
   }
@@ -227,14 +227,14 @@ export default class CommentController {
    */
   static findCommentById(req, res, next, id) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
+      return res.status(400).sjson({
         message: 'Comment ID is invalid',
       });
     }
 
     Comment.findById(id)
       .select(req._fields).sort(req._sort).exec()
-      .then(comment => (req.comment = comment) ? next() : res.status(404).json({ message: 'Comment is not found' }))
+      .then(comment => (req.comment = comment) ? next() : res.status(404).sjson({ message: 'Comment is not found' }))
       .catch(err => next(err));
   }
 }

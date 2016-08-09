@@ -41,7 +41,7 @@ export default class PanelController {
         minlength: description.min,
         maxlength: description.max,
       });
-    }).catch(err => res.status(500).json({ message: err }));
+    }).catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -76,9 +76,9 @@ export default class PanelController {
         },
       }, (err, panel) => {
         if (err) {
-          return res.status(500).json({ message: err });
+          return res.status(500).sjson({ message: err });
         }
-        res.status(200).json(panel);
+        res.status(200).sjson(panel);
       });
   }
 
@@ -97,8 +97,8 @@ export default class PanelController {
         select: '_id name',
         options: { sort: { order: -1 } },
       }).exec()
-      .then(panels => res.status(200).json(panels))
-      .catch(err => res.status(500).json({ message: err }));
+      .then(panels => res.status(200).sjson(panels))
+      .catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -114,7 +114,7 @@ export default class PanelController {
     req.checkBody('name', 'Panel name cannot be empty!').notEmpty();
     var errors = req.validationErrors();
     if (errors) {
-      return res.status(400).json({ message: errors });
+      return res.status(400).sjson({ message: errors });
     }
     Panel.create(req.body).then(panel => {
       if (req.panel) {
@@ -123,7 +123,7 @@ export default class PanelController {
         panel.save().then(panel => {
           req.panel.children.push(panel);
           req.panel.save()
-            .then(_panel => res.status(201).json(panel))
+            .then(_panel => res.status(201).sjson(panel))
             .catch(err => next(err));
         }).catch(err => next(err));
       } else if (req.category) {
@@ -131,13 +131,13 @@ export default class PanelController {
         panel.save().then(panel => {
           req.category.panels.push(panel);
           req.category.save()
-            .then(category => res.status(201).json(panel))
+            .then(category => res.status(201).sjson(panel))
             .catch(err => next(err));
         }).catch(err => next(err));
       } else {
-        res.status(400).json({ message: 'Missing Category or Parent' });
+        res.status(400).sjson({ message: 'Missing Category or Parent' });
       }
-    }).catch(err => res.status(500).json({ message: err }));
+    }).catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -156,12 +156,12 @@ export default class PanelController {
     checkBody('name', 'Panel name cannot be empty!').notEmpty();
     var errors = validationErrors();
     if (errors) {
-      return res.status(400).json({ message: errors });
+      return res.status(400).sjson({ message: errors });
     }
     utils.partialUpdate(body, panel, 'name', 'order', 'description', 'logo');
     panel.save()
-      .then(panel => res.status(200).json(panel))
-      .catch(err => res.status(500).json({ message: err }));
+      .then(panel => res.status(200).sjson(panel))
+      .catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -178,7 +178,7 @@ export default class PanelController {
       panels.push(p);
     };
     const errorCB = err => {
-      return res.status(500).json({ message: err });
+      return res.status(500).sjson({ message: err });
     };
     while (panels.length) {
       let _panel = panels.shift();
@@ -189,8 +189,8 @@ export default class PanelController {
     }
     category.panels.remove(panel);
     category.save()
-      .then(cate => res.status(200).json({ message: `${panel.name} and its children have been removed.` }))
-      .catch(err => res.status(500).json({ message: err }));
+      .then(cate => res.status(200).sjson({ message: `${panel.name} and its children have been removed.` }))
+      .catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -204,11 +204,11 @@ export default class PanelController {
    */
    static findPanelById(req, res, next, id) {
      if (!mongoose.Types.ObjectId.isValid(id)) {
-       return res.status(400).json({ message: 'Category ID is invalid' });
+       return res.status(400).sjson({ message: 'Category ID is invalid' });
      }
      Panel.findById(id)
       .select(req._fields).sort(req._sort).exec()
-      .then(panel => (req.panel = panel) ? next() : res.status(404).json({ message: 'Panel is not found' }))
+      .then(panel => (req.panel = panel) ? next() : res.status(404).sjson({ message: 'Panel is not found' }))
       .catch(err => next(err));
    }
 }

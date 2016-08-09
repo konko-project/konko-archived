@@ -36,7 +36,7 @@ export default class CategoryController {
         maxlength: max,
       });
     }).catch(err => {
-      res.status(500).json({ message: err });
+      res.status(500).sjson({ message: err });
     });
   }
 
@@ -71,10 +71,10 @@ export default class CategoryController {
       },
     }, (err, category) => {
       if (err) {
-        return res.status(500).json({ message: err });
+        return res.status(500).sjson({ message: err });
       }
 
-      res.status(200).json(category);
+      res.status(200).sjson(category);
     });
   }
 
@@ -106,8 +106,8 @@ export default class CategoryController {
           },
         },
       }).exec()
-      .then(categories => res.status(200).json(categories))
-      .catch(err => res.status(500).json({ message: err }));
+      .then(categories => res.status(200).sjson(categories))
+      .catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -123,10 +123,10 @@ export default class CategoryController {
     req.checkBody('name', 'Category name cannot be empty!').notEmpty();
     let errors = req.validationErrors();
     if (errors) {
-      return res.status(400).json({ message: errors });
+      return res.status(400).sjson({ message: errors });
     }
     Category.create(req.body)
-      .then(category => res.status(201).json(category))
+      .then(category => res.status(201).sjson(category))
       .catch(err => next(err));
   }
 
@@ -144,12 +144,12 @@ export default class CategoryController {
     checkBody('name', 'Category name cannot be empty!').notEmpty();
     let errors = validationErrors();
     if (errors) {
-      return res.status(400).json({ message: errors });
+      return res.status(400).sjson({ message: errors });
     }
     utils.partialUpdate(body, category, 'name', 'order');
     category.save()
-      .then(category => res.status(200).json(category))
-      .catch(err => res.status(500).json({ message: err }));
+      .then(category => res.status(200).sjson(category))
+      .catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -164,9 +164,9 @@ export default class CategoryController {
   static delete({ body, category, user }, res) {
     Panel.remove({ category: category }).then(() => {
       category.remove()
-        .then(() => res.status(200).json({ message: `${category.name} has been removed.` }))
-        .catch(err => res.status(500).json({ message: err }));
-    }).catch(err => res.status(500).json({ message: err }));
+        .then(() => res.status(200).sjson({ message: `${category.name} has been removed.` }))
+        .catch(err => res.status(500).sjson({ message: err }));
+    }).catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -180,10 +180,10 @@ export default class CategoryController {
    */
   static findCategoryById(req, res, next, id) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: 'Category ID is invalid' });
+      return res.status(400).sjson({ message: 'Category ID is invalid' });
     }
     Category.findById(id).select(req._fields).sort(req._sort).exec()
-      .then(category => (req.category = category) ? next() : res.status(404).json({ message: 'Category is not found' }))
+      .then(category => (req.category = category) ? next() : res.status(404).sjson({ message: 'Category is not found' }))
       .catch(err => next(err));
   }
 }

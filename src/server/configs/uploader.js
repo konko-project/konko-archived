@@ -77,12 +77,9 @@ export default class Uploader {
       Uploader.getLimit().then(profile => {
         let multer = new app.multer(app, Storage, null, { fileSize: profile[field].limit * 1024 }, Filter);
         multer.single(field)(req, res, err => {
-          if (err) {
-            return res.status(500).json({ message: err.toString() });
-          }
-          next();
+          return err ? res.status(500).sjson({ message: err.toString() }) : next();
         });
-      }).catch(err => res.status(500).json({ message: err }));
+      }).catch(err => res.status(500).sjson({ message: err }));
     };
   }
 

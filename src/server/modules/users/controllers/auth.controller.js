@@ -75,29 +75,29 @@ export default class AuthenticationController {
     return (req, res, next) => {
       AuthenticationController.updateSchema(req, res).then(core => {
         if (!core.registration.public) {
-          return res.status(503).json({ message: core.registration.message });
+          return res.status(503).sjson({ message: core.registration.message });
         }
         req.checkBody('email', 'Invalid Email').isEmail();
         let errors = req.validationErrors();
         if (errors) {
-          return res.status(400).json({ message: errors[0].msg });
+          return res.status(400).sjson({ message: errors[0].msg });
         }
 
         let password = req.body.password;
         if (!password || !RegExp(core.registration.password.regex).test(password)) {
-          return res.status(400).json({ message: 'Password does not meet the requirement.' });
+          return res.status(400).sjson({ message: 'Password does not meet the requirement.' });
         }
 
         User.findOne({ email: req.body.email }).then(user => {
           if (user) {
-            return res.status(400).json({ message: 'User already existed with this email.' });
+            return res.status(400).sjson({ message: 'User already existed with this email.' });
           }
 
           user = new User();
           user.email = req.body.email;
           let error = user.validateSync();
           if (error && error.errors.email.message) {
-            return res.status(400).json({ message: error.errors.email.message });
+            return res.status(400).sjson({ message: error.errors.email.message });
           }
 
           User.create(req.body).then(user => {
@@ -143,10 +143,10 @@ export default class AuthenticationController {
                           };
                           mailer.compileJade('activate', mailData, (err, html) => {
                             if (err) {
-                              return res.status(500).json({ message: err });
+                              return res.status(500).sjson({ message: err });
                             }
                             mailer.sendMail(user.email, core.registration.email.verificationSubject, html, (err, info) => {
-                              return err ? res.status(500).json({ message: err }) : res.status(201).json({ token: user.generateJWT(app) });
+                              return err ? res.status(500).sjson({ message: err }) : res.status(201).sjson({ token: user.generateJWT(app) });
                             });
                           });
                         }).catch(err => next(err));
@@ -156,7 +156,7 @@ export default class AuthenticationController {
                         }
                         user.verified = true;
                         user.save().then(user => {
-                          res.status(201).json({ token: user.generateJWT(app) });
+                          res.status(201).sjson({ token: user.generateJWT(app) });
                         }).catch(err => next(err));
                       }
                     }).catch(err => next(err));
@@ -182,7 +182,7 @@ export default class AuthenticationController {
       req.checkBody('password', 'Invalid Password').notEmpty();
       let errors = req.validationErrors();
       if (errors) {
-        return res.status(400).json({ message: errors });
+        return res.status(400).sjson({ message: errors });
       }
       passport.authenticate('local', (err, user, info) => {
         if (err) {
@@ -193,11 +193,11 @@ export default class AuthenticationController {
               return next(err);
             }
             user.login().then(user => {
-              return res.status(200).json({ token: user.generateJWT(app) });
+              return res.status(200).sjson({ token: user.generateJWT(app) });
             }).catch(err => next(err));
           });
         } else {
-          return res.status(401).json(info);
+          return res.status(401).sjson(info);
         }
       })(req, res, next);
     };
@@ -214,9 +214,9 @@ export default class AuthenticationController {
       if (req.body.pass) {
         User.findOne({ email: req.body.email }).then(user => {
           if (!user) {
-            return res.status(500).json({ message: 'User is not found.' });
+            return res.status(500).sjson({ message: 'User is not found.' });
           } else if (req.body.pass !== req.body.pass2) {
-            return res.status(400).json({ message: 'Passwords are not match.' });
+            return res.status(400).sjson({ message: 'Passwords are not match.' });
           }
           user.setPassword(req.body.pass);
           user.save().then(user => {
@@ -226,27 +226,27 @@ export default class AuthenticationController {
       } else if (req.body.code) {
         VerificationToken.findOne({ token: req.body.code }).populate('user', 'email').then(token => {
           if (!token) {
-            return res.status(404).json({ message: 'Verification code is expired or invalid.' });
+            return res.status(404).sjson({ message: 'Verification code is expired or invalid.' });
           }
           if (req.body.email && req.body.email !== token.user.email) {
-            return res.status(401).json({ message: 'Account verification failed.' });
+            return res.status(401).sjson({ message: 'Account verification failed.' });
           }
           Core.findOne().then(core => {
             if (!core) {
-              return res.status(500).json({ message: 'Core is not defined.' });
+              return res.status(500).sjson({ message: 'Core is not defined.' });
             }
-            return res.status(200).json({ passCfg: core.registration.password, email: token.user.email });
+            return res.status(200).sjson({ passCfg: core.registration.password, email: token.user.email });
           }).catch(err => next(err));
         }).catch(err => next(err));
       } else if (req.body.email) {
         User.findOne({email: req.body.email}).then(user => {
           if (!user) {
-            return res.status(404).json({ message: 'User with this Email is not exist.' });
+            return res.status(404).sjson({ message: 'User with this Email is not exist.' });
           }
           VerificationToken.create({ user: user }).then(token => {
             Core.findOne().then(core => {
               if (!core) {
-                return res.status(500).json({ message: 'Core setting is missing, please contact admin.' });
+                return res.status(500).sjson({ message: 'Core setting is missing, please contact admin.' });
               }
               let mailer = new Mailer(app, core);
               let mailData = {
@@ -258,17 +258,17 @@ export default class AuthenticationController {
               };
               mailer.compileJade('reset', mailData, (err, html) => {
                 if (err) {
-                  return res.status(500).json({ message: err });
+                  return res.status(500).sjson({ message: err });
                 }
                 mailer.sendMail(user.email, core.registration.password.resetEmailSubject, html, (err, info) => {
-                  return err ? res.status(500).json({ message: err }) : res.status(201).json({ message: 'Password reset verification code is sent.' });
+                  return err ? res.status(500).sjson({ message: err }) : res.status(201).sjson({ message: 'Password reset verification code is sent.' });
                 });
               });
             }).catch(err => next(err));
           }).catch(err => next(err));
         }).catch(err => next(err));
       } else {
-        return res.status(400).json({ message: 'User email is missing.' });
+        return res.status(400).sjson({ message: 'User email is missing.' });
       }
     };
   }
@@ -290,7 +290,7 @@ export default class AuthenticationController {
         verified: false,
         permission: 'guest',
       });
-      return res.status(200).json({ token: guest.generateJWT(app) });
+      return res.status(200).sjson({ token: guest.generateJWT(app) });
     };
   }
 
@@ -305,28 +305,28 @@ export default class AuthenticationController {
     User.findById(req.token.user).exec()
       .then(user => {
         if (!user) {
-          return res.status(404).json({ message: 'User does not exist.' });
+          return res.status(404).sjson({ message: 'User does not exist.' });
         }
         user.verified = true;
         user.save()
           .then(user => {
             req.token.remove()
-              .then(() => res.status(200).json({ message: 'ok' }))
-              .catch(err => res.status(500).json({ message: err }));
-          }).catch(err => res.status(500).json({ message: err }));
-      }).catch(err => res.status(500).json({ message: err }));
+              .then(() => res.status(200).sjson({ message: 'ok' }))
+              .catch(err => res.status(500).sjson({ message: err }));
+          }).catch(err => res.status(500).sjson({ message: err }));
+      }).catch(err => res.status(500).sjson({ message: err }));
   }
 
   static validatePassword(req, res) {
     User.findById(req.payload).exec().then(user => {
       if (!user) {
-        return res.status(404).json({ message: 'User does not exist.' });
+        return res.status(404).sjson({ message: 'User does not exist.' });
       } else if (user.validPassword(req.body.adminPass)) {
-        return res.status(200).json({ message: 'ok.' });
+        return res.status(200).sjson({ message: 'ok.' });
       } else {
-        return res.status(401).json({ message: 'Cannot confirm your identity.' });
+        return res.status(401).sjson({ message: 'Cannot confirm your identity.' });
       }
-    }).catch(err => res.status(500).json({ message: err }));
+    }).catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -341,7 +341,7 @@ export default class AuthenticationController {
         .populate('profile preference').exec().then(user => {
           user.profile.online().then(profile => {
             user.profile = profile;
-            user.save().then(user => res.status(200).json({ token: user.generateJWT(app) })).catch(err => next(err));
+            user.save().then(user => res.status(200).sjson({ token: user.generateJWT(app) })).catch(err => next(err));
           }).catch(err => next(err));
         }).catch(err => next(err));
     };
@@ -360,7 +360,7 @@ export default class AuthenticationController {
     VerificationToken.findOne({ token: token }).exec()
       .then(token => {
         return (req.token = token) ? next() :
-          res.status(404).json({
+          res.status(404).sjson({
             message: 'Verification token is expired or invalid.',
           });
       })

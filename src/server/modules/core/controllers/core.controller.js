@@ -25,7 +25,7 @@ export default class CoreController {
    * @static
    */
   static get({ core }, res) {
-    res.status(200).json(core);
+    res.status(200).sjson(core);
   }
 
   /**
@@ -44,7 +44,7 @@ export default class CoreController {
         let _core = core.toObject();
         delete _core.admin;
         delete _core.mailer;
-        res.status(200).json(_core);
+        res.status(200).sjson(_core);
       }).catch(err => next(err));
   }
 
@@ -60,21 +60,21 @@ export default class CoreController {
     req.checkBody('admin.email', 'Invalid admin email.').isEmail();
     let errors = req.validationErrors();
     if (errors) {
-      return res.status(400).json({ message: errors[0].msg });
+      return res.status(400).sjson({ message: errors[0].msg });
     }
 
     Core.find().then(([core, ...rest]) => {
       if (core && core.global.installed) {
-        res.status(400).json({ message: 'Bad Request!' });
+        res.status(400).sjson({ message: 'Bad Request!' });
       } else {
         req.checkBody('basic.title', 'Title cannot be empty!').notEmpty();
         var errors = req.validationErrors();
         if (errors) {
-          return res.status(400).json({ message: errors });
+          return res.status(400).sjson({ message: errors });
         }
         Core.create(req.body).then(core => {
           core.global.styles.push({ name: 'Konko', root: 'styles/core' });
-          core.save().then(core => res.status(201).json(core)).catch(err => next(err));
+          core.save().then(core => res.status(201).sjson(core)).catch(err => next(err));
         }).catch(err => next(err));
       }
     }).catch(err => next(err));
@@ -90,8 +90,8 @@ export default class CoreController {
   static update({ body, core, _fields }, res) {
     utils.partialUpdate(body, core, _fields);
     core.save()
-      .then(core => res.status(200).json(core))
-      .catch(err => res.status(500).json({ message: err }));
+      .then(core => res.status(200).sjson(core))
+      .catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -105,11 +105,11 @@ export default class CoreController {
    */
   static findCoreById(req, res, next, id) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: 'Core ID is invalid' });
+      return res.status(400).sjson({ message: 'Core ID is invalid' });
     }
 
     Core.findById(id).exec()
-      .then(core => (req.core = core) ? next() : res.status(404).json({ message: 'Core is not found.' }))
+      .then(core => (req.core = core) ? next() : res.status(404).sjson({ message: 'Core is not found.' }))
       .catch(err => next(err));
   }
 

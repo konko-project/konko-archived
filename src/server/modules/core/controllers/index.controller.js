@@ -38,7 +38,7 @@ export default class IndexController {
       } else {
         res.redirect('/setup');
       }
-    }).catch(err => res.status(500).json({ message: err }));
+    }).catch(err => res.status(500).sjson({ message: err }));
   }
 
   static setup(req, res) {
@@ -53,6 +53,6 @@ export default class IndexController {
           host: req.get('host'),
         });
       }
-    }).catch(err => res.status(500).json({ message: err }));
+    }).catch(err => res.status(500).sjson({ message: err }));
   }
 }

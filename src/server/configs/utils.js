@@ -17,6 +17,24 @@ export default class Utilities {
   constructor() {}
 
   /**
+   * Patch JSON with angular prefix to prevent JSON Vulnerability
+   *
+   * @param {Object} req - HTTP request.
+   * @param {Object} res - HTTP response.
+   * @param {nextCallback} next - A callback to run.
+   * @returns {nextCallback} Call next middleware.
+   * @static
+   */
+  static patchJSON(req, res, next) {
+    const sjson = obj => {
+      const prefix = ')]}\',\n';
+      return res.send(prefix + JSON.stringify(obj));
+    };
+    res.sjson = process.env.NODE_ENV !== 'test' ? sjson : res.json;
+    return next();
+  }
+
+  /**
    * Declare content language in header for every response
    *
    * @param {Object} req - HTTP request.
@@ -56,7 +74,7 @@ export default class Utilities {
     const Core = mongoose.model('Core');
     Core.findOne().then(core => {
       if (core && !core.basic.public) {
-        return res.status(503).json({ message: 'Site is down.' });
+        return res.status(503).sjson({ message: 'Site is down.' });
       }
       return next();
     }).catch(err => next(err));
@@ -105,7 +123,7 @@ export default class Utilities {
           res.set('X-Rate-Limit-Reset', reset);
           req.rateLimit = rateLimit;
           if (rateLimit.hits > 600) {
-            return res.status(429).json({ message: 'Too Many Requests' });
+            return res.status(429).sjson({ message: 'Too Many Requests' });
           } else {
             return next();
           }

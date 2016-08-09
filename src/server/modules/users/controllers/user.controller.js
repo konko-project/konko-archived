@@ -47,7 +47,7 @@ export default class UserController {
         minlength: tagline.min,
         maxlength: tagline.max,
       });
-    }).catch(err => res.status(500).json({ message: err }));
+    }).catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -57,7 +57,7 @@ export default class UserController {
    * @param {Object} res - HTTP response.
    * @static
    */
-  static get({ user }, res) {
+  static get({ user }, res, next) {
     user.populate('profile preference').populate({
       path: 'bookmarks',
       select: '_id title author panel date views comments',
@@ -72,9 +72,9 @@ export default class UserController {
       },
     }, (err, user) => {
       if (err) {
-        return res.status(500).json({ message: err });
+        return res.status(500).sjson({ message: err });
       }
-      res.status(200).json(user);
+      res.status(200).sjson(user);
     });
   }
 
@@ -98,7 +98,7 @@ export default class UserController {
       } else {
         Profile.findOne({ username: q }).then(profile => {
           User.find({ profile: profile }).populate('profile').select(req._fields).sort(req._sort).exec().then(users => {
-            res.status(200).json(users);
+            res.status(200).sjson(users);
           }).catch(err => next(err));
         }).catch(err => next(err));
         return;
@@ -106,7 +106,7 @@ export default class UserController {
     }
 
     User.find(option).populate('profile').select(req._fields).sort(req._sort).exec().then(users => {
-      res.status(200).json(users);
+      res.status(200).sjson(users);
     }).catch(err => next(err));
   }
 
@@ -121,9 +121,9 @@ export default class UserController {
     User.findById(user).then(user => {
       utils.partialUpdate(body, user, 'permission', 'verified');
       user.save()
-        .then(user => res.status(200).json(user))
-        .catch(err => res.status(500).json({ message: err }));
-    }).catch(err => res.status(500).json({ message: err }));
+        .then(user => res.status(200).sjson(user))
+        .catch(err => res.status(500).sjson({ message: err }));
+    }).catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -136,8 +136,8 @@ export default class UserController {
    */
   static getProfile({ user: { profile } }, res, next) {
     Profile.findById(profile)
-      .then(profile => res.status(200).json(profile))
-      .catch(err => res.status(500).json({ message: err }));
+      .then(profile => res.status(200).sjson(profile))
+      .catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -151,19 +151,19 @@ export default class UserController {
     UserController.updateSchema(res);
     Profile.findOne({ username: body.username }).then(p => {
       if (p && !p.equals(profile)) {
-        return res.status(500).json({ message: 'This username is already used.' });
+        return res.status(500).sjson({ message: 'This username is already used.' });
       }
       Profile.findById(profile).then(profile => {
         utils.partialUpdate(body, profile, 'username', 'tagline', 'gender', 'dob', 'tokenLive', 'avatar', 'banner');
         let error = profile.validateSync();
         if (error && error.errors.username.message) {
-          return res.status(500).json({ message: error.errors.username.message });
+          return res.status(500).sjson({ message: error.errors.username.message });
         }
         profile.save()
-          .then(profile => res.status(200).json(profile))
-          .catch(err => res.status(500).json({ message: err }));
-      }).catch(err => res.status(500).json({ message: err }));
-    }).catch(err => res.status(500).json({ message: err }));
+          .then(profile => res.status(200).sjson(profile))
+          .catch(err => res.status(500).sjson({ message: err }));
+      }).catch(err => res.status(500).sjson({ message: err }));
+    }).catch(err => res.status(500).sjson({ message: err }));
 
   }
 
@@ -177,8 +177,8 @@ export default class UserController {
    */
   static getPreference({ user: { preference } }, res, next) {
     Preference.findById(preference)
-      .then(preference => res.status(200).json(preference))
-      .catch(err => res.status(500).json({ message: err }));
+      .then(preference => res.status(200).sjson(preference))
+      .catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -193,10 +193,10 @@ export default class UserController {
       .then(preference => {
         utils.partialUpdate.apply(null, [body, preference].concat(Object.keys(body)));
         preference.save()
-          .then(preference => res.status(200).json(preference))
-          .catch(err => res.status(500).json({ message: err }));
+          .then(preference => res.status(200).sjson(preference))
+          .catch(err => res.status(500).sjson({ message: err }));
       })
-      .catch(err => res.status(500).json({ message: err }));
+      .catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -244,9 +244,9 @@ export default class UserController {
       },
     }, (err, user) => {
       if (err) {
-        return res.status(500).json({ message: err });
+        return res.status(500).sjson({ message: err });
       }
-      res.status(200).json(user.bookmarks);
+      res.status(200).sjson(user.bookmarks);
     });
   }
 
@@ -261,9 +261,9 @@ export default class UserController {
     user.bookmarks.remove(topic);
     user.save().then(u => {
       topic.unbookmark(u._id.toString()).then(t => {
-        res.status(204).json({});
-      }).catch(err => res.status(500).json({ message: err }));
-    }).catch(err => res.status(500).json({ message: err }));
+        res.status(204).sjson({});
+      }).catch(err => res.status(500).sjson({ message: err }));
+    }).catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -274,7 +274,7 @@ export default class UserController {
    * @static
    */
   static getPermission({ user: { permission } }, res) {
-    res.status(200).json({ permission: permission });
+    res.status(200).sjson({ permission: permission });
   }
 
   /**
@@ -287,8 +287,8 @@ export default class UserController {
   static setPermission({ body, user }, res) {
     user.permission = body.permission;
     user.save().then(u => {
-      res.status(204).json({});
-    }).catch(err => res.status(500).json({ message: err }));
+      res.status(204).sjson({});
+    }).catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -302,12 +302,14 @@ export default class UserController {
    */
   static findUserById(req, res, next, id) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: 'User ID is invalid' });
+      return res.status(400).sjson({ message: 'User ID is invalid' });
+    } else if (!req.payload) {
+      return next();
     }
 
     let select = id === req.payload._id ? '-hash -salt' : '-email -hash -salt';
     User.findById(id).select(select).exec()
-      .then(user => (req.user = user) ? next() : res.status(404).json({ message: 'User is not found' }))
+      .then(user => (req.user = user) ? next() : res.status(404).sjson({ message: 'User is not found' }))
       .catch(err => next(err));
   }
 }

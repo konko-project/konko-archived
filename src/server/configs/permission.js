@@ -32,16 +32,14 @@ export default class PermissionMiddleware {
    */
   static get(permission, model = null) {
     return (req, res, next) => {
+      req._docs = model ? req[model] : { author: null };
       if (req.payload.permission === 'guest') {
         PermissionMiddleware[permission](req, res, next);
       } else {
         User.findById(req.payload).then(user => {
           req.payload.permission = user.permission;
-          if(model) {
-            req._docs = req[model];
-          }
           PermissionMiddleware[permission](req, res, next);
-        }).catch(err => res.status(500).json({ message: err }));
+        }).catch(err => res.status(500).sjson({ message: err }));
       }
     };
   }
@@ -59,15 +57,15 @@ export default class PermissionMiddleware {
    */
   static allowOwner({ payload, _docs: { author }, user }, res, next) {
     if (!payload) {
-      return res.status(401).json({ message: MissingToken });
+      return res.status(401).sjson({ message: MissingToken });
     } else if (!author && !user) {
-      return res.status(400).json({ message: MissingOwner });
+      return res.status(500).sjson({ message: MissingOwner });
     } else if (author) {  // author will be string of ObjectId already
-      return author.equals(payload._id) ? next() : res.status(401).json({ message: NoPermToAccess });
+      return author.equals(payload._id) ? next() : res.status(401).sjson({ message: NoPermToAccess });
     } else if (user) {
-      return user._id.equals(payload._id) ? next() : res.status(401).json({ message: NoPermToAccess });
+      return user._id.equals(payload._id) ? next() : res.status(401).sjson({ message: NoPermToAccess });
     } else {
-      return res.status(500).json({ message: Unknown });
+      return res.status(500).sjson({ message: Unknown });
     }
   }
 
@@ -86,19 +84,19 @@ export default class PermissionMiddleware {
    */
   static allowAdminOwner({ payload, _docs: { author }, user }, res, next) {
     if (!payload) {
-      return res.status(401).json({ message: MissingToken });
+      return res.status(401).sjson({ message: MissingToken });
     } else if (!author && !user) {
-      return res.status(400).json({ message: MissingOwner });
+      return res.status(500).sjson({ message: MissingOwner });
+    } else if (payload.permission === 'banned' || payload.permission === 'guest') {
+      return res.status(401).sjson({ message: NoPermToAccess });
     } else if (payload.permission === 'admin') {
       return next();
-    } else if (payload.permission === 'banned') {
-      return res.status(401).json({ message: NoPermToAccess });
     } else if (author) {  // author will be string of ObjectId already
-      return author.equals(payload._id) ? next() : res.status(401).json({ message: NoPermToAccess });
+      return author.equals(payload._id) ? next() : res.status(401).sjson({ message: NoPermToAccess });
     } else if (user) {
-      return user._id.equals(payload._id) ? next() : res.status(401).json({ message: NoPermToAccess });
+      return user._id.equals(payload._id) ? next() : res.status(401).sjson({ message: NoPermToAccess });
     } else {
-      return res.status(500).json({ message: Unknown });
+      return res.status(500).sjson({ message: Unknown });
     }
   }
 
@@ -115,9 +113,9 @@ export default class PermissionMiddleware {
    */
   static allowAdmin({ payload }, res, next) {
     if (!payload) {
-      return res.status(401).json({ message: MissingToken });
+      return res.status(401).sjson({ message: MissingToken });
     } else if (payload.permission !== 'admin') {
-      return res.status(401).json({ message: NoPermToAccess });
+      return res.status(401).sjson({ message: NoPermToAccess });
     } else {
       next();
     }
@@ -135,9 +133,9 @@ export default class PermissionMiddleware {
    */
   static allowUser({ payload }, res, next) {
     if (!payload) {
-      return res.status(401).json({ message: MissingToken });
+      return res.status(401).sjson({ message: MissingToken });
     } else if (payload.permission === 'guest' || payload.permission === 'banned') {
-      return res.status(401).json({ message: NoPermToAccess });
+      return res.status(401).sjson({ message: NoPermToAccess });
     } else {
       next();
     }
@@ -155,9 +153,9 @@ export default class PermissionMiddleware {
    */
   static allowRegistered({ payload }, res, next) {
     if (!payload) {
-      return res.status(401).json({ message: MissingToken });
+      return res.status(401).sjson({ message: MissingToken });
     } else if (payload.permission === 'guest') {
-      return res.status(401).json({ message: NoPermToAccess });
+      return res.status(401).sjson({ message: NoPermToAccess });
     } else {
       next();
     }
@@ -175,7 +173,7 @@ export default class PermissionMiddleware {
    */
   static allowAll({ payload }, res, next) {
     if (!payload) {
-      return res.status(401).json({ message: MissingToken });
+      return res.status(401).sjson({ message: MissingToken });
     } else {
       next();
     }
@@ -193,7 +191,7 @@ export default class PermissionMiddleware {
    * @returns {Response} Always response 401.
    */
   static denyAll({ payload }, res, next) {
-    return res.status(401).json({ message: NoPermToAccess });
+    return res.status(401).sjson({ message: NoPermToAccess });
   }
 
   /**
@@ -208,9 +206,9 @@ export default class PermissionMiddleware {
    */
   static denyUser({ payload }, res, next) {
     if (!payload) {
-      return res.status(401).json({ message: MissingToken });
+      return res.status(401).sjson({ message: MissingToken });
     } else if (payload.permission === 'banned' || payload.permission === 'user') {
-      return res.status(401).json({ message: NoPermToAccess });
+      return res.status(401).sjson({ message: NoPermToAccess });
     } else {
       next();
     }
@@ -228,9 +226,9 @@ export default class PermissionMiddleware {
    */
   static denyBanned({ payload }, res, next) {
     if (!payload) {
-      return res.status(401).json({ message: MissingToken });
+      return res.status(401).sjson({ message: MissingToken });
     } else if (payload.permission === 'banned') {
-      return res.status(401).json({ message: NoPermToAccess });
+      return res.status(401).sjson({ message: NoPermToAccess });
     } else {
       next();
     }
@@ -249,9 +247,9 @@ export default class PermissionMiddleware {
    */
   static denyGuest({ payload }, res, next) {
     if (!payload) {
-      return res.status(401).json({ message: MissingToken });
+      return res.status(401).sjson({ message: MissingToken });
     } else if (payload.permission === 'guest') {
-      return res.status(401).json({ message: NoPermToAccess });
+      return res.status(401).sjson({ message: NoPermToAccess });
     } else {
       next();
     }

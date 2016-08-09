@@ -91,6 +91,9 @@ export default dirname => {
   // declare content language
   app.use(utils.setLanguage);
 
+  // patch JSON with prefix
+  app.use(utils.patchJSON);
+
   // check site publicity
   app.use(jwt({
     secret: app.get('secret'),

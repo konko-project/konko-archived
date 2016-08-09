@@ -12,7 +12,7 @@ import index from '../controllers/index.controller';
 export default app => {
 
   app.route('/:url(api|libs|javascripts|css|favicons)/*').get((req, res) => {
-    res.status(404).json({
+    res.status(404).sjson({
       messages: 'Not Found!',
     });
   });
