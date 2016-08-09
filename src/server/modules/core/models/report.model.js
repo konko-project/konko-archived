@@ -8,7 +8,7 @@ import mongoose from 'mongoose';
  */
 const reportSchema = new mongoose.Schema({
   iid: { type: String, required: '{PATH} is required' },
-  type: { type: String, required: '{PATH} is required' },
+  type: { type: String, enum: ['user', 'topic', 'comment'], required: '{PATH} is required' },
   url: { type: String, required: '{PATH} is required' },
   reason: { type: String, required: '{PATH} is required' },
   createAt: { type: Date, default: Date.now },
