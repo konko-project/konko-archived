@@ -32,7 +32,7 @@ export default app => {
     .put(JWT, permission.get('allowOwner', 'user'), user.updatePreference);
 
   app.route('/api/v1/users/:userId/bookmarks')
-    .get(JWT, permission.get('allowUser'), user.getBookmarks);
+    .get(JWT, permission.get('allowOwner', 'user'), user.getBookmarks);
 
   app.route('/api/v1/users/:userId/bookmarks/:topicId')
     .delete(utils.throttle, JWT, permission.get('allowOwner', 'user'), user.removeBookmark);

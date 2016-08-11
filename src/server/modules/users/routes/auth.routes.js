@@ -31,10 +31,10 @@ export default app => {
     .get(utils.throttle, auth.verify);
 
   app.route('/api/v1/auth/reset')
-    .post(utils.throttle, JWT_AUTH, permission.get('allowAll'), auth.resetPass(app));
+    .post(utils.throttle, JWT_AUTH, permission.get('allowRegistered'), auth.resetPass(app));
 
   app.route('/api/v1/auth/confirm')
-    .post(utils.throttle, JWT_AUTH, permission.get('allowAdmin'), auth.validatePassword);
+    .post(utils.throttle, JWT_AUTH, permission.get('allowAdmin'), auth.validateAdminPassword);
 
   app.param('token', auth.findToken);
 };
