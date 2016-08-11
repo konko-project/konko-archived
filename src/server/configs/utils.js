@@ -106,7 +106,7 @@ export default class Utilities {
       .exec().then(rateLimit => {
         if (!rateLimit) {
           RateLimit.create({ ip: ip }).then(rateLimit => {
-            let reset = 10 * 60 * 1000 - (new Date().getTime() - rateLimit.expiresAt.getTime());
+            let reset = 10 * 60 * 1000 - (new Date().getTime() - rateLimit.createdAt.getTime());
             res.set('X-Rate-Limit-Limit', 600);
             res.set('X-Rate-Limit-Remaining', 600 - rateLimit.hits);
             res.set('X-Rate-Limit-Reset', reset);
@@ -117,7 +117,7 @@ export default class Utilities {
             return next(err);
           });
         } else {
-          let reset = 10 * 60 * 1000 - (new Date().getTime() - rateLimit.expiresAt.getTime());
+          let reset = 10 * 60 * 1000 - (new Date().getTime() - rateLimit.createdAt.getTime());
           res.set('X-Rate-Limit-Limit', 600);
           res.set('X-Rate-Limit-Remaining', 600 - rateLimit.hits);
           res.set('X-Rate-Limit-Reset', reset);
