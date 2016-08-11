@@ -65,7 +65,7 @@ export default class CoreController {
 
     Core.find().then(([core, ...rest]) => {
       if (core && core.global.installed) {
-        res.status(400).sjson({ message: 'Bad Request!' });
+        res.status(403).sjson({ message: 'Forbidden!' });
       } else {
         req.checkBody('basic.title', 'Title cannot be empty!').notEmpty();
         var errors = req.validationErrors();
@@ -88,7 +88,10 @@ export default class CoreController {
    * @static
    */
   static update({ body, core, _fields }, res) {
-    utils.partialUpdate(body, core, _fields);
+    if (!_fields) {
+      return res.status(400).sjson({ message: 'No field was specified to update.' });
+    }
+    utils.partialUpdate(body, core, ..._fields.split(' '));
     core.save()
       .then(core => res.status(200).sjson(core))
       .catch(err => res.status(500).sjson({ message: err }));

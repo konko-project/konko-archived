@@ -92,7 +92,7 @@ export default class ReportController {
    * @static
    */
   static update({ body, report, _fields }, res) {
-    utils.partialUpdate(body, report, _fields);
+    utils.partialUpdate(body, report, ..._fields.split(' '));
     report.save()
       .then(report => res.status(200).sjson(report))
       .catch(err => res.status(500).sjson({ message: err }));
