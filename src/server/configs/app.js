@@ -69,7 +69,7 @@ export default dirname => {
 
   // view engine setup
   app.set('views', path.join(app.pwd, STATICS.shared.root));
-  app.set('view engine', 'jade');
+  app.set('view engine', 'pug');
 
   // multer
   app.multer = multer;

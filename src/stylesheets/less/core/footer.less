@@ -1,0 +1,32 @@
+@import '../globals/mixins';
+@import '../globals/constants';
+
+.footer {
+  z-index: 2333;
+  position: absolute;
+  padding: 1rem 2rem;
+  height: @globalFooterHeight;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.5); // fallback
+  background-color: #fff8;
+  .footer-nav {
+    padding-bottom: 0.5rem;
+  }
+}
+@media screen {
+  @media (max-width: (@largeScreen - 1px)) and (min-width: @mediumScreen) {
+    .footer {
+      padding: 1rem (@globalViewPadding / 2);
+    }
+  }
+  @media (max-width: (@mediumScreen - 1px)) and (min-width: @smallScreen) {
+    .footer {
+      padding: 1rem (@globalViewPadding / 4);
+    }
+  }
+  @media (max-width: (@smallScreen - 1px)) {
+    .footer {
+      padding: 1rem 0.5rem;
+    }
+  }
+}

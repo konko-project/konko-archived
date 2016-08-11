@@ -10,12 +10,14 @@ const STATICS = require('./configurations/statics');
 const ENV = require('./configurations/environment');
 
 module.exports = grunt => {
+
   // Grunt configuration
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     /** grunt-babel **/
     babel: {
       options: {
+        sourceMap: true,
         presets: ['babel-preset-es2015-node5', 'stage-0'],
       },
       server: {

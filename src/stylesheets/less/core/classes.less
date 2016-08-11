@@ -19,6 +19,9 @@
 .f-a-i-fe {
   .AlignItems(flex-end);
 }
+.f-j-c-sa {
+  .JustifyContent(space-around);
+}
 .f-j-c-sb {
   .JustifyContent(space-between);
 }
@@ -34,6 +37,8 @@
 .wrap {
   .FlexWrap(wrap);
 }
+
+/* font */
 .f-s-1 {
   font-size: 1rem !important;
 }
@@ -42,6 +47,32 @@
 }
 
 /* border */
+.b-l-0 {
+  border-left: 0 !important;
+}
+.b-r-0 {
+  border-right: 0 !important;
+}
+.b-t-0 {
+  border-top: 0 !important;
+}
+.b-b-0 {
+  border-bottom: 0 !important;
+}
+.b-x-0 {
+  border-left: 0 !important;
+  border-right: 0 !important;
+}
+.b-y-0 {
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+}
+.b-a-0 {
+  border: 0 !important;
+}
+.b-a-1-d {
+  border: 0.0625rem dotted @globalBorderColor !important;
+}
 .b-t-1-d {
   border-top: 0.0625rem dotted @globalBorderColor !important;
 }
@@ -60,15 +91,18 @@
   background: @globalLoadingBarColor;
 }
 
+/* */
 .text-wrap {
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
 
+/* */
 .file-custom::after {
   content: attr(data-content);
 }
 
+/* */
 ul .list-group-item, .list-group-item {
   background: @globalBackgroundColor;
   &:hover {
@@ -79,4 +113,50 @@ ul .list-group-item, .list-group-item {
 /* form */
 .form-heading {
   margin-bottom: 1.5rem;
+}
+
+.custom-cb-wrapper {
+  position: relative;
+  .Translate2D(0, 50%);
+  .custom-control-description {
+    vertical-align: top;
+  }
+}
+
+.custom-rd-wrapper {
+  padding: 0.5rem 0;
+  .custom-control-description {
+    vertical-align: top;
+  }
+}
+
+.custom-select, .custom-select option {
+  font-family: 'Segoe UI', Frutiger, 'Frutiger Linotype', 'Dejavu Sans', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* image */
+.img-center {
+  position: relative;
+  text-align: center;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.15);
+  > img {
+    top: 50%;
+    left: 50%;
+    position: absolute;
+    margin: auto;
+    .Translate3D(-50%, -50%, 0);
+  }
+}
+
+/* collapse */
+.c-collapse {
+  &:after {
+    content: '\23f6';
+  }
+  &.collapsed {
+    &:after {
+      content: '\23f7';
+    }
+  }
 }

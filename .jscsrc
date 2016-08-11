@@ -1,6 +1,6 @@
 {
   "maximumLineLength": {
-    "value": 120,
-    "allExcept": ["regex", "functionSignature"]
+    "value": 80,
+    "allExcept": ["regex", "functionSignature", "comments", "require", "urlComments"],
   }
 }

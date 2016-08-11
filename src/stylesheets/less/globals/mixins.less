@@ -10,6 +10,13 @@
 	-o-transform: translate(@x, @y);
 	transform: translate(@x, @y);
 }
+.Translate3D(@x: 0, @y: 0, @z: 0) {
+	-webkit-transform: translate3d(@x, @y, @z);
+	-moz-transform: translate3d(@x, @y, @z);
+	-ms-transform: translate3d(@x, @y, @z);
+	-o-transform: translate3d(@x, @y, @z);
+	transform: translate3d(@x, @y, @z);
+}
 .DonutChart(@color) {
   stroke: @color;
   stroke-width: 0.065rem !important;
@@ -98,4 +105,25 @@
   -moz-transition: @arguments;
   -o-transition: @arguments;
   transition: @arguments;
+}
+.LinearGradients(@direction, @step1, @step2, @rest...) {
+  background: @step1;
+  background: -webkit-linear-gradient(@direction, @step1, @step2, @rest);
+  background: -moz-linear-gradient(@direction, @step1, @step2, @rest);
+  background: -o-linear-gradient(@direction, @step1, @step2, @rest);
+  background: linear-gradient(@direction, @step1, @step2, @rest);
+}
+.LinearGradients (@step1, @step2, @rest...) {
+  background: @step1;
+  background: -webkit-linear-gradient(@step1, @step2, @rest);
+  background: -moz-linear-gradient(@step1, @step2, @rest);
+  background: -o-linear-gradient(@step1, @step2, @rest);
+  background: linear-gradient(@step1, @step2, @rest);
+}
+.LinearGradients (@step1, @step2) {
+  background: @step1;
+  background: -webkit-linear-gradient(@step1, @step2);
+  background: -moz-linear-gradient(@step1, @step2);
+  background: -o-linear-gradient(@step1, @step2);
+  background: linear-gradient(@step1, @step2);
 }

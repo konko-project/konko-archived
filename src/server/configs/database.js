@@ -18,55 +18,63 @@ export default class Database {
 
   /**
    * @constructs
+   *
+   * @param {String} server - directory where the server file is located.
    */
-  constructor() {}
+  constructor(server) {
+    this.server = server;
+    this.loadModels();
+    this.info = {};
+  }
 
   /**
    * Glob and require all data models's path with given path pattern.
    *
-   * @param {Object} server - Module that contains server side paths.
-   * @param {Database~optionalCallback} callback - An optional callback.
-   * @static
    */
-  static loadModels(server, callback) {
+  loadModels() {
     let env = process.env.NODE_ENV;
-    server.models.forEach(pattern => {
-      let root = env === 'production' ? server.dist.paths.root :
-                 env === 'development' ? server.build.paths.root :
-                 env === 'test' ? server.build.paths.root : '';
+    this.server.models.forEach(pattern => {
+      let root = env === 'production' ? this.server.dist.paths.root :
+                 env === 'development' ? this.server.build.paths.root :
+                 env === 'test' ? this.server.build.paths.root : '';
       glob.sync(path.join(root, pattern)).forEach(path => {
         require(path.replace(root, '..').replace('.js', ''));
       });
     });
-    if (callback) {
-      callback();
-    }
   }
 
   /**
    * Make connection to MongoDB via mongoose based on current express
    * environment.
    *
-   * @param {Database~databaseCallback} callback - A callback that handles a
-   *        connected database.
-   * @static
+   * @param {String} env - Node environment
+   * @returns {Promise} connection information
    */
-  static connect(callback) {
-    let env = process.env.NODE_ENV;
+  connect(env) {
     let uri = env === 'production' ? URI_PROD :
               env === 'development' ? URI_DEV :
               env === 'test' ? URL_TEST : '';
 
-    // connect to mongoDB
-    let database = mongoose.connect(uri, err => {
-      if (err) {
-        console.error('Error when connecting to MongoDB...');
-        console.log(err);
-      } else {
-        if (callback) {
-          callback(database);
+    return new Promise((resolve, reject) => {
+      let database = mongoose.connect(uri, err => {
+        if (err) {
+          console.error('Error when connecting to MongoDB...');
+          console.error(err);
+        } else {
+          let admin = new mongoose.mongo.Admin(mongoose.connection.db);
+          let connection = database.connection;
+          admin.buildInfo((err, info) => {
+            this.info = {
+              name: connection.name,
+              host: connection.host,
+              port: connection.port,
+              admin: connection.user,
+              version: info.version,
+            };
+            resolve(this.info);
+          });
         }
-      }
+      });
     });
   }
 
@@ -83,19 +91,6 @@ export default class Database {
     });
   }
 }
-
-/**
- * Optional callback to run if has one.
- *
- * @callback Database~optionalCallback
- */
-
-/**
- * Callback that handles a connected database.
- *
- * @callback Database~databaseCallback
- * @param {Object} database - A connected database.
- */
 
 /**
  * Callback that handles error from database disconnection.

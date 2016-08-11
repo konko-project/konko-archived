@@ -1,12 +1,15 @@
 @import '../globals/mixins';
 @import '../globals/constants';
 
+// set document always extend to the bottom
+.container-fluid {
+  height: auto !important;
+  min-height: calc(~'100% - '@globalFooterHeight);
+}
+
 /* ui view */
-@defaultViewTop: 3.375rem;
-@defaultViewPadding: 4rem;
 .view {
-  top: @defaultViewTop;
-  padding:@defaultViewPadding;
+  padding: @globalViewTop @globalViewPadding @globalViewPadding;
   .breadcrumb {
     background: none;
     border-radius: 0;
@@ -24,17 +27,17 @@
 @media screen {
   @media (max-width: (@largeScreen - 1px)) and (min-width: @mediumScreen) {
     .view {
-      padding: @defaultViewPadding / 2;
+      padding: @globalViewTop (@globalViewPadding / 2) (@globalViewPadding / 2);
     }
   }
   @media (max-width: (@mediumScreen - 1px)) and (min-width: @smallScreen) {
     .view {
-      padding: @defaultViewPadding / 4;
+      padding: @globalViewTop (@globalViewPadding / 4) (@globalViewPadding / 4);
     }
   }
   @media (max-width: (@smallScreen - 1px)) {
     .view {
-      padding: 0;
+      padding: @globalViewTop 0;
     }
   }
 }

@@ -14,6 +14,9 @@
   }
   &:hover .p-b-edit {
     visibility: visible;
+    a {
+      color: #ddd;
+    }
   }
   img {
     top: 0;
@@ -27,13 +30,18 @@
 .p-b-edit {
   top: 0;
   right: 0;
+  width: 100%;
   position: absolute;
-  padding: 0 0.5rem;
+  padding: 0.25rem 0.5rem;
   visibility: hidden;
+  .LinearGradients(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.0));
   a {
-    font-family: 'Segoe UI', Frutiger, 'Frutiger Linotype', 'Dejavu Sans', 'Helvetica Neue', Arial, sans-serif;
-    font-size: 1.5rem;
-    text-shadow: 0.125rem 0.125rem 0.125rem #000;
+    color: #fff !important;
+    display: block;
+    font-size: 0.9rem;
+    &:hover {
+      color: @globalAnchorColor !important;
+    }
   }
 }
 
@@ -52,14 +60,11 @@
   width: 10rem;
   height: 10rem;
   z-index: 1;
-  overflow: hidden;
   margin-top: -5rem;
   .Translate2D(-50%, 0);
   img {
-    position: absolute;
     width: auto;
     height: 10rem;
-    .Translate2D(-50%, 0);
   }
   div {
     position: relative;
@@ -90,33 +95,42 @@
 .p-username {
   position: relative;
   font-size: 2.0rem;
+  span {
+    top: 50%;
+    position: absolute;
+    font-size: 1.2rem;
+    font-family: 'Segoe UI', Frutiger, 'Frutiger Linotype', 'Dejavu Sans', 'Helvetica Neue', Arial, sans-serif;
+  }
 }
 .p-gender {
-  top: 50%;
-  position: absolute;
   transform: translate(0, -50%) rotateZ(20deg);
-  font-size: 1.2rem;
   padding-left: 0.5rem;
-  font-family: 'Segoe UI', Frutiger, 'Frutiger Linotype', 'Dejavu Sans', 'Helvetica Neue', Arial, sans-serif;
+}
+.p-birth {
+  transform: translate(-50%, -50%);
+  margin-left: -1rem;
+}
+.p-since {
+  border-bottom: 0.0625rem dashed @globalBorderColor;
 }
 
 /* user topics */
 .profile-t {
   .card-title {
-    position: relative;
     img {
-      height: 4rem;
-      width: 4rem;
-    }
-    span {
-      top: 50%;
-      right: 0;
-      position: absolute;
-      .Translate2D(0, -50%);
+      max-height: 4rem;
+      max-width: 4rem;
     }
   }
+  [konko-post] {
+    max-height: 240px;
+  }
+}
+.p-t-info {
+  padding: 0 15px;
 }
 .p-t-title {
+  max-height: 4rem;
   display: -moz-inline-stack;
   display: inline-block;
 }

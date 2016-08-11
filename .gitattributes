@@ -7,7 +7,7 @@
 *.js text
 *.less text
 *.ejs text
-*.jade text
+*.pug text
 *.json text
 *.md text
 *.py text

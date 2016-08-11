@@ -21,7 +21,7 @@ export default app => {
   if (app.get('env') === 'development') {
     app.use((err, req, res, next) => {
       res.status(err.status || 500);
-      res.render('jade/error', {
+      res.render('pug/error', {
         message: err.message,
         error: err,
       });
@@ -32,7 +32,7 @@ export default app => {
   // no stacktraces leaked to user
   app.use((err, req, res, next) => {
     res.status(err.status || 500);
-    res.render('jade/error', {
+    res.render('pug/error', {
       message: err.message,
       error: {},
     });

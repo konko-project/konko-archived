@@ -1,6 +1,6 @@
 'use strict';
 
-import jade from 'jade';
+import pug from 'pug';
 import nodemailer from 'nodemailer';
 import sesTransport from 'nodemailer-ses-transport';
 import sendmailTransport from 'nodemailer-sendmail-transport';
@@ -58,15 +58,15 @@ export default class Mailer {
   }
 
   /**
-   * Compiles the jade template into html
+   * Compiles the pug template into html
    *
-   * @param {String} fileName - The jade template file name
+   * @param {String} fileName - The pug template file name
    * @param {Object} data - The data that parse into the template
-   * @param {jadeCallback} cb - Callback that handles the compiled HTML
+   * @param {pugCallback} cb - Callback that handles the compiled HTML
    */
-  compileJade(fileName, data, cb) {
-    let absPath = this.app.pwd + '/static/jade/' + fileName + '.jade';
-    jade.renderFile(absPath, data, (error, compiled) => {
+  compilePug(fileName, data, cb) {
+    let absPath = this.app.pwd + '/static/pug/' + fileName + '.pug';
+    pug.renderFile(absPath, data, (error, compiled) => {
       if (error) {
         cb(error, null);
       } else {
@@ -102,7 +102,7 @@ export default class Mailer {
 /**
  * Callback that handles the compiled HTML or error.
  *
- * @callback jadeCallback
+ * @callback pugCallback
  * @param {Object} error - Error, if has any.
  * @param {Object} compiled - The compiled HTML
  */

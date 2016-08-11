@@ -1,11 +1,11 @@
 doctype html
 html
     head
-        include ./head.jade
+        include ./head.pug
     body
-        include ./navbar.jade
+        include ./navbar.pug
         block view
             .container-fluid
         each file in js
             script(src="#{file}")
-        include ./footer.jade
+        include ./footer.pug

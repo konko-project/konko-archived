@@ -4,7 +4,7 @@
 /* navbar */
 .pos-f-t > nav {
   border-radius: 0;
-  .DropShadow(0, 0, 0.5rem, 0.0625rem, #000);
+  border-bottom: 0.0625rem solid @globalBorderColor !important;
 }
 
 .navbar-brand {
@@ -58,5 +58,8 @@
   }
   span {
     font-size: 1rem;
+  }
+  a {
+    padding-bottom: 0.5rem;
   }
 }

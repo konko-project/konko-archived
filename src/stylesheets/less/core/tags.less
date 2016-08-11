@@ -1,6 +1,10 @@
 @import '../globals/mixins';
 @import '../globals/constants';
 
+html, body {
+  height: 100%;
+}
+
 body {
   background: @globalBackgroundColor;
 }
@@ -24,7 +28,7 @@ img {
 
 blockquote {
   padding: 0 0 0.5rem 1rem;
-  border-left: 0.5rem solid @globalBorderColor;
+  border-left: 0.25rem solid @globalBorderColor;
   border-bottom: 0.0625rem dotted @globalBorderColor;
 }
 

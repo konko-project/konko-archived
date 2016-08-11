@@ -175,20 +175,20 @@ export default class Utilities {
       return true;
     } else if (secret === 'DEFAULTCOOKIE') {
       if (log) {
-        console.log('* Default cookie secret is in used!');
-        console.log('* It\'s recommended to modify your default cookie secret before running Konko in production mode.');
-        console.log('* You can modify the cookie secret in configuration/secrets.js in the root directory of Konko.');
+        console.warn('* Default cookie secret is in used!');
+        console.warn('* It\'s recommended to modify your default cookie secret before running Konko in production mode.');
+        console.warn('* You can modify the cookie secret in configuration/secrets.js in the root directory of Konko.');
       }
 
       return false;
     } else if (!secret) {
       if (log) {
-        console.log('* Cookie secret is empty or undefined!');
-        console.log('* It\'s recommended to use cookie secret to run Konko in production mode.');
-        console.log('* You can set cookie secret in configuration/secrets.js in the root directory of Konko using node module exports.');
-        console.log('  - Please use \'cookieSecret\' as key.');
-        console.log('  - Please refer to other configurations for constructing a node module.');
-        console.log('  - Please set cookie secret to be something other than \'DEFAULTCOOKIE\'');
+        console.warn('* Cookie secret is empty or undefined!');
+        console.warn('* It\'s recommended to use cookie secret to run Konko in production mode.');
+        console.warn('* You can set cookie secret in configuration/secrets.js in the root directory of Konko using node module exports.');
+        console.warn('  - Please use \'cookieSecret\' as key.');
+        console.warn('  - Please refer to other configurations for constructing a node module.');
+        console.warn('  - Please set cookie secret to be something other than \'DEFAULTCOOKIE\'');
       }
 
       return false;
@@ -210,9 +210,9 @@ export default class Utilities {
       return true;
     } else if (secret === 'DEFAULTJWT') {
       if (log) {
-        console.log('* Default jwt secret is in used!');
-        console.log('* It\'s recommended to modify your default JWT secret before running Konko in production mode.');
-        console.log('* You can modify the cookie secret in configuration/secrets.js in the root directory of Konko.');
+        console.warn('* Default jwt secret is in used!');
+        console.warn('* It\'s recommended to modify your default JWT secret before running Konko in production mode.');
+        console.warn('* You can modify the cookie secret in configuration/secrets.js in the root directory of Konko.');
       }
 
       return false;

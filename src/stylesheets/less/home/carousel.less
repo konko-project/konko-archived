@@ -2,7 +2,7 @@
 @import '../globals/constants';
 
 /* carousel */
-@defaultCarouselHeight: 20rem;
+@defaultCarouselHeight: 24rem;
 @carouselImgTranslate: -50%;
 .konko-carousel {
   .carousel-item {
@@ -16,9 +16,14 @@
     }
   }
   @media screen {
+    @media (max-width: (@largeScreen - 1px)) and (min-width: @mediumScreen) {
+      .carousel-item {
+        height: @defaultCarouselHeight - 2rem;
+      }
+    }
     @media (max-width: (@mediumScreen - 1px)) and (min-width: @smallScreen) {
       .carousel-item {
-        height: @defaultCarouselHeight - 5rem;
+        height: @defaultCarouselHeight - 4rem;
       }
     }
     @media (max-width: (@smallScreen - 1px)) {

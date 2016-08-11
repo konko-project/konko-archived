@@ -2,7 +2,7 @@
 @import '../globals/constants';
 
 /* sidebar */
-.profile-sidebar {
+.admin-sidebar {
   top: 3.5rem;
   left: 0;
   position: fixed;
@@ -18,7 +18,7 @@
 }
 
 /* sidebar menu */
-.p-s-menu {
+.a-s-menu {
   .Animation(appear, 1s, linear);
   &.ng-hide {
     .Animation(disappear, 0.01s, linear);
@@ -34,7 +34,7 @@
 }
 
 /* sidebar avatar button */
-.profile-sidebar-button {
+.admin-sidebar-button {
   top: 50%;
   left: -7rem;
   height: 10rem;
@@ -44,8 +44,8 @@
   .Transition(~'0.6s ease left, 0.4s linear opacity');
   .Translate2D(0, -50%);
 }
-.profile-sidebar-avatar {
-  &:extend(.profile-sidebar-button);
+.admin-sidebar-avatar {
+  &:extend(.admin-sidebar-button);
   overflow: hidden;
   .Opacity(0.3);
   &.show {
@@ -59,8 +59,8 @@
     width: auto;
   }
 }
-.profile-sidebar-avatar-cover {
-  &:extend(.profile-sidebar-button);
+.admin-sidebar-avatar-cover {
+  &:extend(.admin-sidebar-button);
   .Opacity(0.7);
   &.hide {
     left: 10rem;

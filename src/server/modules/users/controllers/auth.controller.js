@@ -141,7 +141,7 @@ export default class AuthenticationController {
                             url: req.protocol + '://' + req.get('host') +
                                   '/verify/' + token.token,
                           };
-                          mailer.compileJade('activate', mailData, (err, html) => {
+                          mailer.compilePug('activate', mailData, (err, html) => {
                             if (err) {
                               return res.status(500).sjson({ message: err });
                             }
@@ -256,7 +256,7 @@ export default class AuthenticationController {
                       '/reset/' + token.token,
                 ttl: core.registration.email.ttl / 60,
               };
-              mailer.compileJade('reset', mailData, (err, html) => {
+              mailer.compilePug('reset', mailData, (err, html) => {
                 if (err) {
                   return res.status(500).sjson({ message: err });
                 }

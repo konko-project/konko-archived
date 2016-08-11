@@ -22,10 +22,15 @@
     margin-bottom: 0.0625rem;
   }
   .p-t-l-i {
-    img {
-      height: 2rem;
-      width: 2rem;
-      .FlexShrink(0);
+    .p-t-l-a {
+      height: 3rem;
+      width: 3rem;
+      img {
+        max-height: 3rem;
+        max-width: 3rem;
+        .FlexShrink(0);
+        .Translate2D(-50%, -50%);
+      }
     }
   }
   .p-t-l-t {
@@ -33,5 +38,8 @@
   }
   .p-t-l-l {
     padding: 0 0.125rem;
+    a {
+      display: block;
+    }
   }
 }

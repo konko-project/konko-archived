@@ -1,0 +1,41 @@
+@custom-file-text-placeholder: en "Choose file...",
+                               zh "选择文件...",
+                               zh-CN "选择文件...",
+                               zh-TW "選擇文件...";
+@custom-file-text-button-label: en "Browse",
+                                zh "浏览",
+                                zh-CN "浏览",
+                                zh-TW "瀏覽";
+
+.make-custom-file-placeholder(@custom-file-text-placeholder);
+.make-custom-file-text-button-label(@custom-file-text-button-label);
+
+.make-custom-file-placeholder(@list) {
+  .loop(length(@list));
+  .loop(@i) when (@i > 0) {
+    .loop((@i - 1));
+    @pair: extract(@list, @i);
+    @lang: extract(@pair, 1);
+    @text: extract(@pair, 2);
+    .custom-file-control {
+      &:lang(@{lang})::after {
+        content: @text;
+      }
+    }
+  }
+}
+
+.make-custom-file-text-button-label(@list) {
+  .loop(length(@list));
+  .loop(@i) when (@i > 0) {
+    .loop((@i - 1));
+    @pair: extract(@list, @i);
+    @lang: extract(@pair, 1);
+    @text: extract(@pair, 2);
+    .custom-file-control {
+      &:lang(@{lang})::before {
+        content: @text;
+      }
+    }
+  }
+}
