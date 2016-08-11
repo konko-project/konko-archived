@@ -11,7 +11,7 @@ const topicSchema = new mongoose.Schema({
   content: { type: String, required: '{PATH} is required' },
   comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
   date: { type: Date, default: Date.now },
-  title: { type: String, required: '{PATH} is required'},
+  title: { type: String, required: '{PATH} is required' },
   updated: {
     by: { type: String, default: null },
     date: { type: Date, default: Date.now },

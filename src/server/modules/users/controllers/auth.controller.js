@@ -214,7 +214,7 @@ export default class AuthenticationController {
       if (req.body.pass) {
         User.findOne({ email: req.body.email }).then(user => {
           if (!user) {
-            return res.status(500).sjson({ message: 'User is not found.' });
+            return res.status(404).sjson({ message: 'User is not found.' });
           } else if (req.body.pass !== req.body.pass2) {
             return res.status(400).sjson({ message: 'Passwords are not match.' });
           }
@@ -302,22 +302,20 @@ export default class AuthenticationController {
    * @static
    */
   static verify(req, res) {
-    User.findById(req.token.user).exec()
-      .then(user => {
-        if (!user) {
-          return res.status(404).sjson({ message: 'User does not exist.' });
-        }
-        user.verified = true;
-        user.save()
-          .then(user => {
-            req.token.remove()
-              .then(() => res.status(200).sjson({ message: 'ok' }))
-              .catch(err => res.status(500).sjson({ message: err }));
-          }).catch(err => res.status(500).sjson({ message: err }));
+    User.findById(req.token.user).exec().then(user => {
+      if (!user) {
+        return res.status(404).sjson({ message: 'User does not exist.' });
+      }
+      user.verified = true;
+      user.save().then(user => {
+        req.token.remove()
+          .then(() => res.status(200).sjson({ message: 'ok' }))
+          .catch(err => res.status(500).sjson({ message: err }));
       }).catch(err => res.status(500).sjson({ message: err }));
+    }).catch(err => res.status(500).sjson({ message: err }));
   }
 
-  static validatePassword(req, res) {
+  static validateAdminPassword(req, res) {
     User.findById(req.payload).exec().then(user => {
       if (!user) {
         return res.status(404).sjson({ message: 'User does not exist.' });
