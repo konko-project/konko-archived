@@ -1,6 +1,7 @@
 'use strict';
 
 import index from '../controllers/index.controller';
+import utils from '../../../configs/utils';
 
 /**
  * Index routing.
@@ -18,5 +19,5 @@ export default app => {
   });
 
   app.route('/setup').get(index.setup);
-  app.route('/*').get(index.index);
+  app.route('/*').get(utils.throttle, index.index);
 };
