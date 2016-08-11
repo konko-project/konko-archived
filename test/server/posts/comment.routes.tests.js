@@ -4,12 +4,13 @@ import path from 'path';
 import request from 'supertest';
 import expect from 'expect.js';
 import mongoose from 'mongoose';
+const Core = mongoose.model('Core');
 const Panel = mongoose.model('Panel');
 const Topic = mongoose.model('Topic');
 const Comment = mongoose.model('Comment');
 const User = mongoose.model('User');
 const Profile = mongoose.model('Profile');
-const Core = mongoose.model('Core');
+const Preference = mongoose.model('Preference');
 const SERVER = require(path.resolve('./configurations/server'));
 const app = require(path.resolve(SERVER.build.paths.root, 'configs/app')).default;
 
@@ -50,6 +51,12 @@ const each = () => {
 
 describe('Comment CRUD Test:', () => {
   before(done => {
+    const buildUser = (username, permission = username) => new User({
+      email: `${username}@test.com`,
+      permission: permission,
+      profile: new Profile({ username: username }),
+      preference: new Preference(),
+    });
     t1 = {
       title: 'Topic 2',
       content: 'A'.repeat(233),
@@ -65,59 +72,49 @@ describe('Comment CRUD Test:', () => {
         return done();
       });
     });
-    Profile.create({ username: 'author' }).then(profile => {
-      User.create({ email: 'author@test.com', permission: 'user', profile: profile }).then(u => author = u).catch(err => {
-        expect(err).to.be.empty();
-        return done();
-      });
-    });
-    Profile.create({ username: 'b_author' }).then(profile => {
-      User.create({ email: 'b_author@test.com', permission: 'banned', profile: profile }).then(u => bannedAuthor = u).catch(err => {
-        expect(err).to.be.empty();
-        return done();
-      });
-    });
+
     let _app = app(path.resolve(SERVER.build.paths.root));
     agent = request.agent(_app);
-    let admin = new User({ email: 'admin@test.com', permission: 'admin' });
-    let user = new User({ email: 'user@test.com', permission: 'user' });
-    let banned = new User({ email: 'banned@test.com', permission: 'banned' });
-    let guest = new User({ email: 'guest@test.com', permission: 'guest' });
-    admin.profile = new Profile({ username: 'admin' });
-    user.profile = new Profile({ username: 'user' });
-    banned.profile = new Profile({ username: 'banned' });
-    guest.profile = new Profile({ username: 'guest' });
-    agent.get('/').end((err, res) => {
-      let csrfToken = /csrfToken=(.*?)(?=\;)/.exec(res.header['set-cookie'].join(''))[1];
-      adminHeader = {
-        Authorization: `Bearer ${admin.generateJWT(_app)}`,
-        'x-csrf-token': csrfToken,
-      };
-      userHeader = {
-        Authorization: `Bearer ${user.generateJWT(_app)}`,
-        'x-csrf-token': csrfToken,
-      };
-      bannedHeader = {
-        Authorization: `Bearer ${banned.generateJWT(_app)}`,
-        'x-csrf-token': csrfToken,
-      };
-      guestHeader = {
-        Authorization: `Bearer ${guest.generateJWT(_app)}`,
-        'x-csrf-token': csrfToken,
-      };
-      authorHeader = {
-        Authorization: `Bearer ${author.generateJWT(_app)}`,
-        'x-csrf-token': csrfToken,
-      };
-      bannedAuthorHeader = {
-        Authorization: `Bearer ${bannedAuthor.generateJWT(_app)}`,
-        'x-csrf-token': csrfToken,
-      };
-      done();
-    });
+    author = buildUser('author', 'user');
+    bannedAuthor = buildUser('b_author', 'banned');
+    let admin = buildUser('admin');
+    let user = buildUser('user');
+    let banned = buildUser('banned');
+    let guest = buildUser('guest');
+
+    author.save().then(bannedAuthor.save().then(admin.save().then(user.save().then(banned.save().then(guest.save().then(u => {
+      agent.get('/').end((err, res) => {
+        let csrfToken = /csrfToken=(.*?)(?=\;)/.exec(res.header['set-cookie'].join(''))[1];
+        adminHeader = {
+          Authorization: `Bearer ${admin.generateJWT(_app)}`,
+          'x-csrf-token': csrfToken,
+        };
+        userHeader = {
+          Authorization: `Bearer ${user.generateJWT(_app)}`,
+          'x-csrf-token': csrfToken,
+        };
+        bannedHeader = {
+          Authorization: `Bearer ${banned.generateJWT(_app)}`,
+          'x-csrf-token': csrfToken,
+        };
+        guestHeader = {
+          Authorization: `Bearer ${guest.generateJWT(_app)}`,
+          'x-csrf-token': csrfToken,
+        };
+        authorHeader = {
+          Authorization: `Bearer ${author.generateJWT(_app)}`,
+          'x-csrf-token': csrfToken,
+        };
+        bannedAuthorHeader = {
+          Authorization: `Bearer ${bannedAuthor.generateJWT(_app)}`,
+          'x-csrf-token': csrfToken,
+        };
+        done();
+      });
+    }))))));
   });
   after(done => {
-    Profile.remove().then(User.remove().then(Core.remove().then(Topic.remove().then(Panel.remove().then(done())))));
+    Preference.remove().then(Profile.remove().then(User.remove().then(Core.remove().then(Topic.remove().then(Panel.remove().then(done()))))));
   });
   describe('Testing POST', () => {
     each();
@@ -223,35 +220,45 @@ describe('Comment CRUD Test:', () => {
     it('should response 401 when JWT is missing in header', done => {
       agent.get(`/api/v1/topics/${topic._id}/comments`).expect(401, done);
     });
-    it('should response all comments in topic when user is an Admin', done => {
+    it('should allow Admin to query comments in a topic', done => {
       agent.get(`/api/v1/topics/${topic._id}/comments`)
         .set(adminHeader)
         .expect(200)
-        .expect(({ res: { body, body: [{ content }, ...rest] } }) => {
-          expect(body).to.have.length(1);
-          expect(content).to.be(c1.content);
+        .expect(({ body: { comments, comments: [comment, ...rest] } }) => {
+          expect(comments).to.have.length(1);
+          expect(comment.content).to.be(c1.content);
         })
         .end(done);
     });
-    it('should response all comments in topic when user is an User', done => {
+    it('should allow User to query comments in a topic', done => {
       agent.get(`/api/v1/topics/${topic._id}/comments`)
         .set(userHeader)
         .expect(200)
-        .expect(({ res: { body, body: [{ content }, ...rest] } }) => {
-          expect(body).to.have.length(1);
-          expect(content).to.be(c1.content);
+        .expect(({ body: { comments, comments: [comment, ...rest] } }) => {
+          expect(comments).to.have.length(1);
+          expect(comment.content).to.be(c1.content);
         })
         .end(done);
     });
-    it('should response 401 when quering comments from topic when user is Banned', done => {
+    it('should allow Banned User to query comments in a topic', done => {
       agent.get(`/api/v1/topics/${topic._id}/comments`)
         .set(bannedHeader)
-        .expect(401, done);
+        .expect(200)
+        .expect(({ body: { comments, comments: [comment, ...rest] } }) => {
+          expect(comments).to.have.length(1);
+          expect(comment.content).to.be(c1.content);
+        })
+        .end(done);
     });
-    it('should response 401 when quering comments from topic when Guest', done => {
+    it('should allow Guest to query comments in a topic', done => {
       agent.get(`/api/v1/topics/${topic._id}/comments`)
         .set(guestHeader)
-        .expect(401, done);
+        .expect(200)
+        .expect(({ body: { comments, comments: [comment, ...rest] } }) => {
+          expect(comments).to.have.length(1);
+          expect(comment.content).to.be(c1.content);
+        })
+        .end(done);
     });
     it('should response 404 when topic is not exist in database', done => {
       agent.get(`/api/v1/topics/${new Topic(t1)._id}/comments`)
@@ -271,7 +278,7 @@ describe('Comment CRUD Test:', () => {
     it('should response 401 when JWT is missing in header when request 1 comment', done => {
       agent.get(`/api/v1/topics/${topic._id}/comments/${comment._id}`).expect(401, done);
     });
-    it('should response a comment with given its id when user is an Admin', done => {
+    it('should allow Admin to query a comment with given its id', done => {
       agent.get(`/api/v1/topics/${topic._id}/comments/${comment._id}`)
         .set(adminHeader)
         .expect(200)
@@ -281,7 +288,7 @@ describe('Comment CRUD Test:', () => {
         })
         .end(done);
     });
-    it('should response a comment with given its id when user is an User', done => {
+    it('should allow User to query a comment with given its id', done => {
       agent.get(`/api/v1/topics/${topic._id}/comments/${comment._id}`)
         .set(userHeader)
         .expect(200)
@@ -291,15 +298,25 @@ describe('Comment CRUD Test:', () => {
         })
         .end(done);
     });
-    it('should response 401 when user is banned', done => {
+    it('should allow Banned User to query a comment with given its id', done => {
       agent.get(`/api/v1/topics/${topic._id}/comments/${comment._id}`)
         .set(bannedHeader)
-        .expect(401, done);
+        .expect(200)
+        .expect(({ res: { body: { content, topic: _t } } }) => {
+          expect(content).to.be(c1.content);
+          expect(_t._id).to.be(topic._id.toString());
+        })
+        .end(done);
     });
-    it('should response 401 when Guest', done => {
+    it('should allow Guest to query a comment with given its id', done => {
       agent.get(`/api/v1/topics/${topic._id}/comments/${comment._id}`)
         .set(guestHeader)
-        .expect(401, done);
+        .expect(200)
+        .expect(({ res: { body: { content, topic: _t } } }) => {
+          expect(content).to.be(c1.content);
+          expect(_t._id).to.be(topic._id.toString());
+        })
+        .end(done);
     });
     it('should response 400 when comment id is invalid', done => {
       agent.get(`/api/v1/topics/${topic._id}/comments/12345`).set(adminHeader).expect(400, done);
@@ -316,6 +333,16 @@ describe('Comment CRUD Test:', () => {
     it('should response 404 when topic id is missing', done => {
       agent.get(`/api/v1/topics//comments/${comment._id}`).set(adminHeader).expect(404, done);
     });
+    it('should allow query a comment without specified topic', done => {
+      agent.get(`/api/v1/comments/${comment._id}`)
+        .set(adminHeader)
+        .expect(200)
+        .expect(({ res: { body: { content, topic: _t } } }) => {
+          expect(content).to.be(c1.content);
+          expect(_t._id).to.be(topic._id.toString());
+        })
+        .end(done);
+    });
   });
   describe('Testing PUT', () => {
     each();
@@ -330,7 +357,7 @@ describe('Comment CRUD Test:', () => {
         .set(adminHeader)
         .send(c2)
         .expect(200)
-        .expect(({ res: { body: { content } } }) => expect(content).to.be(c2.content))
+        .expect(({ body: { comment: { content } } }) => expect(content).to.be(c2.content))
         .end(done);
     });
     it('should allow update a comment when user is the Author', done => {
@@ -338,7 +365,7 @@ describe('Comment CRUD Test:', () => {
         .set(authorHeader)
         .send(c2)
         .expect(200)
-        .expect(({ res: { body: { content } } }) => expect(content).to.be(c2.content))
+        .expect(({ body: { comment: { content } } }) => expect(content).to.be(c2.content))
         .end(done);
     });
     it('should response 401 when user is the Author but banned', done => {
@@ -377,6 +404,14 @@ describe('Comment CRUD Test:', () => {
         .send(c2)
         .expect(404, done);
     });
+    it('should allow update a comment without specified topic', done => {
+      agent.put(`/api/v1/comments/${comment._id}`)
+        .set(authorHeader)
+        .send(c2)
+        .expect(200)
+        .expect(({ body: { comment: { content } } }) => expect(content).to.be(c2.content))
+        .end(done);
+    });
     it('should response 400 when comment id is invalid', done => {
       agent.put(`/api/v1/topics/${topic._id}/comments/12345`)
         .set(adminHeader)
@@ -401,21 +436,21 @@ describe('Comment CRUD Test:', () => {
         .send(c2)
         .expect(404, done);
     });
-    it('should response 400 when comment content is empty', done => {
+    it('should response 400 when update comment content is empty', done => {
       c2.content = '';
       agent.put(`/api/v1/topics/${topic._id}/comments/${comment._id}`)
         .set(adminHeader)
         .send(c2)
         .expect(400, done);
     });
-    it('should response 500 when comment content is too short', done => {
+    it('should response 500 when update comment content is too short', done => {
       c2.content = 't';
       agent.put(`/api/v1/topics/${topic._id}/comments/${comment._id}`)
         .set(adminHeader)
         .send(c2)
         .expect(500, done);
     });
-    it('should response 500 when comment content is too long', done => {
+    it('should response 500 when update comment content is too long', done => {
       c2.content = 't'.repeat(10001);
       agent.put(`/api/v1/topics/${topic._id}/comments/${comment._id}`)
         .set(adminHeader)
@@ -427,7 +462,7 @@ describe('Comment CRUD Test:', () => {
         .set(adminHeader)
         .send(c2)
         .expect(200)
-        .expect(({ res: { body: { content } } }) => expect(content).to.be(c2.content))
+        .expect(({ body: { comment: { content } } }) => expect(content).to.be(c2.content))
         .end(done);
     });
   });
@@ -484,6 +519,15 @@ describe('Comment CRUD Test:', () => {
         .set(adminHeader)
         .expect(404, done);
     });
+    it('should allow delete a comment without specified topic', done => {
+      agent.del(`/api/v1/comments/${comment._id}`)
+        .set(adminHeader)
+        .expect(200)
+        .expect(res => {
+          Comment.findOne(comment).then(comment => expect(comment).to.be.empty());
+        })
+        .end(done);
+    });
     it('should response 400 when comment id is invalid', done => {
       agent.del(`/api/v1/topics/${topic._id}/comments/12345`)
         .set(adminHeader)
@@ -516,12 +560,12 @@ describe('Comment CRUD Test:', () => {
     it('should allow an Admin likes a comment', done => {
       agent.put(`/api/v1/topics/${topic._id}/comments/${comment._id}/like`)
         .set(adminHeader)
-        .expect(204, done);
+        .expect(200, done);
     });
     it('should allow an User likes a comment', done => {
       agent.put(`/api/v1/topics/${topic._id}/comments/${comment._id}/like`)
         .set(userHeader)
-        .expect(204, done);
+        .expect(200, done);
     });
     it('should response 401 when a Banned user likes a comment', done => {
       agent.put(`/api/v1/topics/${topic._id}/comments/${comment._id}/like`)
@@ -536,7 +580,7 @@ describe('Comment CRUD Test:', () => {
     it('should response 403 when a user likes a comment again', done => {
       agent.put(`/api/v1/topics/${topic._id}/comments/${comment._id}/like`)
         .set(adminHeader)
-        .expect(204)
+        .expect(200)
         .end((err, res) => {
           if (err) {
             expect(err).to.be.empty();
@@ -566,7 +610,7 @@ describe('Comment CRUD Test:', () => {
         .end((err, res) => {
           agent.del(`/api/v1/topics/${topic._id}/comments/${comment._id}/like`)
             .set(adminHeader)
-            .expect(204, done);
+            .expect(200, done);
         });
     });
     it('should allow an User un-likes a comment', done => {
@@ -575,7 +619,7 @@ describe('Comment CRUD Test:', () => {
         .end((err, res) => {
           agent.del(`/api/v1/topics/${topic._id}/comments/${comment._id}/like`)
             .set(userHeader)
-            .expect(204, done);
+            .expect(200, done);
         });
     });
     it('should response 401 when a Banned user un-likes a comment', done => {
@@ -596,10 +640,10 @@ describe('Comment CRUD Test:', () => {
             .expect(401, done);
         });
     });
-    it('should response 204 when a user did not like the comment at first', done => {
+    it('should response 204 when a user un-likes an un-liked comment', done => {
       agent.put(`/api/v1/topics/${topic._id}/comments/${comment._id}/like`)
         .set(adminHeader)
-        .expect(204, done);
+        .expect(200, done);
     });
   });
 });

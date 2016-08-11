@@ -16,6 +16,7 @@ describe('Preference Model Tests:', () => {
       Preference.create({}).then(preference => {
         expect(preference.topicListLimit).to.be(20);
         expect(preference.commentListLimit).to.be(30);
+        expect(preference.sideBarBackground).to.be(false);
         preference.remove().then(done());
       });
     });

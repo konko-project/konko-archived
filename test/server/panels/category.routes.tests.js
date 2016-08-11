@@ -8,6 +8,7 @@ const Category = mongoose.model('Category');
 const Panel = mongoose.model('Panel');
 const User = mongoose.model('User');
 const Profile = mongoose.model('Profile');
+const Preference = mongoose.model('Preference');
 const Core = mongoose.model('Core');
 const SERVER = require(path.resolve('./configurations/server'));
 const app = require(path.resolve(SERVER.build.paths.root, 'configs/app')).default;
@@ -49,63 +50,69 @@ const each = () => {
 
 describe('Category CRUD Test:', () => {
   before(done => {
+    const buildUser = (username, permission = username) => new User({
+      email: `${username}@test.com`,
+      permission: permission,
+      profile: new Profile({ username: username }),
+      preference: new Preference(),
+    });
     Core.create({ basic: { title: 'Test' } }).catch(err => {
       expect(err).to.be.empty();
       return done();
     });
+
     let _app = app(path.resolve(SERVER.build.paths.root));
     agent = request.agent(_app);
-    let admin = new User({ email: 'admin@test.com', permission: 'admin' });
-    let user = new User({ email: 'user@test.com', permission: 'user' });
-    let banned = new User({ email: 'banned@test.com', permission: 'banned' });
-    let guest = new User({ email: 'guest@test.com', permission: 'guest' });
-    admin.profile = new Profile({ username: 'admin' });
-    user.profile = new Profile({ username: 'user' });
-    banned.profile = new Profile({ username: 'banned' });
-    guest.profile = new Profile({ username: 'guest' });
-    agent.get('/').end((err, res) => {
-      let csrfToken = /csrfToken=(.*?)(?=\;)/.exec(res.header['set-cookie'].join(''))[1];
-      adminHeader = {
-        Authorization: `Bearer ${admin.generateJWT(_app)}`,
-        'x-csrf-token': csrfToken,
-      };
-      userHeader = {
-        Authorization: `Bearer ${user.generateJWT(_app)}`,
-        'x-csrf-token': csrfToken,
-      };
-      bannedHeader = {
-        Authorization: `Bearer ${banned.generateJWT(_app)}`,
-        'x-csrf-token': csrfToken,
-      };
-      guestHeader = {
-        Authorization: `Bearer ${guest.generateJWT(_app)}`,
-        'x-csrf-token': csrfToken,
-      };
-      done();
-    });
+    let admin = buildUser('admin');
+    let user = buildUser('user');
+    let banned = buildUser('banned');
+    let guest = buildUser('guest');
+
+    admin.save().then(user.save().then(banned.save().then(guest.save().then(u => {
+      agent.get('/').end((err, res) => {
+        let csrfToken = /csrfToken=(.*?)(?=\;)/.exec(res.header['set-cookie'].join(''))[1];
+        adminHeader = {
+          Authorization: `Bearer ${admin.generateJWT(_app)}`,
+          'x-csrf-token': csrfToken,
+        };
+        userHeader = {
+          Authorization: `Bearer ${user.generateJWT(_app)}`,
+          'x-csrf-token': csrfToken,
+        };
+        bannedHeader = {
+          Authorization: `Bearer ${banned.generateJWT(_app)}`,
+          'x-csrf-token': csrfToken,
+        };
+        guestHeader = {
+          Authorization: `Bearer ${guest.generateJWT(_app)}`,
+          'x-csrf-token': csrfToken,
+        };
+        done();
+      });
+    }))));
   });
   after(done => {
-    Core.remove().then(done());
+    Preference.remove().then(Profile.remove().then(User.remove().then(Core.remove().then(done()))));
   });
   describe('Testing POST', () => {
     each();
     it('should response 401 when user is an User', done => {
       agent.post('/api/v1/categories')
-      .set(userHeader)
-      .send(c2)
-      .expect(401, done);
+        .set(userHeader)
+        .send(c2)
+        .expect(401, done);
     });
     it('should response 401 when user is a Banned user', done => {
       agent.post('/api/v1/categories')
-      .set(bannedHeader)
-      .send(c2)
-      .expect(401, done);
+        .set(bannedHeader)
+        .send(c2)
+        .expect(401, done);
     });
     it('should response 401 when user is a Guest', done => {
       agent.post('/api/v1/categories')
-      .set(guestHeader)
-      .send(c2)
-      .expect(401, done);
+        .set(guestHeader)
+        .send(c2)
+        .expect(401, done);
     });
     it('should response 401 when JWT is missing in header', done => {
       agent.post('/api/v1/categories')

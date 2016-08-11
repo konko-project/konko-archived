@@ -8,6 +8,7 @@ const Category = mongoose.model('Category');
 const Panel = mongoose.model('Panel');
 const User = mongoose.model('User');
 const Profile = mongoose.model('Profile');
+const Preference = mongoose.model('Preference');
 const Core = mongoose.model('Core');
 const SERVER = require(path.resolve('./configurations/server'));
 const app = require(path.resolve(SERVER.build.paths.root, 'configs/app')).default;
@@ -58,45 +59,51 @@ const each = () => {
 
 describe('Panel CRUD Test:', () => {
   before(done => {
+    const buildUser = (username, permission = username) => new User({
+      email: `${username}@test.com`,
+      permission: permission,
+      profile: new Profile({ username: username }),
+      preference: new Preference(),
+    });
     Core.create({ basic: { title: 'Test' } }).catch(err => {
       expect(err).to.be.empty();
       return done();
     });
+
     let _app = app(path.resolve(SERVER.build.paths.root));
     agent = request.agent(_app);
-    let admin = new User({ email: 'admin@test.com', permission: 'admin' });
-    let user = new User({ email: 'user@test.com', permission: 'user' });
-    let banned = new User({ email: 'banned@test.com', permission: 'banned' });
-    let guest = new User({ email: 'guest@test.com', permission: 'guest' });
-    admin.profile = new Profile({ username: 'admin' });
-    user.profile = new Profile({ username: 'user' });
-    banned.profile = new Profile({ username: 'banned' });
-    guest.profile = new Profile({ username: 'guest' });
-    agent.get('/').end((err, res) => {
-      let csrfToken = /csrfToken=(.*?)(?=\;)/.exec(res.header['set-cookie'].join(''))[1];
-      adminHeader = {
-        Authorization: `Bearer ${admin.generateJWT(_app)}`,
-        'x-csrf-token': csrfToken,
-      };
-      userHeader = {
-        Authorization: `Bearer ${user.generateJWT(_app)}`,
-        'x-csrf-token': csrfToken,
-      };
-      bannedHeader = {
-        Authorization: `Bearer ${banned.generateJWT(_app)}`,
-        'x-csrf-token': csrfToken,
-      };
-      guestHeader = {
-        Authorization: `Bearer ${guest.generateJWT(_app)}`,
-        'x-csrf-token': csrfToken,
-      };
-      done();
-    });
+    let admin = buildUser('admin');
+    let user = buildUser('user');
+    let banned = buildUser('banned');
+    let guest = buildUser('guest');
+
+    admin.save().then(user.save().then(banned.save().then(guest.save().then(u => {
+      agent.get('/').end((err, res) => {
+        let csrfToken = /csrfToken=(.*?)(?=\;)/.exec(res.header['set-cookie'].join(''))[1];
+        adminHeader = {
+          Authorization: `Bearer ${admin.generateJWT(_app)}`,
+          'x-csrf-token': csrfToken,
+        };
+        userHeader = {
+          Authorization: `Bearer ${user.generateJWT(_app)}`,
+          'x-csrf-token': csrfToken,
+        };
+        bannedHeader = {
+          Authorization: `Bearer ${banned.generateJWT(_app)}`,
+          'x-csrf-token': csrfToken,
+        };
+        guestHeader = {
+          Authorization: `Bearer ${guest.generateJWT(_app)}`,
+          'x-csrf-token': csrfToken,
+        };
+        done();
+      });
+    }))));
   });
   after(done => {
-    Core.remove().then(done());
+    Preference.remove().then(Profile.remove().then(User.remove().then(Core.remove().then(done()))));
   });
-  describe('Testing POST', () => {
+  describe('Testing POST - panel under a panel', () => {
     each();
     it('should response 401 when user is an User', done => {
       agent.post(`/api/v1/categories/${category._id}/panels/${panel._id}`)
@@ -194,10 +201,31 @@ describe('Panel CRUD Test:', () => {
   });
   describe('Testing GET', () => {
     each();
-    it('should response 401 when JWT is missing in header when quering', done => {
+    it('should response 401 when JWT is missing in header when quering all panels', done => {
+      agent.get('/api/v1/panels').expect(401, done);
+    });
+    it('should allow Admin to query all panels', done => {
+      agent.get('/api/v1/panels')
+      .set(adminHeader)
+      .expect(200)
+      .expect(({ res: { body, body: [panel, ...rest] } }) => {
+        expect(body).to.have.length(1);
+        expect(panel.name).to.be(p1.name);
+      }).end(done);
+    });
+    it('should response 401 when User queries all panels', done => {
+      agent.get('/api/v1/panels').set(userHeader).expect(401, done);
+    });
+    it('should response 401 when Banned User queries all panels', done => {
+      agent.get('/api/v1/panels').set(bannedHeader).expect(401, done);
+    });
+    it('should response 401 when Guest queries all panels', done => {
+      agent.get('/api/v1/panels').set(guestHeader).expect(401, done);
+    });
+    it('should response 401 when JWT is missing in header when quering panels under a category', done => {
       agent.get(`/api/v1/categories/${category._id}/panels`).expect(401, done);
     });
-    it('should response all panels when user is an Admin', done => {
+    it('should response all panels under a category when user is an Admin', done => {
       agent.get(`/api/v1/categories/${category._id}/panels`)
         .set(adminHeader)
         .expect(200)
@@ -210,7 +238,7 @@ describe('Panel CRUD Test:', () => {
         })
         .end(done);
     });
-    it('should response all panels when user is an User', done => {
+    it('should response all panels under a category when user is an User', done => {
       agent.get(`/api/v1/categories/${category._id}/panels`)
         .set(userHeader)
         .expect(200)
@@ -223,7 +251,7 @@ describe('Panel CRUD Test:', () => {
         })
         .end(done);
     });
-    it('should response all panels when user is a Banned user', done => {
+    it('should response all panels under a category when user is a Banned user', done => {
       agent.get(`/api/v1/categories/${category._id}/panels`)
         .set(bannedHeader)
         .expect(200)
@@ -236,7 +264,7 @@ describe('Panel CRUD Test:', () => {
         })
         .end(done);
     });
-    it('should response all panels when user is a Guest', done => {
+    it('should response all panels under a category when user is a Guest', done => {
       agent.get(`/api/v1/categories/${category._id}/panels`)
         .set(guestHeader)
         .expect(200)

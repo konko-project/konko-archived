@@ -10,7 +10,7 @@ const SERVER = require(path.resolve('./configurations/server'));
 const app = require(path.resolve(SERVER.build.paths.root, 'configs/app')).default;
 const utils = require(path.resolve(SERVER.build.paths.root, 'configs/utils')).default;
 
-describe('Server Configuration Tests:', () => {
+describe('Express Configuration Tests:', () => {
   let _app;
   let agent;
   before(done => {
@@ -90,27 +90,6 @@ describe('Server Configuration Tests:', () => {
     });
   });
 
-  describe('Testing Express-Mailer configuration', () => {
-    it('should warn if Express-Mailer config file is missing in production mode.', () => {
-      process.env.NODE_ENV = 'production';
-      expect(utils.hasExpressMailerConfiguration(path.join(SERVER.dist.paths.root, 'configs', '*.js'), false)).to.be.false;
-      process.env.NODE_ENV = 'test';
-    });
-    it('should not warn if Express-Mailer config file is missing in development mode.', () => {
-      process.env.NODE_ENV = 'development';
-      expect(utils.hasExpressMailerConfiguration(path.join(SERVER.build.paths.root, 'configs', '*.js'), false)).to.be.true;
-      process.env.NODE_ENV = 'test';
-    });
-    it('should not warn if Express-Mailer config file is missing in test mode.', () => {
-      expect(utils.hasExpressMailerConfiguration(path.join(SERVER.build.paths.root, 'configs', '*.js'), false)).to.be.true;
-    });
-    it('should not warn if Express-Mailer config file exists in production mode.', () => {
-      process.env.NODE_ENV = 'production';
-      expect(utils.hasExpressMailerConfiguration(path.join(SERVER.build.paths.root, 'configs', '*.js'), false)).to.be.true;
-      process.env.NODE_ENV = 'test';
-    });
-  });
-
   describe('Testing CSRF configuration', () => {
     it('should return CSRF in cookies', done => {
       agent.get('/')
@@ -121,17 +100,46 @@ describe('Server Configuration Tests:', () => {
         })
         .end(done);
     });
-    it('should return 200 when CSRF is not set in header on GET', done => {
-      agent.get('/').expect(200, done);
+    it('should not return error when CSRF is not set in header on GET', done => {
+      agent.get('/').end((err, data) => {
+        if (err) {
+          return done(err);
+        }
+        expect(data.error).to.be(false);
+        done();
+      });
     });
-    it('should return 403 when CSRF is not set in header on POST', done => {
+    it('should response 403 when CSRF is not set in header on POST', done => {
       agent.post('/').expect(403, done);
     });
-    it('should return 403 when CSRF is not set in header on PUT', done => {
+    it('should response 403 when CSRF is not set in header on PUT', done => {
       agent.put('/').expect(403, done);
     });
-    it('should return 403 when CSRF is not set in header on DELETE', done => {
+    it('should response 403 when CSRF is not set in header on DELETE', done => {
       agent.del('/').expect(403, done);
+    });
+  });
+
+  describe('Testing RateLimit throttling', () => {
+    beforeEach(done => {
+      process.env.NODE_ENV = 'production';
+      done();
+    });
+    afterEach(done => {
+      process.env.NODE_ENV = 'test';
+      done();
+    });
+    it('should response 429 when request reaches limit', done => {
+      const testRL = done => {
+        agent.get('/').end((err, res) => {
+          if (res.error) {
+            expect(res.error.status).to.be(429);
+            return done();
+          }
+          return testRL(done);
+        });
+      };
+      testRL(done);
     });
   });
 });

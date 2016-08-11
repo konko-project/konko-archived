@@ -4,8 +4,8 @@ import path from 'path';
 import request from 'supertest';
 import expect from 'expect.js';
 import mongoose from 'mongoose';
-const User = mongoose.model('User');
 const Core = mongoose.model('Core');
+const User = mongoose.model('User');
 const Profile = mongoose.model('Profile');
 const Preference = mongoose.model('Preference');
 const Topic = mongoose.model('Topic');
@@ -24,72 +24,55 @@ let ownerHeader;
 
 describe('User CRUD Test:', () => {
   before(done => {
+    const buildUser = (username, permission = username) => new User({
+      email: `${username}@test.com`,
+      permission: permission,
+      profile: new Profile({ username: username }),
+      preference: new Preference(),
+    });
     Core.create({ basic: { title: 'Test' } }).catch(err => {
       expect(err).to.be.empty();
       return done();
     });
-    let admin;
-    let user;
-    let banned;
-    let guest;
-    Profile.create({ username: 'admin' }).then(profile => {
-      User.create({ email: 'admin@test.com', permission: 'admin', profile: profile }).then(u => admin = u).catch(err => {
-        expect(err).to.be.empty();
-        return done();
-      });
-    });
-    Profile.create({ username: 'user' }).then(profile => {
-      User.create({ email: 'user@test.com', permission: 'user', profile: profile }).then(u => user = u).catch(err => {
-        expect(err).to.be.empty();
-        return done();
-      });
-    });
-    Profile.create({ username: 'banned' }).then(profile => {
-      User.create({ email: 'banned@test.com', permission: 'banned', profile: profile }).then(u => banned = u).catch(err => {
-        expect(err).to.be.empty();
-        return done();
-      });
-    });
-    Profile.create({ username: 'guest' }).then(profile => {
-      User.create({ email: 'guest@test.com', permission: 'guest', profile: profile }).then(u => guest = u).catch(err => {
-        expect(err).to.be.empty();
-        return done();
-      });
-    });
-    Preference.create({}).then(preference => {
-      Profile.create({ username: 'owner' }).then(profile => {
-        User.create({ email: 'owner@test.com', permission: 'user', profile: profile, preference: preference }).then(u => owner = u).catch(err => {
-          expect(err).to.be.empty();
-          return done();
-        });
-      });
-    });
+
     let _app = app(path.resolve(SERVER.build.paths.root));
     agent = request.agent(_app);
-    agent.get('/').end((err, res) => {
-      let csrfToken = /csrfToken=(.*?)(?=\;)/.exec(res.header['set-cookie'].join(''))[1];
-      adminHeader = {
-        Authorization: `Bearer ${admin.generateJWT(_app)}`,
-        'x-csrf-token': csrfToken,
-      };
-      userHeader = {
-        Authorization: `Bearer ${user.generateJWT(_app)}`,
-        'x-csrf-token': csrfToken,
-      };
-      bannedHeader = {
-        Authorization: `Bearer ${banned.generateJWT(_app)}`,
-        'x-csrf-token': csrfToken,
-      };
-      guestHeader = {
-        Authorization: `Bearer ${guest.generateJWT(_app)}`,
-        'x-csrf-token': csrfToken,
-      };
-      ownerHeader = {
-        Authorization: `Bearer ${owner.generateJWT(_app)}`,
-        'x-csrf-token': csrfToken,
-      };
-      done();
-    });
+    owner = buildUser('owner', 'user');
+    let admin = buildUser('admin');
+    let user = buildUser('user');
+    let banned = buildUser('banned');
+    let guest = buildUser('guest');
+
+    owner.preference.save().then(admin.preference.save().then(user.preference.save().then(banned.preference.save().then(guest.preference.save().then(
+      owner.profile.save().then(admin.profile.save().then(user.profile.save().then(banned.profile.save().then(guest.profile.save().then(
+        owner.save().then(admin.save().then(user.save().then(banned.save().then(guest.save().then(u => {
+          agent.get('/').end((err, res) => {
+            let csrfToken = /csrfToken=(.*?)(?=\;)/.exec(res.header['set-cookie'].join(''))[1];
+            adminHeader = {
+              Authorization: `Bearer ${admin.generateJWT(_app)}`,
+              'x-csrf-token': csrfToken,
+            };
+            userHeader = {
+              Authorization: `Bearer ${user.generateJWT(_app)}`,
+              'x-csrf-token': csrfToken,
+            };
+            bannedHeader = {
+              Authorization: `Bearer ${banned.generateJWT(_app)}`,
+              'x-csrf-token': csrfToken,
+            };
+            guestHeader = {
+              Authorization: `Bearer ${guest.generateJWT(_app)}`,
+              'x-csrf-token': csrfToken,
+            };
+            ownerHeader = {
+              Authorization: `Bearer ${owner.generateJWT(_app)}`,
+              'x-csrf-token': csrfToken,
+            };
+            done();
+          });
+        })))))
+      )))))
+    )))));
   });
   after(done => {
     Preference.remove().then(Profile.remove().then(User.remove().then(Core.remove().then(done()))));
@@ -137,15 +120,29 @@ describe('User CRUD Test:', () => {
         .set('Authorization', '')
         .expect(401, done);
     });
-    it('should response 401 when an Admin is quering a user', done => {
+    it('should allow Admin to query an User', done => {
       agent.get(`/api/v1/users/${owner._id}`)
         .set(adminHeader)
-        .expect(401, done);
+        .expect(200)
+        .expect(({ res: { body, body: { _id, permission, profile: { _id: pid, username } } } }) => {
+          expect(_id).to.be(owner._id.toString());
+          expect(permission).to.be(owner.permission);
+          expect(pid).to.be(owner.profile._id.toString());
+          expect(username).to.be(owner.profile.username);
+        })
+        .end(done);
     });
-    it('should response 401 when an User is quering other user', done => {
+    it('should allow User to query other User', done => {
       agent.get(`/api/v1/users/${owner._id}`)
         .set(userHeader)
-        .expect(401, done);
+        .expect(200)
+        .expect(({ res: { body, body: { _id, permission, profile: { _id: pid, username } } } }) => {
+          expect(_id).to.be(owner._id.toString());
+          expect(permission).to.be(owner.permission);
+          expect(pid).to.be(owner.profile._id.toString());
+          expect(username).to.be(owner.profile.username);
+        })
+        .end(done);
     });
     it('should response 401 when an Banned user is quering a user', done => {
       agent.get(`/api/v1/users/${owner._id}`)
@@ -161,10 +158,11 @@ describe('User CRUD Test:', () => {
       agent.get(`/api/v1/users/${owner._id}`)
         .set(ownerHeader)
         .expect(200)
-        .expect(({ res: { body: { _id, email, permission, profile: { username } } } }) => {
+        .expect(({ res: { body: { _id, email, permission, profile: { _id: pid, username } } } }) => {
           expect(_id).to.be(owner._id.toString());
           expect(email).to.be(owner.email);
           expect(permission).to.be(owner.permission);
+          expect(pid).to.be(owner.profile._id.toString());
           expect(username).to.be(owner.profile.username);
         })
         .end(done);
@@ -185,30 +183,32 @@ describe('User CRUD Test:', () => {
         .set('Authorization', '')
         .expect(401, done);
     });
-    it('should response a user\'s profile when an Admin is quering a user\'s profile', done => {
+    it('should allow Admin to query an user\'s profile', done => {
       agent.get(`/api/v1/users/${owner._id}/profile`)
         .set(adminHeader)
         .expect(200)
-        .expect(({ res: { body: { username } } }) => {
+        .expect(({ res: { body, body: { _id, username } } }) => {
+          expect(_id).to.be(owner.profile._id.toString());
           expect(username).to.be(owner.profile.username);
         })
         .end(done);
     });
-    it('should response a user\'s profile when an User is quering a user\'s profile', done => {
+    it('should allow User to query an user\'s profile', done => {
       agent.get(`/api/v1/users/${owner._id}/profile`)
         .set(userHeader)
         .expect(200)
-        .expect(({ res: { body: { username } } }) => {
+        .expect(({ res: { body: { _id, username } } }) => {
+          expect(_id).to.be(owner.profile._id.toString());
           expect(username).to.be(owner.profile.username);
         })
         .end(done);
     });
-    it('should response 401 when an Banned user is quering a user\'s profile', done => {
+    it('should response 401 when an Banned user is quering an user\'s profile', done => {
       agent.get(`/api/v1/users/${owner._id}/profile`)
         .set(bannedHeader)
         .expect(401, done);
     });
-    it('should response 401 when a Guest is quering a user\'s profile', done => {
+    it('should response 401 when a Guest is quering an user\'s profile', done => {
       agent.get(`/api/v1/users/${owner._id}/profile`)
         .set(guestHeader)
         .expect(401, done);
@@ -280,15 +280,15 @@ describe('User CRUD Test:', () => {
         .set('Authorization', '')
         .expect(401, done);
     });
-    it('should allow an Admin quering a user\'s bookmarks', done => {
+    it('should response 401 when an Admin is quering a user\'s bookmarks', done => {
       agent.get(`/api/v1/users/${owner._id}/bookmarks`)
         .set(adminHeader)
-        .expect(200, done);
+        .expect(401, done);
     });
-    it('should allow an User quering other user\'s bookmarks', done => {
+    it('should response 401 when an User is quering other user\'s bookmarks', done => {
       agent.get(`/api/v1/users/${owner._id}/bookmarks`)
         .set(userHeader)
-        .expect(200, done);
+        .expect(401, done);
     });
     it('should response 401 when an Banned user is quering a user\'s bookmarks', done => {
       agent.get(`/api/v1/users/${owner._id}/bookmarks`)
@@ -299,6 +299,11 @@ describe('User CRUD Test:', () => {
       agent.get(`/api/v1/users/${owner._id}/bookmarks`)
         .set(guestHeader)
         .expect(401, done);
+    });
+    it('should allow User queries its own bookmarks', done => {
+      agent.get(`/api/v1/users/${owner._id}/bookmarks`)
+        .set(ownerHeader)
+        .expect(200, done);
     });
     it('should response 404 when user is not exist in database', done => {
       agent.get(`/api/v1/users/${new User({ email: 'user3@test.com' })._id}/bookmarks`)
@@ -371,6 +376,57 @@ describe('User CRUD Test:', () => {
       };
       done();
     });
+    it('should response 401 when JWT is missing in header when updating an user', done => {
+      agent.put(`/api/v1/users/${owner._id}`)
+        .set(adminHeader)
+        .set('Authorization', '')
+        .send({})
+        .expect(401, done);
+    });
+    it('should allow Admin to update an user', done => {
+      agent.put(`/api/v1/users/${owner._id}`)
+        .set(adminHeader)
+        .send({}).expect(200, done);
+    });
+    it('should response 401 when User updates other user', done => {
+      agent.put(`/api/v1/users/${owner._id}`)
+        .set(userHeader)
+        .send({})
+        .expect(401, done);
+    });
+    it('should response 401 when Banned User updates an user', done => {
+      agent.put(`/api/v1/users/${owner._id}`)
+        .set(bannedHeader)
+        .send({})
+        .expect(401, done);
+    });
+    it('should response 401 when Guest updates an user', done => {
+      agent.put(`/api/v1/users/${owner._id}`)
+        .set(guestHeader)
+        .send({})
+        .expect(401, done);
+    });
+    it('should response 401 when owner updates its own info', done => {
+      agent.put(`/api/v1/users/${owner._id}`)
+        .set(ownerHeader)
+        .send({})
+        .expect(401, done);
+    });
+    it('should response 400 when user id invalid', done => {
+      agent.put('/api/v1/users/12345')
+        .set(adminHeader)
+        .send({}).expect(400, done);
+    });
+    it('should response 404 when user id is missing', done => {
+      agent.put('/api/v1/users/')
+        .set(adminHeader)
+        .send({}).expect(404, done);
+    });
+    it('should response 404 when user is not exist in database', done => {
+      agent.put(`/api/v1/users/${new User({ email: 'a@a.com' })._id}`)
+        .set(adminHeader)
+        .send({}).expect(404, done);
+    });
     it('should response 401 when JWT is missing in header when updating an user\'s profile', done => {
       agent.put(`/api/v1/users/${owner._id}/profile`)
         .set(ownerHeader)
@@ -378,11 +434,16 @@ describe('User CRUD Test:', () => {
         .send(p)
         .expect(401, done);
     });
-    it('should response 401 when an Admin is updating an user\'s profile', done => {
+    it('should allow Admin to update an user\'s profile', done => {
       agent.put(`/api/v1/users/${owner._id}/profile`)
         .set(adminHeader)
         .send(p)
-        .expect(401, done);
+        .expect(200)
+        .expect(({ res: { body: { username, gender } } }) => {
+          expect(username).to.be(p.username);
+          expect(gender).to.be(p.gender);
+        })
+        .end(done);
     });
     it('should response 401 when an User is updating other user\'s profile', done => {
       agent.put(`/api/v1/users/${owner._id}/profile`)
@@ -575,7 +636,7 @@ describe('User CRUD Test:', () => {
         topic = t;
         agent.put(`/api/v1/topics/${topic._id}/bookmark`)
           .set(ownerHeader)
-          .expect(204)
+          .expect(200)
           .expect(res => User.findById(owner._id).then(u => expect(u.bookmarks).to.have.length(1)))
           .end(done);
       });

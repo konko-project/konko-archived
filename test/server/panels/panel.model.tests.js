@@ -60,7 +60,7 @@ describe('Panel Model Tests:', () => {
   });
 
   describe('Testing create a panel', () => {
-    it('should contain no panel', done => {
+    it('should contain no Panel', done => {
       Panel.find().then(panels => {
         expect(panels).to.be.empty();
         done();
@@ -68,6 +68,9 @@ describe('Panel Model Tests:', () => {
     });
     it('should allow create panel when name and description are within limits', done => {
       Panel.create(p1).then(_p1 => {
+        expect(_p1.name).to.be(p1.name);
+        expect(_p1.order).to.be(p1.order);
+        expect(_p1.description).to.be(p1.description);
         _p1.remove().then(done()).catch(err => {
           expect(err).to.be.empty();
           done();

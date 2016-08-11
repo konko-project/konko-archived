@@ -137,11 +137,11 @@ describe('Topic Model Tests:', () => {
         });
       });
     });
-    it('should not allow create topics that has same content', done => {
+    it('should allow create topics that has same content and title', done => {
       Topic.create(topic).then(t1 => {
-        Topic.create(topic).catch(err => {
-          expect(err).not.to.be.empty();
-          t1.remove().then(done());
+        Topic.create(topic).then(t2 => {
+          expect(t2.content).to.be(topic.content);
+          t1.remove().then(t2.remove().then(done()));
         });
       });
     });
@@ -219,18 +219,6 @@ describe('Topic Model Tests:', () => {
         });
       });
     });
-    it('should allow persist last reply information', done => {
-      Comment.create({ content: 'c'.repeat(100) }).then(comment => {
-        _topic.lastReplies.push(comment);
-        _topic.lastReplyDate = comment.date;
-        _topic.save().then(() => {
-          comment.remove().then(done());
-        }).catch(err => {
-          expect(err).to.be.empty();
-          done();
-        });
-      });
-    });
     it('should allow assign topic to a author', done => {
       _topic.author = user;
       _topic.save().then(done()).catch(err => {
@@ -251,19 +239,6 @@ describe('Topic Model Tests:', () => {
       Topic.create(topic).then(topic => {
         topic.view().then(topic => {
           expect(topic.views).to.be(1);
-          topic.remove().then(done());
-        }).catch(err => {
-          expect(err).to.be.empty();
-          done();
-        });
-      });
-    });
-  });
-  describe('Testing Topic#reply', () => {
-    it('should increment reply number by 1', done => {
-      Topic.create(topic).then(topic => {
-        topic.reply().then(topic => {
-          expect(topic.replies).to.be(1);
           topic.remove().then(done());
         }).catch(err => {
           expect(err).to.be.empty();
