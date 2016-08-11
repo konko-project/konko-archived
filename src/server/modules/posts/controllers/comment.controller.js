@@ -153,7 +153,7 @@ export default class CommentController {
       }
 
       let page = { size: payload.preference.commentListLimit };
-      Comment.find({ topic: topic._id }).lean().sort('-date').exec().then(comments => {
+      Comment.find({ topic: topic ? topic._id : comment.topic }).lean().sort('-date').exec().then(comments => {
         page.page = Math.floor(_.findIndex(comments, c => c._id.equals(comment._id)) / page.size) + 1;
         utils.partialUpdate(body, comment, 'content');
         comment.updated.date = Date.now();
@@ -174,12 +174,21 @@ export default class CommentController {
    * @static
    */
   static delete({ topic, comment }, res) {
-    topic.comments.remove(comment);
-    topic.save().then(topic => {
-      comment.remove()
-        .then(() => res.status(200).sjson({ message: 'ok' }))
-        .catch(err => res.status(500).sjson({ message: err }));
-    }).catch(err => res.status(500).sjson({ message: err }));
+    const _delete = (topic, comment) => {
+      topic.comments.remove(comment);
+      topic.save().then(topic => {
+        comment.remove()
+          .then(() => res.status(200).sjson({ message: 'ok' }))
+          .catch(err => res.status(500).sjson({ message: err }));
+      }).catch(err => res.status(500).sjson({ message: err }));
+    };
+    if (topic) {
+      _delete(topic, comment);
+    } else {
+      Topic.findById(comment.topic).then(topic => {
+        _delete(topic, comment);
+      }).catch(err => res.status(500).sjson({ message: err }));
+    }
   }
 
   /**
