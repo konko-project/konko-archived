@@ -1,8 +1,10 @@
 'use strict';
 
+import _ from 'lodash';
 import mongoose from 'mongoose';
 import utils from '../../../configs/utils';
 const Report = mongoose.model('Report');
+const Comment = mongoose.model('Comment');
 
 /**
  * Controller that process report request.
@@ -45,7 +47,7 @@ export default class ReportController {
    * @param {Object} res - HTTP response.
    * @static
    */
-  static list({ _fields, _sort }, res) {
+  static list({ _fields, _sort, payload }, res) {
     Report.find({ done: false }).select(_fields).sort(_sort).lean()
       .populate({
         path: 'reporter',
@@ -55,9 +57,28 @@ export default class ReportController {
           model: 'Profile',
           select: 'username',
         },
-      }).exec()
-      .then(reports => res.status(200).sjson(reports))
-      .catch(err => res.status(500).sjson({ message: err }));
+      }).exec().then(reports => {
+        const fixReporter = report => {
+          return new Promise(resolve => {
+            report.reporter = { profile: { username: 'Anonymous' } };
+            resolve(report.reporter);
+          });
+        };
+        const fixUrl = report => {
+          let [ ,tid, cid] = report.url.match(/\/t\/(.*)#(.*)/);
+          let size = payload.preference.commentListLimit;
+          return new Promise((resolve, reject) => {
+            Comment.find({ topic: tid }).lean().sort('-date').exec().then(comments => {
+              let page = Math.floor(_.findIndex(comments, c => c._id.equals(cid)) / size) + 1;
+              report.url = `/t/${tid}/page/${page}#${cid}`;
+              resolve(report.url);
+            }).catch(err => reject(err));
+          });
+        };
+        Promise.all(_.map(_.filter(reports, { reporter: null }), fixReporter).concat(_.map(_.filter(reports, { type: 'comment' }), fixUrl))).then(values => {
+          res.status(200).sjson(reports);
+        }, reason => res.status(500).sjson({ message: reason }));
+      }).catch(err => res.status(500).sjson({ message: err }));
   }
 
   /**
@@ -79,8 +100,7 @@ export default class ReportController {
     }
     Report.create(body).then(report => {
       report.reporter = payload;
-      report.save().then(report => res.status(201).sjson(report))
-        .catch(err => next(err));
+      report.save().then(report => res.status(201).sjson(report)).catch(err => next(err));
     }).catch(err => next(err));
   }
 
