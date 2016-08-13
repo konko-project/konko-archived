@@ -96,7 +96,7 @@
         <h4 class="modal-title">Report inappropriate</h4>
       </div>
       <div class="modal-body">
-        <div class="alert alert-danger" role="alert" data-ng-if="vm.error" data-ng-class="{'alert-danger': vm.error.type === 'danger', 'alert-success': vm.error.type === 'success'}">
+        <div class="alert alert-danger" role="alert" data-ng-if="vm.error" data-ng-class="{'alert-danger': vm.error.type == 'danger', 'alert-success': vm.error.type == 'success'}">
           {{vm.error.message}}
         </div>
         <div class="form-group row">

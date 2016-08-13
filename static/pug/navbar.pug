@@ -22,7 +22,7 @@ section(class='pos-f-t', data-ng-controller='NavbarController as vm', ng-cloak)
   nav(class=['navbar', 'navbar-light', 'bg-faded'], role='navigation', scroll-to)
     a(class='navbar-brand', href='/')
       span(class='pull-xs-right') {{vm.core.basic.title}}
-      img(alt='Brand', class="logo", data-ng-src='#{logo}')
+      img(alt='Brand', class="logo", data-ng-src= logo)
     button(class=['navbar-toggler', 'pull-xs-right', 'hidden-sm-up'], type='button', data-toggle='collapse', data-target='#navbar-header', aria-expanded='false') &#9776;
     .collapse.navbar-toggleable-xs(scroll-to)
       div(class=['pull-xs-left'])
