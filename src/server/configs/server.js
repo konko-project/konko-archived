@@ -31,15 +31,6 @@ export default class Server {
   }
 
   /**
-   * Initialize database.
-   *
-   */
-  initDB() {
-    db.loadModels(SERVER);
-    db.connect();
-  }
-
-  /**
    * Fire up the express server.
    *
    * @param {Server~Callback} cb - A callback to run.
@@ -50,11 +41,11 @@ export default class Server {
       this.server = http.createServer(this.app).listen(_this.port, () => {
         console.log('Express server listening on port ' + _this.port);
         console.log('Environment:\t' + _this.app.get('env'));
-        console.log(`Databse name: ${info.name}`);
-        console.log(`Databse host: ${info.host}`);
-        console.log(`Databse port: ${info.port}`);
-        console.log(`Databse admin: ${info.user}`);
-        console.log(`Databse version: ${info.version}`);
+        console.log(`Database name: ${info.name}`);
+        console.log(`Database host: ${info.host}`);
+        console.log(`Database port: ${info.port}`);
+        console.log(`Database admin: ${info.user}`);
+        console.log(`Database version: ${info.version}`);
         if (cb) {
           cb();
         }
