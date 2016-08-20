@@ -14,4 +14,18 @@
     max-width: 100%;
     height: auto;
   }
+  pre {
+    background: #161719;
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    code {
+      color: #ccc;
+      &[lang="markdown"] {
+        color: #fce3be;
+      }
+      &[lang="javascript"] {
+        color: #80dbe9;
+      }
+    }
+  }
 }
