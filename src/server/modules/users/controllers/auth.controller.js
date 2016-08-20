@@ -188,6 +188,11 @@ export default class AuthenticationController {
         if (err) {
           return next(err);
         } else if (user) {
+          if (req.query && req.query.admin) {
+            if (user.permission !== 'admin') {
+              return res.status(403).sjson({ message: 'You account do not have admin permission.' });
+            }
+          }
           user.populate('profile preference', (err, user) => {
             if (err) {
               return next(err);
