@@ -40,7 +40,6 @@ export default class Utilities {
    * @param {Object} req - HTTP request.
    * @param {Object} res - HTTP response.
    * @param {nextCallback} next - A callback to run.
-   * @returns {nextCallback} Call next middleware.
    * @static
    */
   static setLanguage(req, res, next) {
@@ -61,14 +60,13 @@ export default class Utilities {
    * @param {Object} req - HTTP request.
    * @param {Object} res - HTTP response.
    * @param {nextCallback} next - A callback to run.
-   * @returns {nextCallback} Call next middleware.
    * @static
    */
   static public(req, res, next) {
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV === 'test') {
       return next();
     }
-    if (!req.payload || req.payload.permission === 'admin' || req.url.match('/api/v1/core')) {
+    if (!req.payload || req.payload.permission === 'admin' || req.url.match('/api/v1/core') || req.url.match('/api/v1/auth/login')) {
       return next();
     }
     const Core = mongoose.model('Core');
