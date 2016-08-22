@@ -1,10 +1,6 @@
 <div id="konko-carousel" class="carousel slide" data-ride="carousel">
     <ol class="carousel-indicators">
-        <li data-target="#konko-carousel" data-slide-to="0" class="active"></li>
-        <li data-target="#konko-carousel" data-slide-to="1"></li>
-        <li data-target="#konko-carousel" data-slide-to="2"></li>
-        <li data-target="#konko-carousel" data-slide-to="3"></li>
-        <li data-target="#konko-carousel" data-slide-to="4"></li>
+        <li data-target="#konko-carousel" data-slide-to="{{index}}" data-ng-class="{active: $first}" data-ng-repeat="index in indicators"></li>
     </ol>
     <div class="carousel-inner" role="listbox" data-ng-transclude></div>
     <a class="left carousel-control" href="#konko-carousel" role="button" data-slide="prev">

@@ -15,4 +15,7 @@
   <div class="btn-group" data-ng-if="vm.canEdit(doc.author._id)">
     <button class="btn btn-link btn-sm edit" type="button" data-ng-click="edit()" data-placement="top" title="Edit" konko-tooltip></button>
   </div>
+  <div class="btn-group" data-ng-if="vm.isAdmin()">
+    <button class="btn btn-link btn-sm slide" type="button" data-ng-click="slide()" data-ng-if="doc.title" data-placement="top" title="Add to Carousel" konko-tooltip></button>
+  </div>
 </div>

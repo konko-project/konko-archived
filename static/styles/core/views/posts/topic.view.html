@@ -86,48 +86,106 @@
   </div>
 </div>
 
-<div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModal" aria-hidden="true">
+<div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-        <h4 class="modal-title">Report inappropriate</h4>
-      </div>
-      <div class="modal-body">
-        <div class="alert alert-danger" role="alert" data-ng-if="vm.error" data-ng-class="{'alert-danger': vm.error.type == 'danger', 'alert-success': vm.error.type == 'success'}">
-          {{vm.error.message}}
+      <form id="addReportForm" name="addReportForm" role="form" data-ng-submit="vm.flag(addReportForm.$valid)" autocomplete="off">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="reportModalLabel">Report inappropriate</h4>
         </div>
-        <div class="form-group row">
-          <label for="report__doc__id" class="col-xs-2 col-form-label">ID</label>
-          <div class="col-xs-10">
-            <input class="form-control" type="text" value="{{vm.report.iid}}" id="report__doc__id" readonly>
+        <div class="modal-body">
+          <div class="alert" role="alert" data-ng-if="vm.error" data-ng-class="{'alert-danger': vm.error.type == 'danger', 'alert-success': vm.error.type == 'success'}" data-ng-bind-html="vm.error.message"></div>
+          <div class="form-group row">
+            <label for="report__doc__id" class="col-xs-2 col-form-label">ID</label>
+            <div class="col-xs-10">
+              <input class="form-control" type="text" value="{{vm.report.iid}}" id="report__doc__id" readonly>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="report__doc__type" class="col-xs-2 col-form-label">Type</label>
+            <div class="col-xs-10">
+              <input class="form-control" type="text" value="{{vm.report.type}}" id="report__doc__type" readonly>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="report__doc__url" class="col-xs-2 col-form-label">Url</label>
+            <div class="col-xs-10">
+              <input class="form-control" type="url" value="{{vm.report.url}}" id="report__doc__url" readonly>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="report__reason" class="col-xs-2 col-form-label">Reason</label>
+            <div class="col-xs-10">
+              <textarea maxlength="150" class="form-control" id="report__reason" rows="3" data-ng-model="vm.report.reason" placeholder="Describe why inappropriate in 150 characters..." required></textarea>
+            </div>
           </div>
         </div>
-        <div class="form-group row">
-          <label for="report__doc__type" class="col-xs-2 col-form-label">Type</label>
-          <div class="col-xs-10">
-            <input class="form-control" type="text" value="{{vm.report.type}}" id="report__doc__type" readonly>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-danger">Report</button>
+        </div>
+      </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="addSlideModal" tabindex="-1" role="dialog" aria-labelledby="addSlideModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form id="addSlideForm" name="addSlideForm" role="form" data-ng-submit="vm.addSlide(addSlideForm.$valid)" autocomplete="off">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="addSlideModalLabel">New carousel slide</h4>
+        </div>
+        <div class="modal-body">
+          <div class="alert" role="alert" data-ng-if="vm.error" data-ng-class="{'alert-danger': vm.error.type == 'danger', 'alert-success': vm.error.type == 'success'}" data-ng-bind-html="vm.error.message"></div>
+          <div class="form-group row">
+            <label for="slide__title" class="col-xs-2 col-form-label">Title</label>
+            <div class="col-xs-10">
+              <input class="form-control" type="text" data-ng-model="vm.slide.title" id="slide__title" placeholder="Slide title" required>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="slide__description" class="col-xs-2 col-form-label">Description</label>
+            <div class="col-xs-10">
+              <input class="form-control" type="text" data-ng-model="vm.slide.description" id="slide__description" placeholder="Slide description">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="slide__url" class="col-xs-2 col-form-label">Url</label>
+            <div class="col-xs-10">
+              <input class="form-control" type="text" data-ng-model="vm.slide.url" id="slide__url" readonly required>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="slide__order" class="col-xs-2 col-form-label">Order</label>
+            <div class="col-xs-10">
+              <input class="form-control" type="number" min="0" data-ng-model="vm.slide.order" id="slide__order" placeholder="Slide order">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="slide__image" class="col-xs-2 col-form-label">Image</label>
+            <div class="col-xs-10">
+              <input class="form-control" type="text" data-ng-model="vm.slide.image" id="slide__image" placeholder="Slide image url" required>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="slide__alt" class="col-xs-2 col-form-label">Alt</label>
+            <div class="col-xs-10">
+              <input class="form-control" type="text" data-ng-model="vm.slide.alt" id="slide__alt" placeholder="Slide image alt text">
+            </div>
           </div>
         </div>
-        <div class="form-group row">
-          <label for="report__doc__url" class="col-xs-2 col-form-label">Url</label>
-          <div class="col-xs-10">
-            <input class="form-control" type="url" value="{{vm.report.url}}" id="report__doc__url" readonly>
-          </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Add Slide</button>
         </div>
-        <div class="form-group row">
-          <label for="report__reason" class="col-xs-2 col-form-label">Reason</label>
-          <div class="col-xs-10">
-            <textarea maxlength="150" class="form-control" id="report__reason" rows="3" data-ng-model="vm.report.reason" placeholder="Describe why inappropriate in 150 characters..." required></textarea>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-danger" data-ng-click="vm.flag()">Report</button>
-      </div>
+      </form>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->

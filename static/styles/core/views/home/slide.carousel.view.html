@@ -1,7 +1,9 @@
 <div class="carousel-item" data-ng-class="{active: $first}">
-    <img data-ng-src="{{slide.url}}" alt="{{slide.alt}}">
+  <img data-ng-src="{{slide.image}}" alt="{{slide.alt}}">
+  <a data-ng-href="{{slide.url}}" target="_blank">
     <div class="carousel-caption">
-        <h3>Slide</h3>
-        <p>{{$index+1}}</p>
+      <h3>{{slide.title}}</h3>
+      <p>{{slide.description}}</p>
     </div>
+  </a>
 </div>

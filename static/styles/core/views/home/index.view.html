@@ -1,6 +1,6 @@
 <div ng-cloak>
-  <konko-carousel class="konko-carousel" data-ng-if="vm.slides && vm.slides.length">
-    <konko-slide data-ng-repeat="slide in vm.slides track by $index"></konko-slide>
+  <konko-carousel class="konko-carousel" data-ng-if="vm.slides && vm.slides.length" length="{{vm.slides.length}}">
+    <konko-slide data-ng-repeat="slide in vm.slides | orderBy: 'order'"></konko-slide>
   </konko-carousel>
   <breadcrumb current-name="{{ vm.categories.length > 1 ? null : vm.categories[0].name }}"></breadcrumb>
   <div class="cate-list">
