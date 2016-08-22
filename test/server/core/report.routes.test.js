@@ -286,14 +286,43 @@ describe('Report CRUD Test:', () => {
         .set('Authorization', '')
         .expect(401, done);
     });
-    it('should allow Admin to set Report to done', done => {
+    it('should allow Admin to process a Report', done => {
       agent.put(`/api/v1/reports/${report._id}/done`)
         .set(adminHeader)
-        .send({})
         .expect(200)
         .expect(({ res: { body: { done } } }) => {
           expect(done).to.be(true);
         }).end(done);
+    });
+    it('should response 401 when User try to process a Report', done => {
+      agent.put(`/api/v1/reports/${report._id}/done`)
+        .set(userHeader)
+        .expect(401, done);
+    });
+    it('should response 401 when Banned User try to process a Report', done => {
+      agent.put(`/api/v1/reports/${report._id}/done`)
+        .set(bannedHeader)
+        .expect(401, done);
+    });
+    it('should response 401 when Guest try to process a Report', done => {
+      agent.put(`/api/v1/reports/${report._id}/done`)
+        .set(guestHeader)
+        .expect(401, done);
+    });
+    it('should response 400 when report id is invalid', done => {
+      agent.put(`/api/v1/reports/${12345}/done`)
+        .set(adminHeader)
+        .expect(400, done);
+    });
+    it('should response 400 when report id is missing', done => {
+      agent.put('/api/v1/reports//done')
+        .set(adminHeader)
+        .expect(404, done);
+    });
+    it('should response 404 when report is not exist', done => {
+      agent.put(`/api/v1/reports/${new Report(r2)._id}/done`)
+        .set(adminHeader)
+        .expect(404, done);
     });
   });
   describe('Testing DELETE', () => {
