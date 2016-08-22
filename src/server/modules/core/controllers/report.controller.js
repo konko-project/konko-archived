@@ -65,7 +65,7 @@ export default class ReportController {
           });
         };
         const fixUrl = report => {
-          let [ ,tid, cid] = report.url.match(/\/t\/(.*?)(?:\/page\/\d*)?#(.*)/g);
+          let [, tid, cid] = /\/t\/(.*?)(?:\/page\/\d*)?#(.*)/g.exec(report.url);
           let size = payload.preference.commentListLimit;
           return new Promise((resolve, reject) => {
             Comment.find({ topic: tid }).lean().sort('-date').exec().then(comments => {
