@@ -6,9 +6,9 @@ section(class='footer', data-ng-controller='NavbarController as vm', ng-cloak)
         a(class='nav-link' ui-sref='terms') Terms
         a(class='nav-link' ui-sref='privacy') Privacy
     div
-      | &#169; 2016
-      a(href='/') {{vm.core.basic.title}}
-      | All Rights Reserved.
+      | &#169; 2016&#32;
+      a(ui-sref='home.index') {{vm.core.basic.title}}
+      |  All Rights Reserved.
     div
-      | Powered by
+      | Powered by&#32;
       a(href='https://github.com/konko-project/konko') Konko
