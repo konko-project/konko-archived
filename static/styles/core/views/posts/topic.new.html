@@ -2,7 +2,7 @@
   <breadcrumb parent-name="{{ vm.panel.name }}" parent-state="panel.view" parent-params='{"panelId" : "{{ vm.panel._id }}"}' current-name="New Topic"></breadcrumb>
   <form id="newTopicForm" name="newTopicForm" role="form" data-ng-submit="vm.save(newTopicForm.$valid)">
     <konko-editor title-model="vm.topic.title" content-model="vm.topic.content" title-pattern="vm.topicTitlePattern" title-title="vm.topicTitlePatternTitle" content-max="vm.core.post.comment.content.max">
-      <div class="alert alert-danger" id="editor__error" role="alert" data-ng-if="vm.error">{{vm.error}}</div>
+      <konko-alert alert="vm.alert" data-ng-if="vm.alert"></konko-alert>
     </konko-editor>
     <button type="submit" class="btn btn-secondary btn-block">Post Topic</button>
   </form>

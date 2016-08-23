@@ -97,7 +97,7 @@
           <h4 class="modal-title" id="reportModalLabel">Report inappropriate</h4>
         </div>
         <div class="modal-body">
-          <div class="alert" role="alert" data-ng-if="vm.error" data-ng-class="{'alert-danger': vm.error.type == 'danger', 'alert-success': vm.error.type == 'success'}" data-ng-bind-html="vm.error.message"></div>
+          <konko-alert alert="vm.alert" data-ng-if="vm.alert"></konko-alert>
           <div class="form-group row">
             <label for="report__doc__id" class="col-xs-2 col-form-label">ID</label>
             <div class="col-xs-10">
@@ -143,7 +143,7 @@
           <h4 class="modal-title" id="addSlideModalLabel">New carousel slide</h4>
         </div>
         <div class="modal-body">
-          <div class="alert" role="alert" data-ng-if="vm.error" data-ng-class="{'alert-danger': vm.error.type == 'danger', 'alert-success': vm.error.type == 'success'}" data-ng-bind-html="vm.error.message"></div>
+          <konko-alert alert="vm.alert" data-ng-if="vm.alert"></konko-alert>
           <div class="form-group row">
             <label for="slide__title" class="col-xs-2 col-form-label">Title</label>
             <div class="col-xs-10">

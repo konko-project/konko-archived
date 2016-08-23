@@ -60,6 +60,7 @@ export default class Utilities {
    * @param {Object} req - HTTP request.
    * @param {Object} res - HTTP response.
    * @param {nextCallback} next - A callback to run.
+   * @returns {nextCallback} Call next middleware.
    * @static
    */
   static public(req, res, next) {
@@ -244,6 +245,16 @@ export default class Utilities {
         obj[prop] = data[prop];
       }
     }
+  }
+
+  /**
+   * Returns error message only.
+   *
+   * @param {Array} errors - An array of validation errors
+   * @returns {Array} Array of error messages
+   */
+  static validationErrorMessage(errors) {
+    return errors.map(error => error.msg);
   }
 }
 

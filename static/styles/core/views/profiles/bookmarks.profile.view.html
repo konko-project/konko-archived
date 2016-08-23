@@ -1,5 +1,6 @@
 <div class="profile-container" data-ng-class="{pushed:vm.showSideBar}">
   <div class="p-c-inner p-t-2">
+    <konko-alert alert="vm.alert" data-ng-if="vm.alert"></konko-alert>
     <div class="card-columns">
       <div class="p-b-c" data-ng-repeat="bookmark in vm.bookmarks" data-ng-include="'bookmark.html'"></div>
     </div>

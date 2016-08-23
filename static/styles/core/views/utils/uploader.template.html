@@ -6,5 +6,5 @@
     </label>
     <small class="text-muted">Max file size: {{vm.core.profile[vm.profileImageType].limit}} KB</small>
   </div>
-  <div class="alert alert-danger upload-error" role="alert" data-ng-if="error || vm.error">{{error || vm.error}}</div>
+  <konko-alert alert="vm.alert" data-ng-if="vm.alert"></konko-alert>
 </div>

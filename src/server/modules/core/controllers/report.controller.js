@@ -96,7 +96,7 @@ export default class ReportController {
     checkBody('reason', 'Reason of the inappropriate cannot be empty!').notEmpty();
     let errors = validationErrors();
     if (errors) {
-      return res.status(400).sjson({ message: errors });
+      return res.status(400).sjson({ message: utils.validationErrorMessage(errors) });
     }
     Report.create(body).then(report => {
       report.reporter = payload;

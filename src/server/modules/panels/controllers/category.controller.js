@@ -123,11 +123,13 @@ export default class CategoryController {
     req.checkBody('name', 'Category name cannot be empty!').notEmpty();
     let errors = req.validationErrors();
     if (errors) {
-      return res.status(400).sjson({ message: errors });
+      return res.status(400).sjson({ message: utils.validationErrorMessage(errors) });
     }
     Category.create(req.body)
       .then(category => res.status(201).sjson(category))
-      .catch(err => next(err));
+      .catch(err => {
+        res.status(500).sjson({ message: err.toString() });
+      });
   }
 
   /**
@@ -144,12 +146,12 @@ export default class CategoryController {
     checkBody('name', 'Category name cannot be empty!').notEmpty();
     let errors = validationErrors();
     if (errors) {
-      return res.status(400).sjson({ message: errors });
+      return res.status(400).sjson({ message: utils.validationErrorMessage(errors) });
     }
     utils.partialUpdate(body, category, 'name', 'order');
     category.save()
       .then(category => res.status(200).sjson(category))
-      .catch(err => res.status(500).sjson({ message: err }));
+      .catch(err => res.status(500).sjson({ message: err.toString() }));
   }
 
   /**

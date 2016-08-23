@@ -1,0 +1,16 @@
+<div class="alerts" data-ng-repeat="alert in alerts">
+  <div data-ng-include="'konkoAlertTemplate.html'"></div>
+  <script type="text/ng-template" id="konkoAlertTemplate.html">
+    <div class="alert alert-dismissible fade in" data-ng-class="{
+      'alert-success': alert.type == 'success',
+      'alert-warning': alert.type == 'warning',
+      'alert-danger': alert.type == 'danger',
+      'alert-info': alert.type == 'info',
+    }" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <data-ng-bind-html data-ng-bind-html="alert.message"></data-ng-bind-html>
+    </div>
+  </script>
+</div>

@@ -11,13 +11,7 @@
     </div>
   </div>
 </form>
-<div class="alert alert-danger" role="alert" data-ng-if="vm.uerror">
-  <strong>{{vm.uerror.status}}</strong> {{vm.uerror.statusText}}<br />
-  <span>{{vm.uerror.data.message}}</span>
-</div>
-<div class="alert alert-success" role="alert" data-ng-if="vm.usuccess && !vm.uerror && vm.found.length">
-  <p class="text-xs-center">{{vm.usuccess}}</p>
-</div>
+<konko-alert alert="vm.alert" data-ng-if="vm.alert"></konko-alert>
 <div class="m-t-2" data-ng-if="vm.found && vm.found.length" data-ng-repeat="user in vm.found | orderBy: '_id'">
   <form id="coreUserSettingForm_{{user._id}}" name="coreUserSettingForm_{{user._id}}" role="form" data-ng-submit="vm.updateUser(user)" autocomplete="off">
     <div class="form-group row">

@@ -1,12 +1,7 @@
 <div class="profile-container" data-ng-class="{pushed:vm.showSideBar}">
   <div class="p-c-inner">
     <div class="p-t-3">
-      <div class="alert alert-danger" role="alert" data-ng-if="vm.error">
-        {{vm.error.message}}
-      </div>
-      <div class="alert alert-success" role="alert" data-ng-if="vm.info && !vm.error">
-        {{vm.info}}
-      </div>
+      <konko-alert alert="vm.alert" data-ng-if="vm.alert"></konko-alert>
       <form class="preference-edit-form" id="preferenceEditForm" name="preferenceEditForm" role="form" data-ng-submit="vm.updatePreference(preferenceEditForm.$valid)">
         <div class="form-group row">
           <label for="user__preference__topicListLimit" class="col-sm-3 col-form-label">Topic List Limit</label>

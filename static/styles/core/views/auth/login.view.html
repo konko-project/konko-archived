@@ -4,16 +4,11 @@
       <div class="form-heading">
         <h2>Sign In</h2>
       </div>
+      <konko-alert alert="vm.alert" data-ng-if="vm.alert"></konko-alert>
       <label for="login__email" class="sr-only">Email Address</label>
       <input type="email" name="email" class="form-control form-control-lg" id="login__email" data-ng-model="vm.user.email" placeholder="Enter your email" autofocus lowercase required>
       <label for="login__password" class="sr-only">Password</label>
       <input type="password" name="password" class="form-control form-control-lg" id="login__password" data-ng-model="vm.user.password" placeholder="Password" required>
-      <div class="alert alert-danger alert-dismissible fade in" role="alert" data-ng-if="vm.error">
-        <button type="button" class="close m-t-0" data-dismiss="alert" aria-label="Close">
-          <span class="f-s-1-5" aria-hidden="true">&times;</span>
-        </button>
-        {{vm.error}}
-      </div>
       <button type="submit" class="btn btn-large btn-primary btn-block" data-ng-class="{disabled: !loginForm.$valid}">Sign in</button>
       <div class="row n-l-o p-t-2 small">
         <div class="col-xs-6 text-xs-left">

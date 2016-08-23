@@ -116,7 +116,7 @@ export default class CommentController {
       checkBody('content', 'Empty comment!').notEmpty();
       let errors = validationErrors();
       if (errors) {
-        return res.status(400).sjson({ message: 'Cannot post a empty comment.' });
+        return res.status(400).sjson({ message: utils.validationErrorMessage(errors) });
       }
 
       Comment.create(body).then(comment => {
@@ -149,7 +149,7 @@ export default class CommentController {
       checkBody('content', 'Cannot post a empty comment!').notEmpty();
       let errors = validationErrors();
       if (errors) {
-        return res.status(400).sjson({ message: errors });
+        return res.status(400).sjson({ message: utils.validationErrorMessage(errors) });
       }
 
       let page = { size: payload.preference.commentListLimit };

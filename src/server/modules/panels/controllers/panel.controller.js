@@ -114,7 +114,7 @@ export default class PanelController {
     req.checkBody('name', 'Panel name cannot be empty!').notEmpty();
     var errors = req.validationErrors();
     if (errors) {
-      return res.status(400).sjson({ message: errors });
+      return res.status(400).sjson({ message: utils.validationErrorMessage(errors) });
     }
     Panel.create(req.body).then(panel => {
       if (req.panel) {
@@ -137,7 +137,7 @@ export default class PanelController {
       } else {
         res.status(400).sjson({ message: 'Missing Category or Parent' });
       }
-    }).catch(err => res.status(500).sjson({ message: err }));
+    }).catch(err => res.status(500).sjson({ message: err.toString() }));
   }
 
   /**
@@ -156,12 +156,12 @@ export default class PanelController {
     checkBody('name', 'Panel name cannot be empty!').notEmpty();
     var errors = validationErrors();
     if (errors) {
-      return res.status(400).sjson({ message: errors });
+      return res.status(400).sjson({ message: utils.validationErrorMessage(errors) });
     }
     utils.partialUpdate(body, panel, 'name', 'order', 'description', 'logo');
     panel.save()
       .then(panel => res.status(200).sjson(panel))
-      .catch(err => res.status(500).sjson({ message: err }));
+      .catch(err => res.status(500).sjson({ message: err.toString() }));
   }
 
   /**

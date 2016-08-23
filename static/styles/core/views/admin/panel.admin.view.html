@@ -1,4 +1,5 @@
 <h1>Panel Settings</h1>
+<konko-alert alert="vm.alert" data-ng-if="vm.alert"></konko-alert>
 <form id="corePanelUpdateForm" name="corePanelUpdateForm" role="form" data-ng-submit="vm.updatePanels(corePanelUpdateForm.$valid)" autocomplete="off">
   <div class="form-group">
     <div class="v-d-bg" data-ng-repeat="category in vm.categories | orderBy: 'order'" data-ng-class="{ 'p-t-1': $index }">
@@ -42,10 +43,7 @@
           <input type="text" pattern="{{vm.categoryNamePattern}}" title="{{vm.categoryNameTitle}}" class="form-control" id="core__catetory__new__name" data-ng-model="vm.n_Category.name" placeholder="Category name" required>
           <input type="number" min="0" class="form-control" id="core__catetory__new__order" data-ng-model="vm.n_Category.order" placeholder="Category order">
           <span>The smaller Order number, the higher priority.</span>
-          <div class="alert alert-danger" role="alert" data-ng-if="vm.perror">
-            <strong>{{vm.perror.status}}</strong> {{vm.perror.statusText}}<br />
-            <span>Please check your inputs and make sure no duplicate category name.</span>
-          </div>
+          <konko-alert alert="vm.alert" data-ng-if="vm.alert"></konko-alert>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -78,10 +76,7 @@
           <input type="text" class="form-control" id="core__panel__new__logo" data-ng-model="vm.n_Panel.logo" placeholder="Panel logo url">
           <input type="number" min="0" class="form-control" id="core__panel__new__order" data-ng-model="vm.n_Panel.order" placeholder="Panel order">
           <span>The smaller Order number, the higher priority.</span>
-          <div class="alert alert-danger" role="alert" data-ng-if="vm.perror">
-            <strong>{{vm.perror.status}}</strong> {{vm.perror.statusText}}<br />
-            <span>Please check your inputs and make sure no duplicate panel name.</span>
-          </div>
+          <konko-alert alert="vm.alert" data-ng-if="vm.alert"></konko-alert>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

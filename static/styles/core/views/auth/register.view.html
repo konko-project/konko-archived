@@ -1,25 +1,23 @@
 <div class="container">
-    <form class="register-form" id="registerForm" name="registerForm" role="form" data-ng-submit="vm.register(registerForm.$valid)" autocomplete="off">
-        <div class="form-heading">
-            <h2>New User</h2>
-        </div>
-        <div class="alert alert-danger" role="alert" data-ng-if="vm.error">
-          {{vm.error}}
-        </div>
-        <fieldset class="form-group">
-            <label for="register__email">Email Address</label>
-            <input type="email" name="email" class="form-control" id="register__email" data-ng-model="vm.user.email" placeholder="Enter email" autofocus lowercase required>
-        </fieldset>
-        <fieldset class="form-group">
-            <label for="register__password">Password</label>
-            <input type="password" name="password" data-ng-pattern="vm.core.registration.password.regex" title="{{vm.core.registration.password.title}}" class="form-control" id="register__password" data-ng-model="vm.user.password" placeholder="Enter password" required>
-            <small id="passwordHelp" class="form-text text-muted">{{vm.core.registration.password.title}}</small>
-        </fieldset>
-        <fieldset class="form-group">
-            <label for="register__password_confirm">Password Confirmation</label>
-            <input type="password" name="password2" class="form-control" id="register__password_confirm" data-ng-model="vm.user.password2" placeholder="Confirm your password" required>
-        </fieldset>
-        <button type="submit" class="btn btn-large btn-primary btn-block" data-ng-class="{disabled: !registerForm.$valid}">Register</button>
-        <span>By registering, you agree to {{vm.core.basic.title}}'s <a ui-sref="tos">Privacy Policy and Terms of Use</a>.</span>
-    </form>
+  <form class="register-form" id="registerForm" name="registerForm" role="form" data-ng-submit="vm.register(registerForm.$valid)" autocomplete="off">
+    <div class="form-heading">
+      <h2>New User</h2>
+    </div>
+    <konko-alert alert="vm.alert" data-ng-if="vm.alert"></konko-alert>
+    <fieldset class="form-group">
+      <label for="register__email">Email Address</label>
+      <input type="email" name="email" class="form-control" id="register__email" data-ng-model="vm.user.email" placeholder="Enter email" autofocus lowercase required>
+    </fieldset>
+    <fieldset class="form-group">
+      <label for="register__password">Password</label>
+      <input type="password" name="password" data-ng-pattern="vm.core.registration.password.regex" title="{{vm.core.registration.password.title}}" class="form-control" id="register__password" data-ng-model="vm.user.password" placeholder="Enter password" required>
+      <small id="passwordHelp" class="form-text text-muted">{{vm.core.registration.password.title}}</small>
+    </fieldset>
+    <fieldset class="form-group">
+      <label for="register__password_confirm">Password Confirmation</label>
+      <input type="password" name="password2" class="form-control" id="register__password_confirm" data-ng-model="vm.user.password2" placeholder="Confirm your password" required>
+    </fieldset>
+    <button type="submit" class="btn btn-large btn-primary btn-block" data-ng-class="{disabled: !registerForm.$valid}">Register</button>
+    <span>By registering, you agree to {{vm.core.basic.title}}'s <a ui-sref="tos">Privacy Policy and Terms of Use</a>.</span>
+  </form>
 </div>

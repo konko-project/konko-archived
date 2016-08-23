@@ -16,7 +16,7 @@
           <h4 class="modal-title">Please login with your admin account.</h4>
         </div>
         <div class="modal-body">
-          <div class="alert alert-danger" role="alert" data-ng-if="error">{{error}}</div>
+          <konko-alert alert="alert" data-ng-if="alert"></konko-alert>
           <div class="input-group">
             <span class="input-group-addon">✉</span>
             <input type="text" name="email" class="form-control" id="admin__email" data-ng-model="adminEmail" placeholder="You email" required>

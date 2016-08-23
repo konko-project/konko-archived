@@ -187,7 +187,7 @@ export default class TopicController {
       checkQuery('panelId', 'Panel ID is not presented!').notEmpty();
       let errors = validationErrors();
       if (errors) {
-        return res.status(400).sjson({ message: errors });
+        return res.status(400).sjson({ message: utils.validationErrorMessage(errors) });
       }
 
       Topic.create(body).then(topic => {
@@ -221,7 +221,7 @@ export default class TopicController {
       checkBody('content', 'Cannot post a empty topic!').notEmpty();
       let errors = validationErrors();
       if (errors) {
-        return res.status(400).sjson({ message: errors });
+        return res.status(400).sjson({ message: utils.validationErrorMessage(errors) });
       }
 
       utils.partialUpdate(body, topic, 'title', 'content');

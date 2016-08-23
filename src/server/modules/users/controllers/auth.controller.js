@@ -3,6 +3,7 @@
 import passport from 'passport';
 import mongoose from 'mongoose';
 import Mailer from '../../../configs/mailer';
+import utils from '../../../configs/utils';
 const Core = mongoose.model('Core');
 const User = mongoose.model('User');
 const Profile = mongoose.model('Profile');
@@ -80,7 +81,7 @@ export default class AuthenticationController {
         req.checkBody('email', 'Invalid Email').isEmail();
         let errors = req.validationErrors();
         if (errors) {
-          return res.status(400).sjson({ message: errors[0].msg });
+          return res.status(400).sjson({ message: utils.validationErrorMessage(errors) });
         }
 
         let password = req.body.password;
@@ -182,7 +183,7 @@ export default class AuthenticationController {
       req.checkBody('password', 'Invalid Password').notEmpty();
       let errors = req.validationErrors();
       if (errors) {
-        return res.status(400).sjson({ message: errors });
+        return res.status(400).sjson({ message: utils.validationErrorMessage(errors) });
       }
       passport.authenticate('local', (err, user, info) => {
         if (err) {

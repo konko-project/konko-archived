@@ -1,6 +1,5 @@
 'use strict';
 
-import _ from 'lodash';
 import mongoose from 'mongoose';
 import utils from '../../../configs/utils';
 const Slide = mongoose.model('Slide');
@@ -57,7 +56,7 @@ export default class SlideController {
     checkBody('url', 'Url of the Slide cannot be empty!').notEmpty();
     let errors = validationErrors();
     if (errors) {
-      return res.status(400).sjson({ message: _.map(errors, 'msg').join('\n') });
+      return res.status(400).sjson({ message: utils.validationErrorMessage(errors) });
     }
 
     Slide.create(body).then(slide => {
@@ -78,7 +77,7 @@ export default class SlideController {
     checkBody('url', 'Url of the Slide cannot be empty!').notEmpty();
     let errors = validationErrors();
     if (errors) {
-      return res.status(400).sjson({ message: _.map(errors, 'msg').join('\n') });
+      return res.status(400).sjson({ message: utils.validationErrorMessage(errors) });
     }
 
     utils.partialUpdate(body, slide, ...Object.keys(body));

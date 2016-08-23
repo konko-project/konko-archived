@@ -1,4 +1,5 @@
 <div class="container">
+    <konko-alert alert="vm.alert" data-ng-if="vm.alert"></konko-alert>
     <form class="setup-form" id="setupForm" name="setupForm" role="form" data-ng-submit="vm.save(setupForm.$valid)" autocomplete="off">
         <div class="form-heading">
             <h2>Setup Your Konko</h2>
@@ -7,7 +8,7 @@
             <label for="core_title">Site Title</label>
             <input name="title" class="form-control" data-ng-class="{'form-control-success': vm.core.basic.title}" id="core_title" data-ng-model="vm.core.basic.title" placeholder="Enter the title for your Konko" autofocus required>
         </fieldset>
-        <fieldset class="form-group"  data-ng-class="{'has-success': vm.core.basic.description}">
+        <fieldset class="form-group" data-ng-class="{'has-success': vm.core.basic.description}">
             <label for="core_description">Site Description</label>
             <input name="description" class="form-control" data-ng-class="{'form-control-success': vm.core.basic.description}" id="core_description" data-ng-model="vm.core.basic.description" placeholder="...and the description">
         </fieldset>
