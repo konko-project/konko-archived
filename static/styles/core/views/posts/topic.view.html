@@ -15,7 +15,9 @@
         <span class="t-i-icon" title="Replies" data-placement="bottom" konko-tooltip>📝 </span><span>{{vm.topic.comments.length}}</span>
       </div>
       <div class="t-action">
-        <a class="btn btn-secondary btn-sm" role="button" ui-sref="topic.comment({topicId: vm.topic._id})" data-ng-if="vm.user && vm.user.verified && vm.user.permission != 'guest'"><span class="f-s-1">comment</span></a>
+        <a class="btn btn-info" role="button" ui-sref="topic.comment({topicId: vm.topic._id})" data-ng-if="vm.user && vm.user.verified && vm.user.permission != 'guest'" data-placement="top" title="Comment" konko-tooltip>
+          <span class="f-s-1 reply"></span>
+        </a>
       </div>
     </div>
     <div class="flex-container f-j-c-fs p-t-1">

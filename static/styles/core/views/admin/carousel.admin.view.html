@@ -2,7 +2,7 @@
 <konko-alert alert="vm.alert" data-ng-if="vm.alert"></konko-alert>
 <form id="coreCarouselUpdateForm" name="coreCarouselUpdateForm" role="form" data-ng-submit="vm.updateCarousel(coreCarouselUpdateForm.$valid)" autocomplete="off">
   <div class="form-group">
-    <div class="p-t-1" data-ng-repeat="slide in vm.slides | orderBy: 'order'">
+    <div data-ng-class="{'p-t-1': !$first}" data-ng-repeat="slide in vm.slides | orderBy: 'order'">
       <div data-ng-include="'coreSlideTemplate.html'"></div>
     </div>
     <div class="p-t-1">

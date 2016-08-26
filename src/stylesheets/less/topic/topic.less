@@ -14,8 +14,11 @@
     font-size: 1rem;
   }
   .t-action {
-    > a {
-      width: 5.75rem;
+    .reply {
+      &::before {
+        color: #fff;
+        content: '✏';
+      }
     }
   }
   .p-user {

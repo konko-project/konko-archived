@@ -1,4 +1,4 @@
 <div class="jumbotron">
-  <h1>{{vm.error.status}} - {{vm.error.title}}</h1>
-  <p>{{vm.error.message}}</p>
+  <h1 class="display-3">{{vm.error.status}} - {{vm.error.title}}</h1>
+  <data-ng-bind-html data-ng-bind-html="vm.error.message"></data-ng-bind-html>
 </div>

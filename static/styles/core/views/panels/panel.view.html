@@ -3,7 +3,9 @@
   <div class="konko-panel" id="panel_{{vm.panel._id}}">
     <div class="flex-container f-a-i-c f-j-c-sb">
       <h2 class="p-name">{{vm.panel.name}}</h2>
-      <a class="btn btn-secondary" role="button" ui-sref="topic.new({panelId: vm.panel._id, categoryId: vm.panel.category})" data-ng-if="vm.user && vm.user.verified && vm.user.permission != 'guest'"><span class="f-s-1">new&#160;topic</span></a>
+      <a class="btn btn-warning" role="button" ui-sref="topic.new({panelId: vm.panel._id, categoryId: vm.panel.category})" data-ng-if="vm.user && vm.user.verified && vm.user.permission != 'guest'" data-placement="top" title="New Topic" konko-tooltip>
+        <span class="f-s-1 new-topic"></span>
+      </a>
     </div>
     <div class="p-subs" data-ng-if="vm.panel.children && vm.panel.children.length">
       <div class="hidden-sm-up">

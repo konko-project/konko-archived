@@ -21,24 +21,35 @@ section(class='pos-f-t', data-ng-controller='NavbarController as vm', ng-cloak)
         a(role='button', class=['btn', 'btn-link', 'btn-sm'], ui-sref='register') Register
   nav(class=['navbar', 'navbar-light', 'bg-faded'], role='navigation', scroll-to)
     a(class='navbar-brand', href='/')
-      span(class='pull-xs-right') {{vm.core.basic.title}}
+      h4(class='pull-xs-right site-title') {{vm.core.basic.title}}
       img(alt='Brand', class="logo", data-ng-src= logo)
     button(class=['navbar-toggler', 'pull-xs-right', 'hidden-sm-up'], type='button', data-toggle='collapse', data-target='#navbar-header', aria-expanded='false') &#9776;
     .collapse.navbar-toggleable-xs(scroll-to)
-      div(class=['pull-xs-left'])
+      .pull-xs-left
         ul(class=['nav', 'navbar-nav'])
           li(data-ng-repeat='nav in vm.navs | orderBy: "order"', class=['nav-item'])
             a(class=['nav-link'], href='{{nav.url}}') {{nav.name}}
-      div(data-ng-if='!vm.isLoggedIn')
-        ul(class=['nav', 'navbar-nav', 'pull-xs-right'])
-          li(class='nav-item')
-            a(role='button', class=['nav-link', 'btn', 'btn-secondary', 'btn-sm'], ui-sref='login'): span Sign in
-      div(data-ng-if='vm.isLoggedIn')
-        .pull-xs-right
-          .pull-xs-left.navbar-user
-            a(role='button', ui-sref='user.profile.view({userId: vm.user._id})', class='m-r-1', konko-tooltip, data-placement='bottom', title='{{vm.user.profile.username}}')
-              img(data-ng-src='{{vm.user.profile.avatar}}', alt='avatar', class='img-thumbnail')
-            a(role='button', data-ng-if='vm.isAdmin()' ui-sref='admin.settings.basic', class='m-r-1', konko-tooltip, data-placement='bottom', title='Admin Settings')
-              img(data-ng-src='{{vm.adminLogo}}', alt='admin', class='img-thumbnail')
-            //- span(class='p-r-1') {{vm.user.profile.username}}
-            a(role='button', class=['btn', 'btn-secondary', 'btn-sm'], data-ng-click='vm.logout()'): span Sign out
+      .pull-xs-right
+        div(class='pull-xs-left navbar-user', data-ng-if='vm.isLoggedIn')
+          a(role='button', ui-sref='user.profile.view({userId: vm.user._id})', class='m-r-1', konko-tooltip, data-placement='bottom', title='{{vm.user.profile.username}}')
+            img(data-ng-src='{{vm.user.profile.avatar}}', alt='avatar', class='img-thumbnail')
+          a(role='button', data-ng-if='vm.isAdmin()' ui-sref='admin.settings.basic', class='m-r-1', konko-tooltip, data-placement='bottom', title='Admin Settings')
+            img(data-ng-src='{{vm.adminLogo}}', alt='admin', class='img-thumbnail')
+          //- span(class='p-r-1') {{vm.user.profile.username}}
+          a(role='button', class=['btn', 'btn-secondary', 'btn-sm'], data-ng-click='vm.logout()'): span Sign out
+        div(class='pull-xs-left navbar-user', data-ng-if='!vm.isLoggedIn')
+          a(role='button', class=['btn', 'btn-secondary', 'btn-sm'], ui-sref='login'): span Sign in
+          
+      //- div(data-ng-if='!vm.isLoggedIn')
+      //-   ul(class=['nav', 'navbar-nav', 'pull-xs-right'])
+      //-     li(class='nav-item')
+      //-       a(role='button', class=['nav-link', 'btn', 'btn-secondary', 'btn-sm'], ui-sref='login'): span Sign in
+      //- div(data-ng-if='vm.isLoggedIn')
+      //-   .pull-xs-right
+      //-     .pull-xs-left.navbar-user
+      //-       a(role='button', ui-sref='user.profile.view({userId: vm.user._id})', class='m-r-1', konko-tooltip, data-placement='bottom', title='{{vm.user.profile.username}}')
+      //-         img(data-ng-src='{{vm.user.profile.avatar}}', alt='avatar', class='img-thumbnail')
+      //-       a(role='button', data-ng-if='vm.isAdmin()' ui-sref='admin.settings.basic', class='m-r-1', konko-tooltip, data-placement='bottom', title='Admin Settings')
+      //-         img(data-ng-src='{{vm.adminLogo}}', alt='admin', class='img-thumbnail')
+      //-       //- span(class='p-r-1') {{vm.user.profile.username}}
+      //-       a(role='button', class=['btn', 'btn-secondary', 'btn-sm'], data-ng-click='vm.logout()'): span Sign out
