@@ -12,12 +12,20 @@ Konko is a MEAN stack based forum project, created by **C Killua**, and utilizes
 
 ## Demo
 
+[Live demo](http://konko.herokuapp.com)
+
+Deploy your own Konko:
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/konko-project/konko)
+
 ## Requirements
 
 The following softwares are required by Konko:
 
-- Node.js, 5.10 or greater
-- MongoDB, 2.6 or latest
+- Node.js, 5.0 or newer version
+- MongoDB, 2.6 or newer version
 - SendMail (only on Linux Server)
 
 ## Installation
+
+TBD

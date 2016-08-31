@@ -285,13 +285,16 @@ module.exports = grunt => {
     'test-server',
     'mochaTest',
   ]);
-
-  /** Default mode **/
-  grunt.registerTask('default', [
+  grunt.registerTask('build', [
     'build:server',
     'build:client',
     'vendors',
     'mkdir:upload',
+  ]);
+
+  /** Default mode **/
+  grunt.registerTask('default', [
+    'build',
     'server:dev',
     'watch',
   ]);

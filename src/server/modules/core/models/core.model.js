@@ -52,10 +52,10 @@ const coreSchema = new mongoose.Schema({
     public: { type: Boolean, default: true },
     message: { type: String, default: 'Registration is closed by admin.' },
     email: {
-      verification: { type: Boolean, default: true },
+      verification: { type: Boolean, default: false },
       verificationSubject: { type: String, default: 'Welcome!' },
       ttl: { type: Number, default: 12 * 60 },
-      welcome: { type: Boolean, default: true },
+      welcome: { type: Boolean, default: false },
       welcomeMessage: { type: String },
     },
     password: {

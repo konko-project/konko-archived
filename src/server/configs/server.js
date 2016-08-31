@@ -39,13 +39,13 @@ export default class Server {
     const _this = this;
     this.database.connect(process.env.NODE_ENV).then(info => {
       this.server = http.createServer(this.app).listen(_this.port, () => {
-        console.log('Express server listening on port ' + _this.port);
-        console.log('Environment:\t' + _this.app.get('env'));
-        console.log(`Database name: ${info.name}`);
-        console.log(`Database host: ${info.host}`);
-        console.log(`Database port: ${info.port}`);
-        console.log(`Database admin: ${info.user}`);
-        console.log(`Database version: ${info.version}`);
+        console.log(`Express server listening on port ${_this.port}`);
+        console.log(`Environment:\t${_this.app.get('env')}`);
+        console.log(`Database name:\t${info.name}`);
+        console.log(`Database host:\t${info.host}`);
+        console.log(`Database port:\t${info.port}`);
+        console.log(`Database admin:\t${info.user}`);
+        console.log(`Database version:\t${info.version}`);
         if (cb) {
           cb();
         }

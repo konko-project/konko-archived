@@ -6,6 +6,6 @@
  * @module Konko/Global/Configurations/Secrets
  */
 module.exports = {
-  jwtSecret: 'DEFAULTJWT',
-  cookieSecret: 'DEFAULTCOOKIE',
+  jwtSecret: process.env.JWT_SECRET || 'DEFAULTJWT',
+  cookieSecret: process.env.COOKIE_SECRET || 'DEFAULTCOOKIE',
 };

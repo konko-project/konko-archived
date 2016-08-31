@@ -1,0 +1,27 @@
+{
+  "name": "Konko",
+  "description": "A MEAN stack forum with bootstrap",
+  "keywords": [
+    "MEAN",
+    "mongodb",
+    "express",
+    "angular",
+    "node",
+    "REST"
+  ],
+  "repository": "https://github.com/konko-project/konko",
+  "logo": "https://avatars2.githubusercontent.com/u/17352955?v=3&s=400",
+  "env": {
+    "NODE_ENV": "development",
+    "NPM_CONFIG_PRODUCTION": "false",
+    "JWT_SECRET": {
+      "description": "A secert key to encrypt and verify signed JWT",
+      "generator": "secret"
+    },
+    "COOKIE_SECRET": {
+      "description": "A secret key to encrypt and verify signed cookie",
+      "generator": "secret"
+    }
+  },
+  "addons": ["mongolab", "logentries"]
+}

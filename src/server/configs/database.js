@@ -51,7 +51,8 @@ export default class Database {
    * @returns {Promise} connection information
    */
   connect(env) {
-    let uri = env === 'production' ? URI_PROD :
+    let uri = process.env.MONGODB_URI ? process.env.MONGODB_URI :
+              env === 'production' ? URI_PROD :
               env === 'development' ? URI_DEV :
               env === 'test' ? URL_TEST : '';
 
