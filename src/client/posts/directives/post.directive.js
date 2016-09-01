@@ -8,7 +8,7 @@
  * @param $compile - service in module ng
  * @returns {Object} Directive of konko-post
  */
-export default ($compile) => {
+export default ($compile, $location) => {
   'ngInject';
   return {
       restrict: 'AE',
@@ -67,7 +67,7 @@ export default ($compile) => {
         };
         const genLink = (match, text, url, g3, title, ...rest) => {
           let target = url.match(/(ht|f)tps?:\/\//g) ? '_blank' : '_self';
-          let absUrl = url[0] === '#' ? `${window.location.pathname}${url}` : url;
+          let absUrl = url[0] === '#' ? `${$location.path()}${url}` : url;
           return `<a href="${_.escape(absUrl)}" title="${title || ''}" target="${target}">${text || absUrl}</a>`;
         };
 
