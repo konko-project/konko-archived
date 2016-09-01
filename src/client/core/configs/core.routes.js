@@ -12,6 +12,17 @@ const newCore = CoreService => {
 };
 
 /**
+ * Return a promise of a core
+ *
+ * @param CoreService - service in module konko.core
+ * @returns {Promise} Core promise
+ */
+const resolveCoreBasic = CoreService => {
+  'ngInject';
+  return CoreService.get({ fields: 'basic' }).$promise;
+};
+
+/**
  * Core routing configurations
  *
  * @author C Killua
@@ -93,9 +104,19 @@ export default $stateProvider => {
     },
   }).state('terms', {
     url: '/terms',
+    resolve: {
+      coreBasic: resolveCoreBasic,
+    },
+    controller: ($scope, $rootScope, coreBasic) => {
+      $scope.title = coreBasic.basic.title;
+			$rootScope.$broadcast('title_update', 'Terms');
+    },
     templateUrl: 'styles/core/views/core/terms.view.html',
   }).state('privacy', {
     url: '/privacy',
+		controller: ($rootScope) => {			
+			$rootScope.$broadcast('title_update', 'Privacy');
+		},
     templateUrl: 'styles/core/views/core/privacy.view.html',
   });
 };
