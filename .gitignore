@@ -17,3 +17,6 @@ npm-debug.log
 
 # Test outputs
 test/outputs
+
+# Vim swap file
+*.swp
