@@ -3,11 +3,10 @@
 /**
  * Returns the promise of Core
  *
- * @param $state - service in module ui.router.state
  * @param CoreService - service in module konko.core
  * @returns {Promise} Core promise
  */
-const resolveCoreBasic = ($state, CoreService) => {
+const resolveCoreBasic = CoreService => {
   'ngInject';
   return CoreService.get({ fields: 'basic' }).$promise;
 };
@@ -15,13 +14,12 @@ const resolveCoreBasic = ($state, CoreService) => {
 /**
  * Returns the promise of Core
  *
- * @param $state - service in module ui.router.state
  * @param AuthenticationService - service in module konko.authentication
  * @param CoreService - service in module konko.core
  * @param {Object} coreBasic - core that contains the basic info
  * @returns {Promise} Core promise, or null if not Admin
  */
-const resolveCore = ($state, AuthenticationService, CoreService, coreBasic) => {
+const resolveCore = (AuthenticationService, CoreService, coreBasic) => {
   'ngInject';
   return AuthenticationService.isAdmin() ? CoreService.get({
     coreId: coreBasic._id,
@@ -31,12 +29,11 @@ const resolveCore = ($state, AuthenticationService, CoreService, coreBasic) => {
 /**
  * Returns the promise of Panels
  *
- * @param $state - service in module ui.router.state
  * @param AuthenticationService - service in module konko.authentication
  * @param PanelService - service in module konko.panels
  * @returns {Promise} Panel promise, or null if not Admin
  */
-const resolvePanels = ($state, AuthenticationService, PanelService) => {
+const resolvePanels = (AuthenticationService, PanelService) => {
   'ngInject';
   return AuthenticationService.isAdmin() ? PanelService.getAll({
     fields: 'name,order,description,children,parent,category,logo',
@@ -46,12 +43,11 @@ const resolvePanels = ($state, AuthenticationService, PanelService) => {
 /**
  * Returns the promise of Categories
  *
- * @param $state - service in module ui.router.state
  * @param AuthenticationService - service in module konko.authentication
  * @param CategoryService - service in module konko.layout
  * @returns {Promise} Category promise, or null if not Admin
  */
-const resolveCategories = ($state, AuthenticationService, CategoryService) => {
+const resolveCategories = (AuthenticationService, CategoryService) => {
   'ngInject';
   return AuthenticationService.isAdmin() ? CategoryService.query({
     fields: 'name,order',
@@ -61,12 +57,11 @@ const resolveCategories = ($state, AuthenticationService, CategoryService) => {
 /**
  * Returns the promise of Reports
  *
- * @param $state - service in module ui.router.state
  * @param AuthenticationService - service in module konko.authentication
  * @param ReportService - service in module konko.core
  * @returns {Promise} Report promise, or null if not Admin
  */
-const resolveReports = ($state, AuthenticationService, ReportService) => {
+const resolveReports = (AuthenticationService, ReportService) => {
   'ngInject';
   return AuthenticationService.isAdmin() ? ReportService.query().$promise : null;
 };
@@ -74,12 +69,11 @@ const resolveReports = ($state, AuthenticationService, ReportService) => {
 /**
  * Returns the promise of Slides
  *
- * @param $state - service in module ui.router.state
  * @param AuthenticationService - service in module konko.authentication
  * @param SlideService - service in module konko.core
  * @returns {Promise} Slide promise, or null if not Admin
  */
-const resolveSlides = ($state, AuthenticationService, SlideService) => {
+const resolveSlides = (AuthenticationService, SlideService) => {
   'ngInject';
   return AuthenticationService.isAdmin() ? SlideService.query().$promise : null;
 };
