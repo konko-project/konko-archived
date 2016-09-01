@@ -88,7 +88,11 @@ export default class AdminController {
 
     // toggle model to confirm permission
     element(document).ready(() => {
-      element('#adminConfirmation').modal();
+			if(!AuthenticationService.isAdminTokenValid()) {
+	      element('#adminConfirmation').modal();
+			} else {
+				this.confirmed = true;
+			}
     });
 
     // set handler
@@ -295,7 +299,10 @@ export default class AdminController {
         return false;
       }
       element('#adminConfirmation').modal('hide');
-      AUTH.get(this).checkPass({ adminPass: this.adminPass }).then(data => {
+			let adminVerify = btoa(window.crypto.getRandomValues(new Int32Array(10)).toLocaleString());
+      AUTH.get(this).checkPass({ adminPass: this.adminPass, adminVerify: adminVerify }).then(data => {
+				AUTH.get(this).saveAdminToken(data.data.adminToken);
+				AUTH.get(this).saveAdminVerify(adminVerify);
         this.confirmed = true;
       }).catch(err => {
         element('#adminConfirmation').on('hidden.bs.modal', e => {

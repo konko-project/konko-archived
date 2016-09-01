@@ -40,7 +40,6 @@ export default class AuthenticationService {
    *
    * @param {String} token - JsonWebToken
    * @param {callback} callback - A callback to run.
-   * @returns
    */
   saveToken(token, callback) {
     HTTP.get(this).defaults.headers.common.Authorization = 'Bearer ' + token;
@@ -49,6 +48,43 @@ export default class AuthenticationService {
     if (callback) {
       callback(token);
     }
+  }
+
+  /**
+   * Stores admin token into session storage
+	 *
+	 * @param {String} token - jwt
+	 * @param {callback} callback - A callback to run.
+	 */
+	saveAdminToken(token, callback) {
+		WINDOW.get(this).sessionStorage.setItem('admin-token', token);
+		if (callback) {
+			callback(token);
+		}
+  }
+
+	/**
+	 * Stores admin verify string into session storage
+	 *
+	 * @param {String} verify - verification string
+	 * @param {callback} callback - A callback to run.
+	 */
+	saveAdminVerify(verify, callback) {
+		WINDOW.get(this).sessionStorage.setItem('admin-verify', verify);
+		if (callback) {
+			callback(verify);
+		}
+	}
+
+	/**
+	 * Validate admin token 
+	 *
+	 * @returns {Boolean} true if admin token is valid
+	 */
+  isAdminTokenValid() {
+		let token = WINDOW.get(this).sessionStorage.getItem('admin-token');
+		let verify = WINDOW.get(this).sessionStorage.getItem('admin-verify');
+		return token && !JWT.get(this).isTokenExpired(token) ? this.decodeToken(token).verify === verify : false;
   }
 
   /**

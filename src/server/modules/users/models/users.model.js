@@ -72,4 +72,19 @@ userSchema.methods.generateJWT = function (app) {
   });
 };
 
+/**
+ * Generate a signed JWT for admin only
+ *
+ * @param {Object} app -Express app.
+ * @returns {String} JWT
+ */
+userSchema.methods.generateAdminJWT = function (app, verify) {
+	return jwt.sign({
+		permission: this.permission,
+		verify: verify,
+	}, app.get('secret'), {
+		expiresIn: '15m',
+	});
+};
+
 mongoose.model('User', userSchema);

@@ -321,12 +321,18 @@ export default class AuthenticationController {
     }).catch(err => res.status(500).sjson({ message: err }));
   }
 
-  static validateAdminPassword(req, res) {
-    User.findById(req.payload).exec().then(user => {
+	/**
+	 * Verify admin password, response an admin jwt if is verified
+	 *
+	 * @param {Object} req - HTTP request
+	 * @param {Object} res - HTTP response
+	 */
+  static validateAdminPassword({ app, body, payload }, res) {
+    User.findById(payload).exec().then(user => {
       if (!user) {
         return res.status(404).sjson({ message: 'User does not exist.' });
-      } else if (user.validPassword(req.body.adminPass)) {
-        return res.status(200).sjson({ message: 'ok.' });
+      } else if (user.validPassword(body.adminPass)) {
+        return res.status(200).sjson({ adminToken: user.generateAdminJWT(app, body.adminVerify) });
       } else {
         return res.status(401).sjson({ message: 'Cannot confirm your identity.' });
       }
