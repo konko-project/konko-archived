@@ -16,6 +16,10 @@ before_install:
   - mongo --version
   - mongod --version
   - npm install -g bower
+cache:
+  directories:
+    - node_modules
+    - bower_components
 install:
   - npm install
 before_script:
