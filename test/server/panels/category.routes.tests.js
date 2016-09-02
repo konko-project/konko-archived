@@ -139,6 +139,13 @@ describe('Category CRUD Test:', () => {
         .expect(500, done);
     });
     it('should response 500 when category name is too short', done => {
+      Category.schema.path('name', {
+        type: String,
+        unique: true,
+        required: '{PATH} is required',
+        minlength: 5,
+        maxlength: 60,
+      });
       c1.name = 'this';
       agent.post('/api/v1/categories')
         .set(adminHeader)
@@ -146,6 +153,13 @@ describe('Category CRUD Test:', () => {
         .expect(500, done);
     });
     it('should response 500 when category name is too long', done => {
+      Category.schema.path('name', {
+        type: String,
+        unique: true,
+        required: '{PATH} is required',
+        minlength: 1,
+        maxlength: 60,
+      });
       c1.name = 't'.repeat(61);
       agent.post('/api/v1/categories')
         .set(adminHeader)
@@ -242,6 +256,13 @@ describe('Category CRUD Test:', () => {
         });
     });
     it('should response 500 when panel name is too short', done => {
+      Panel.schema.path('name', {
+        type: String,
+        unique: true,
+        required: '{PATH} is required',
+        minlength: 5,
+        maxlength: 60,
+      });
       p1.name = 't';
       agent.post(`/api/v1/categories/${category._id}/panels`)
         .set(adminHeader)
@@ -249,6 +270,13 @@ describe('Category CRUD Test:', () => {
         .expect(500, done);
     });
     it('should response 500 when panel name is too long', done => {
+      Panel.schema.path('name', {
+        type: String,
+        unique: true,
+        required: '{PATH} is required',
+        minlength: 1,
+        maxlength: 60,
+      });
       p1.name = 't'.repeat(61);
       agent.post(`/api/v1/categories/${category._id}/panels`)
         .set(adminHeader)
@@ -437,6 +465,13 @@ describe('Category CRUD Test:', () => {
         .expect(400, done);
     });
     it('should response 500 when category name is too short', done => {
+      Category.schema.path('name', {
+        type: String,
+        unique: true,
+        required: '{PATH} is required',
+        minlength: 5,
+        maxlength: 60,
+      });
       c2.name = 'this';
       agent.put(`/api/v1/categories/${category._id}`)
         .set(adminHeader)
@@ -444,6 +479,13 @@ describe('Category CRUD Test:', () => {
         .expect(500, done);
     });
     it('should response 500 when category name is too long', done => {
+      Category.schema.path('name', {
+        type: String,
+        unique: true,
+        required: '{PATH} is required',
+        minlength: 1,
+        maxlength: 60,
+      });
       c2.name = 't'.repeat(61);
       agent.put(`/api/v1/categories/${category._id}`)
         .set(adminHeader)

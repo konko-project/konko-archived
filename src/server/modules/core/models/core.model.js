@@ -93,7 +93,7 @@ const coreSchema = new mongoose.Schema({
   panel: {
     panel: {
       name: {
-        min: { type: Number, min: 0, default: 5 },
+        min: { type: Number, min: 0, default: 1 },
         max: { type: Number, min: 0, default: 60 },
       },
       description: {
@@ -103,7 +103,7 @@ const coreSchema = new mongoose.Schema({
     },
     category: {
       name: {
-        min: { type: Number, min: 0, default: 5 },
+        min: { type: Number, min: 0, default: 1 },
         max: { type: Number, min: 0, default: 60 },
       },
     },
