@@ -1,0 +1,14 @@
+version: '2'
+services:
+  db:
+    image: mongo
+    command: "--smallfiles"
+  web:
+    build: .
+    command: npm start
+    volumes:
+      - .:/usr/src/konko
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db

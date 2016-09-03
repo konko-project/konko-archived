@@ -18,6 +18,8 @@ Deploy your own Konko:
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/konko-project/konko)
 
+[![Deploy to Docker Cloud](https://files.cloud.docker.com/images/deploy-to-dockercloud.svg)](https://cloud.docker.com/stack/deploy/?repo=https://github.com/konko-project/konko)
+
 ## Requirements
 
 The following softwares are required by Konko:

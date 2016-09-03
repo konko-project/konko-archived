@@ -1,0 +1,9 @@
+web:
+  image: konko/konko
+  links:
+    - db
+  ports:
+    - "80:3000"
+db:
+  image: mongo
+  command: "--smallfiles"

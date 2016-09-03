@@ -1,0 +1,25 @@
+# Git
+.git*
+
+# Dependency directory
+node_modules
+bower_components
+
+# Compiled directory
+build
+dist
+
+# Compiled vendors
+static/libs/vendors.*
+
+# Upload directory
+static/uploads
+
+# Debug log from npm
+npm-debug.log
+
+# Tests
+test
+
+# Vim swap file
+*.swp
