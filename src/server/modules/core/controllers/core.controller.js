@@ -58,26 +58,27 @@ export default class CoreController {
    */
   static create(req, res, next) {
     req.checkBody('admin.email', 'Invalid admin email.').isEmail();
-    let errors = req.validationErrors();
-    if (errors) {
-      return res.status(400).sjson({ message: utils.validationErrorMessage(errors) });
-    }
-
-    Core.find().then(([core, ...rest]) => {
-      if (core && core.global.installed) {
-        res.status(403).sjson({ message: 'Forbidden!' });
-      } else {
-        req.checkBody('basic.title', 'Title cannot be empty!').notEmpty();
-        var errors = req.validationErrors();
-        if (errors) {
-          return res.status(400).sjson({ message: utils.validationErrorMessage(errors) });
-        }
-        Core.create(req.body).then(core => {
-          core.global.styles.push({ name: 'Konko', root: 'styles/core' });
-          core.save().then(core => res.status(201).sjson(core)).catch(err => next(err));
-        }).catch(err => next(err));
+    req.getValidationResult().then(errors => {
+      if (!errors.isEmpty()) {
+        return res.status(400).sjson({ message: utils.validationErrorMessage(errors.array()) });
       }
-    }).catch(err => next(err));
+      Core.find().then(([core, ...rest]) => {
+        if (core && core.global.installed) {
+          res.status(403).sjson({ message: 'Forbidden!' });
+        } else {
+          req.checkBody('basic.title', 'Title cannot be empty!').notEmpty();
+          req.getValidationResult().then(errors => {
+            if (!errors.isEmpty()) {
+              return res.status(400).sjson({ message: utils.validationErrorMessage(errors.array()) });
+            }
+            Core.create(req.body).then(core => {
+              core.global.styles.push({ name: 'Konko', root: 'styles/core' });
+              core.save().then(core => res.status(201).sjson(core)).catch(err => next(err));
+            }).catch(err => next(err));
+          });
+        }
+      }).catch(err => next(err));
+    });
   }
 
   /**

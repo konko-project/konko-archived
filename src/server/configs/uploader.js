@@ -13,7 +13,7 @@ const Core = mongoose.model('Core');
  * @param {Object} file - The file going to upload.
  * @param {multerCallback} cb - A callback for multer.
  */
-const Storage = (req, file, cb) => {
+const multerStorage = (req, file, cb) => {
   const STATICS = require(path.join(req.app.pwd, 'configurations', 'statics'));
   const BASE = STATICS.shared.uploads.users;
   const USER_DIR = path.join(BASE, req.body.userId);
@@ -75,7 +75,7 @@ export default class Uploader {
   static upload(app, field) {
     return (req, res, next) => {
       Uploader.getLimit().then(profile => {
-        let multer = new app.multer(app, Storage, null, { fileSize: profile[field].limit * 1024 }, Filter);
+        let multer = new app.multer(app, multerStorage, null, { fileSize: profile[field].limit * 1024 }, Filter);
         multer.single(field)(req, res, err => {
           return err ? res.status(500).sjson({ message: err.toString() }) : next();
         });

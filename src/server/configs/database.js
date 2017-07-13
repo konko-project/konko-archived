@@ -25,6 +25,8 @@ export default class Database {
     this.server = server;
     this.loadModels();
     this.info = {};
+
+    mongoose.Promise = global.Promise;
   }
 
   /**
@@ -34,9 +36,9 @@ export default class Database {
   loadModels() {
     let env = process.env.NODE_ENV;
     this.server.models.forEach(pattern => {
-      let root = env === 'production' ? this.server.dist.paths.root :
-                 env === 'development' ? this.server.build.paths.root :
-                 env === 'test' ? this.server.build.paths.root : '';
+      let root = env === 'production'   ? this.server.dist.paths.root :
+                 env === 'development'  ? this.server.build.paths.root :
+                 env === 'test'         ? this.server.build.paths.root : '';
       glob.sync(path.join(root, pattern)).forEach(path => {
         require(path.replace(root, '..').replace('.js', ''));
       });
@@ -52,29 +54,27 @@ export default class Database {
    */
   connect(env) {
     let uri = process.env.MONGODB_URI ? process.env.MONGODB_URI :
-              env === 'production' ? URI_PROD :
-              env === 'development' ? URI_DEV :
-              env === 'test' ? URL_TEST : '';
+              env === 'production'    ? URI_PROD :
+              env === 'development'   ? URI_DEV :
+              env === 'test'          ? URL_TEST : '';
 
     return new Promise((resolve, reject) => {
-      let database = mongoose.connect(uri, err => {
-        if (err) {
-          console.error('Error when connecting to MongoDB...');
-          console.error(err);
-        } else {
-          let admin = new mongoose.mongo.Admin(mongoose.connection.db);
-          let connection = database.connection;
-          admin.buildInfo((err, info) => {
-            this.info = {
-              name: connection.name,
-              host: connection.host,
-              port: connection.port,
-              admin: connection.user,
-              version: info.version,
-            };
-            resolve(this.info);
-          });
-        }
+      let database = mongoose.connect(uri, { useMongoClient: true }).then(conn => {
+        let admin = new mongoose.mongo.Admin(mongoose.connection.db);
+        admin.buildInfo((err, info) => {
+          this.info = {
+            name: conn.name,
+            host: conn.host,
+            port: conn.port,
+            admin: conn.user,
+            version: info.version,
+          };
+          resolve(this.info);
+        });
+      }).catch(error => {
+        console.error('Error when connecting to MongoDB...');
+        console.error(error);
+        reject(error);
       });
     });
   }
