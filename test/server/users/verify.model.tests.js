@@ -40,17 +40,18 @@ describe('VerificationToken Model Tests:', () => {
     });
   });
   describe('Testing VerificationToken#generateToken', done => {
-    before(done => {
-      VerificationToken.create({ user: user }).then(v => token = v);
-      done();
-    });
     after(done => {
       User.remove().then(VerificationToken.remove().then(done()));
     });
     it('should allow generate a uuid token', done => {
-      expect(token.token).not.to.be(null);
-      expect(token.token).not.to.be(undefined);
-      done();
+      VerificationToken.create({ user: user }).then(token => {
+        expect(token.token).not.to.be(null);
+        expect(token.token).not.to.be(undefined);
+        done();
+      }).catch(err => {
+        expect(err).to.be.empty();
+        done();
+      });
     });
   });
 });
