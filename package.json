@@ -11,7 +11,7 @@
   "author": "https://github.com/konko-project/konko/graphs/contributors",
   "license": "MIT",
   "engines": {
-    "node": "5.12.0"
+    "node": "6.11.1"
   },
   "dependencies": {
     "body-parser": "1.15.0",

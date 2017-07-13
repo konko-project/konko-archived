@@ -24,7 +24,7 @@ Deploy your own Konko:
 
 The following softwares are required by Konko:
 
-- Node.js, 5.0 or newer version
+- Node.js, 6.11.1 or newer version (any version that is not affected by [Denial of Service (DoS)](http://hello.heroku.com/e/36622/index-php-Denial-of-Service/cqwb58/642566065) Constant Hashtable Seeds vulnerability)
 - MongoDB, 2.6 or newer version
 - SendMail (only on Linux Server)
 
