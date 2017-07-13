@@ -18,7 +18,7 @@ module.exports = grunt => {
     babel: {
       options: {
         sourceMap: true,
-        presets: ['babel-preset-es2015-node5', 'stage-0'],
+        presets: ['babel-preset-env', 'stage-0'],
       },
       server: {
         files: [
@@ -47,7 +47,7 @@ module.exports = grunt => {
       options: {
         transform: [
           ['babelify', {
-              presets: ['es2015', 'stage-0'],
+              presets: ['env', 'stage-0'],
             },
           ],
         ],

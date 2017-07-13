@@ -15,6 +15,7 @@ before_install:
   - mongod --dbpath=data/db &
   - mongo --version
   - mongod --version
+  - npm install -g npm@latest
   - npm install -g bower
 cache:
   directories:

@@ -1,5 +1,5 @@
 # Pull ubuntu from docker hub
-FROM node:5
+FROM node:6
 MAINTAINER C Killua <killua8q8@gmail.com>
 
 # Set environment
@@ -10,6 +10,7 @@ ENV NODE_ENV development
 RUN groupadd -r konko && useradd -r -g konko konko
 
 # Install Bower & Grunt
+RUN npm install -g npm@latest
 RUN npm install -g bower grunt-cli
 
 # Create app directory
