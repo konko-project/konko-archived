@@ -407,7 +407,7 @@ describe('Core Model Test:', () => {
     it('should allow update fields with new data', done => {
       core.profile = {
         username: {
-          min: 0,
+          min: 1,
           max: 233,
           forbidden: [],
         },
@@ -425,7 +425,7 @@ describe('Core Model Test:', () => {
         },
       };
       core.save().then(({ profile: { username, avatar, banner, tagline } }) => {
-        expect(username.min).to.be(0);
+        expect(username.min).to.be(1);
         expect(username.max).to.be(233);
         expect(username.forbidden).to.be.empty();
         expect(avatar.upload).to.be(false);

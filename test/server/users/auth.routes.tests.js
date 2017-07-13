@@ -284,7 +284,7 @@ describe('Authentication CRUD Test:', () => {
     it('should response back a Guest account when logout', done => {
       agent.get('/api/v1/auth/logout')
         .expect(200)
-        .expect(({ res: { body: { token } } }) => {
+        .expect(({ body: { token } }) => {
           let { email, verified, permission } = jwt.decode(token);
           expect(verified).to.be(false);
           expect(permission).to.be('guest');
@@ -298,7 +298,7 @@ describe('Authentication CRUD Test:', () => {
         agent.get('/api/v1/auth/sync')
           .set('Authorization', `Bearer ${admin.generateJWT(_app)}`)
           .expect(200)
-          .expect(({ res: { body: { token } } }) => {
+          .expect(({ body: { token } }) => {
             expect(token).to.be(admin.generateJWT(_app));
           }).end(done);
       }).catch(err => {

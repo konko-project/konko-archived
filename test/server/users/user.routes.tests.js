@@ -96,7 +96,7 @@ describe('User CRUD Test:', () => {
       agent.get('/api/v1/users')
         .set(adminHeader)
         .expect(200)
-        .expect(({ res: { body } }) => expect(body).to.have.length(5))
+        .expect(({ body }) => expect(body).to.have.length(5))
         .end(done);
     });
     it('should response 401 a User is quering all users', done => {
@@ -124,7 +124,7 @@ describe('User CRUD Test:', () => {
       agent.get(`/api/v1/users/${owner._id}`)
         .set(adminHeader)
         .expect(200)
-        .expect(({ res: { body, body: { _id, permission, profile: { _id: pid, username } } } }) => {
+        .expect(({ body, body: { _id, permission, profile: { _id: pid, username } } }) => {
           expect(_id).to.be(owner._id.toString());
           expect(permission).to.be(owner.permission);
           expect(pid).to.be(owner.profile._id.toString());
@@ -136,7 +136,7 @@ describe('User CRUD Test:', () => {
       agent.get(`/api/v1/users/${owner._id}`)
         .set(userHeader)
         .expect(200)
-        .expect(({ res: { body, body: { _id, permission, profile: { _id: pid, username } } } }) => {
+        .expect(({ body, body: { _id, permission, profile: { _id: pid, username } } }) => {
           expect(_id).to.be(owner._id.toString());
           expect(permission).to.be(owner.permission);
           expect(pid).to.be(owner.profile._id.toString());
@@ -158,7 +158,7 @@ describe('User CRUD Test:', () => {
       agent.get(`/api/v1/users/${owner._id}`)
         .set(ownerHeader)
         .expect(200)
-        .expect(({ res: { body: { _id, email, permission, profile: { _id: pid, username } } } }) => {
+        .expect(({ body: { _id, email, permission, profile: { _id: pid, username } } }) => {
           expect(_id).to.be(owner._id.toString());
           expect(email).to.be(owner.email);
           expect(permission).to.be(owner.permission);
@@ -187,7 +187,7 @@ describe('User CRUD Test:', () => {
       agent.get(`/api/v1/users/${owner._id}/profile`)
         .set(adminHeader)
         .expect(200)
-        .expect(({ res: { body, body: { _id, username } } }) => {
+        .expect(({ body, body: { _id, username } }) => {
           expect(_id).to.be(owner.profile._id.toString());
           expect(username).to.be(owner.profile.username);
         })
@@ -197,7 +197,7 @@ describe('User CRUD Test:', () => {
       agent.get(`/api/v1/users/${owner._id}/profile`)
         .set(userHeader)
         .expect(200)
-        .expect(({ res: { body: { _id, username } } }) => {
+        .expect(({ body: { _id, username } }) => {
           expect(_id).to.be(owner.profile._id.toString());
           expect(username).to.be(owner.profile.username);
         })
@@ -439,7 +439,7 @@ describe('User CRUD Test:', () => {
         .set(adminHeader)
         .send(p)
         .expect(200)
-        .expect(({ res: { body: { username, gender } } }) => {
+        .expect(({ body: { username, gender } }) => {
           expect(username).to.be(p.username);
           expect(gender).to.be(p.gender);
         })
@@ -468,7 +468,7 @@ describe('User CRUD Test:', () => {
         .set(ownerHeader)
         .send(p)
         .expect(200)
-        .expect(({ res: { body: { username, gender } } }) => {
+        .expect(({ body: { username, gender } }) => {
           expect(username).to.be(p.username);
           expect(gender).to.be(p.gender);
         })
@@ -549,7 +549,7 @@ describe('User CRUD Test:', () => {
         .set(ownerHeader)
         .send(pre)
         .expect(200)
-        .expect(({ res: { body: { topicListLimit, commentListLimit } } }) => {
+        .expect(({ body: { topicListLimit, commentListLimit } }) => {
           expect(topicListLimit).to.be(pre.topicListLimit);
           expect(commentListLimit).to.be(pre.commentListLimit);
         })

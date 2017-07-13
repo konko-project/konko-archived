@@ -130,7 +130,7 @@ describe('Comment CRUD Test:', () => {
         .set(adminHeader)
         .send(c2)
         .expect(201)
-        .expect(({ res: { body: { _id, content, topic: _t } } }) => {
+        .expect(({ body: { _id, content, topic: _t } }) => {
           expect(content).to.be(c2.content);
           Topic.findById(_t._id).then(topic => expect(topic.comments).to.contain(_id));
         })
@@ -141,7 +141,7 @@ describe('Comment CRUD Test:', () => {
         .set(userHeader)
         .send(c2)
         .expect(201)
-        .expect(({ res: { body: { content, topic: _t } } }) => {
+        .expect(({ body: { content, topic: _t } }) => {
           expect(content).to.be(c2.content);
           expect(_t._id).to.be(topic._id.toString());
         })
@@ -182,7 +182,7 @@ describe('Comment CRUD Test:', () => {
         .set(adminHeader)
         .send(c1)
         .expect(201)
-        .expect(({ res: { body: { content } } }) => expect(content).to.be(c1.content))
+        .expect(({ body: { content } }) => expect(content).to.be(c1.content))
         .end(done);
     });
     it('should allow comments have different content', done => {
@@ -190,7 +190,7 @@ describe('Comment CRUD Test:', () => {
         .set(adminHeader)
         .send(c2)
         .expect(201)
-        .expect(({ res: { body: { content } } }) => expect(content).to.be(c2.content))
+        .expect(({ body: { content } }) => expect(content).to.be(c2.content))
         .end(done);
     });
     it('should response 500 when comment content is too short', done => {
@@ -282,7 +282,7 @@ describe('Comment CRUD Test:', () => {
       agent.get(`/api/v1/topics/${topic._id}/comments/${comment._id}`)
         .set(adminHeader)
         .expect(200)
-        .expect(({ res: { body: { content, topic: _t } } }) => {
+        .expect(( { body: { content, topic: _t } }) => {
           expect(content).to.be(c1.content);
           expect(_t._id).to.be(topic._id.toString());
         })
@@ -292,7 +292,7 @@ describe('Comment CRUD Test:', () => {
       agent.get(`/api/v1/topics/${topic._id}/comments/${comment._id}`)
         .set(userHeader)
         .expect(200)
-        .expect(({ res: { body: { content, topic: _t } } }) => {
+        .expect(({ body: { content, topic: _t } }) => {
           expect(content).to.be(c1.content);
           expect(_t._id).to.be(topic._id.toString());
         })
@@ -302,7 +302,7 @@ describe('Comment CRUD Test:', () => {
       agent.get(`/api/v1/topics/${topic._id}/comments/${comment._id}`)
         .set(bannedHeader)
         .expect(200)
-        .expect(({ res: { body: { content, topic: _t } } }) => {
+        .expect(({ body: { content, topic: _t } }) => {
           expect(content).to.be(c1.content);
           expect(_t._id).to.be(topic._id.toString());
         })
@@ -312,7 +312,7 @@ describe('Comment CRUD Test:', () => {
       agent.get(`/api/v1/topics/${topic._id}/comments/${comment._id}`)
         .set(guestHeader)
         .expect(200)
-        .expect(({ res: { body: { content, topic: _t } } }) => {
+        .expect(({ body: { content, topic: _t } }) => {
           expect(content).to.be(c1.content);
           expect(_t._id).to.be(topic._id.toString());
         })
@@ -337,7 +337,7 @@ describe('Comment CRUD Test:', () => {
       agent.get(`/api/v1/comments/${comment._id}`)
         .set(adminHeader)
         .expect(200)
-        .expect(({ res: { body: { content, topic: _t } } }) => {
+        .expect(({ body: { content, topic: _t } }) => {
           expect(content).to.be(c1.content);
           expect(_t._id).to.be(topic._id.toString());
         })

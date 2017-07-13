@@ -147,7 +147,7 @@ describe('Panel CRUD Test:', () => {
         .set(adminHeader)
         .send(p2)
         .expect(201)
-        .expect(({ res: { body: { name, order, description, parent } } }) => {
+        .expect(({ body: { name, order, description, parent } }) => {
           expect(name).to.be(p2.name);
           expect(order).to.be(p2.order);
           expect(description).to.be(p2.description);
@@ -222,7 +222,7 @@ describe('Panel CRUD Test:', () => {
       agent.get('/api/v1/panels')
       .set(adminHeader)
       .expect(200)
-      .expect(({ res: { body, body: [panel, ...rest] } }) => {
+      .expect(({ body, body: [panel, ...rest] }) => {
         expect(body).to.have.length(1);
         expect(panel.name).to.be(p1.name);
       }).end(done);
@@ -243,7 +243,7 @@ describe('Panel CRUD Test:', () => {
       agent.get(`/api/v1/categories/${category._id}/panels`)
         .set(adminHeader)
         .expect(200)
-        .expect(({ res: { body, body: [{ _id, name, description, category }, ...rest] } }) => {
+        .expect(({ body, body: [{ _id, name, description, category }, ...rest] }) => {
           expect(body.length).to.be(1);
           expect(_id).to.be(panel._id.toString());
           expect(name).to.be(panel.name);
@@ -256,7 +256,7 @@ describe('Panel CRUD Test:', () => {
       agent.get(`/api/v1/categories/${category._id}/panels`)
         .set(userHeader)
         .expect(200)
-        .expect(({ res: { body, body: [{ _id, name, description, category }, ...rest] } }) => {
+        .expect(({ body, body: [{ _id, name, description, category }, ...rest] }) => {
           expect(body.length).to.be(1);
           expect(_id).to.be(panel._id.toString());
           expect(name).to.be(panel.name);
@@ -269,7 +269,7 @@ describe('Panel CRUD Test:', () => {
       agent.get(`/api/v1/categories/${category._id}/panels`)
         .set(bannedHeader)
         .expect(200)
-        .expect(({ res: { body, body: [{ _id, name, description, category }, ...rest] } }) => {
+        .expect(({ body, body: [{ _id, name, description, category }, ...rest] }) => {
           expect(body.length).to.be(1);
           expect(_id).to.be(panel._id.toString());
           expect(name).to.be(panel.name);
@@ -282,7 +282,7 @@ describe('Panel CRUD Test:', () => {
       agent.get(`/api/v1/categories/${category._id}/panels`)
         .set(guestHeader)
         .expect(200)
-        .expect(({ res: { body, body: [{ _id, name, description, category }, ...rest] } }) => {
+        .expect(({ body, body: [{ _id, name, description, category }, ...rest] }) => {
           expect(body.length).to.be(1);
           expect(_id).to.be(panel._id.toString());
           expect(name).to.be(panel.name);
@@ -298,7 +298,7 @@ describe('Panel CRUD Test:', () => {
       agent.get(`/api/v1/categories/${category._id}/panels/${panel._id}`)
         .set(adminHeader)
         .expect(200)
-        .expect(({ res: { body: { _id, name, description, category } } }) => {
+        .expect(({ body: { _id, name, description, category } }) => {
           expect(_id).to.be(panel._id.toString());
           expect(name).to.be(panel.name);
           expect(description).to.be(panel.description);
@@ -310,7 +310,7 @@ describe('Panel CRUD Test:', () => {
       agent.get(`/api/v1/categories/${category._id}/panels/${panel._id}`)
         .set(userHeader)
         .expect(200)
-        .expect(({ res: { body: { _id, name, description, category } } }) => {
+        .expect(({ body: { _id, name, description, category } }) => {
           expect(_id).to.be(panel._id.toString());
           expect(name).to.be(panel.name);
           expect(description).to.be(panel.description);
@@ -322,7 +322,7 @@ describe('Panel CRUD Test:', () => {
       agent.get(`/api/v1/categories/${category._id}/panels/${panel._id}`)
         .set(bannedHeader)
         .expect(200)
-        .expect(({ res: { body: { _id, name, description, category } } }) => {
+        .expect(({ body: { _id, name, description, category } }) => {
           expect(_id).to.be(panel._id.toString());
           expect(name).to.be(panel.name);
           expect(description).to.be(panel.description);
@@ -334,7 +334,7 @@ describe('Panel CRUD Test:', () => {
       agent.get(`/api/v1/categories/${category._id}/panels/${panel._id}`)
         .set(guestHeader)
         .expect(200)
-        .expect(({ res: { body: { _id, name, description, category } } }) => {
+        .expect(({ body: { _id, name, description, category } }) => {
           expect(_id).to.be(panel._id.toString());
           expect(name).to.be(panel.name);
           expect(description).to.be(panel.description);
@@ -352,7 +352,7 @@ describe('Panel CRUD Test:', () => {
       agent.get(`/api/v1/categories/${category._id}/panels/${panel._id}?fields=_id,name`)
         .set(adminHeader)
         .expect(200)
-        .expect(({ res, res: { body: { _id, name, description, category } } }) => {
+        .expect(({ body: { _id, name, description, category } }) => {
           expect(_id).to.be(panel._id.toString());
           expect(name).to.be(panel.name);
           expect(description).to.not.be.ok();
@@ -447,7 +447,7 @@ describe('Panel CRUD Test:', () => {
         .set(adminHeader)
         .send(p2)
         .expect(200)
-        .expect(({ res: { body: { name, order, description } } }) => {
+        .expect(({ body: { name, order, description } }) => {
           expect(name).to.be(p2.name);
           expect(order).to.be(p2.order);
           expect(description).to.be(p2.description);
@@ -466,7 +466,7 @@ describe('Panel CRUD Test:', () => {
         .set(adminHeader)
         .send(p2)
         .expect(200)
-        .expect(({ res: { body: { name, order, description } } }) => {
+        .expect(({ body: { name, order, description } }) => {
           expect(name).to.be(p2.name);
           expect(order).to.be(p2.order);
           expect(description).to.be(p2.description);
@@ -528,7 +528,7 @@ describe('Panel CRUD Test:', () => {
         .set(adminHeader)
         .send(p1)
         .expect(201)
-        .expect(({ res: { body: { parent } } }) => {
+        .expect(({ body: { parent } }) => {
           Panel.findOne(parent).then(parent => expect(parent.children).to.have.length(1));
         })
         .end((err, res) => {

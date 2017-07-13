@@ -92,7 +92,7 @@ describe('Core CRUD Test:', () => {
           .set('Authorization', '')
           .send(c1)
           .expect(201)
-          .expect(({ res: { body: { basic: { title }, admin: { email } } } }) => {
+          .expect(({ body: { basic: { title }, admin: { email } } }) => {
             expect(title).to.be(c1.basic.title);
             expect(email).to.be(c1.admin.email);
           })
@@ -142,7 +142,7 @@ describe('Core CRUD Test:', () => {
       agent.get('/api/v1/core')
         .set(adminHeader)
         .expect(200)
-        .expect(({ res: { body: _core } }) => {
+        .expect(({ body: _core }) => {
           expect(_core.basic).not.to.be.empty();
         })
         .end(done);
@@ -151,7 +151,7 @@ describe('Core CRUD Test:', () => {
       agent.get('/api/v1/core')
         .set(userHeader)
         .expect(200)
-        .expect(({ res: { body: _core } }) => {
+        .expect(({ body: _core }) => {
           expect(_core.basic).not.to.be.empty();
         })
         .end(done);
@@ -160,7 +160,7 @@ describe('Core CRUD Test:', () => {
       agent.get('/api/v1/core')
         .set(bannedHeader)
         .expect(200)
-        .expect(({ res: { body: _core } }) => {
+        .expect(({ body: _core }) => {
           expect(_core.basic).not.to.be.empty();
         })
         .end(done);
@@ -169,7 +169,7 @@ describe('Core CRUD Test:', () => {
       agent.get('/api/v1/core')
         .set(guestHeader)
         .expect(200)
-        .expect(({ res: { body: _core } }) => {
+        .expect(({ body: _core }) => {
           expect(_core.basic).not.to.be.empty();
         })
         .end(done);
@@ -178,7 +178,7 @@ describe('Core CRUD Test:', () => {
       agent.get('/api/v1/core')
         .set(adminHeader)
         .expect(200)
-        .expect(({ res: { body: core } }) => {
+        .expect(({ body: core }) => {
           expect(core.admin).to.be(undefined);
           expect(core.mailer).to.be(undefined);
         })
@@ -188,7 +188,7 @@ describe('Core CRUD Test:', () => {
       agent.get('/api/v1/core?fields=basic,admin,global,mailer,registration,profile,panel,post')
         .set(adminHeader)
         .expect(200)
-        .expect(({ res: { body: core } }) => {
+        .expect(({ body: core }) => {
           expect(core.basic).not.to.be.empty();
           expect(core.admin).to.be(undefined);
           expect(core.global).not.to.be.empty();
@@ -207,7 +207,7 @@ describe('Core CRUD Test:', () => {
       agent.get(`/api/v1/core/${core._id}`)
         .set(adminHeader)
         .expect(200)
-        .expect(({ res: { body: _core } }) => {
+        .expect(({ body: _core }) => {
           expect(_core._id).to.be(core._id.toString());
         })
         .end(done);
@@ -256,7 +256,7 @@ describe('Core CRUD Test:', () => {
         .set(adminHeader)
         .send(c2)
         .expect(200)
-        .expect(({ res: { body: { basic, admin } } }) => {
+        .expect(({ body: { basic, admin } }) => {
           expect(basic.title).to.be(c2.basic.title);
           expect(admin.email).to.be(c2.admin.email);
         }).end(done);

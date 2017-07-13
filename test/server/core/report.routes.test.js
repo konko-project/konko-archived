@@ -111,7 +111,7 @@ describe('Report CRUD Test:', () => {
         .set(adminHeader)
         .send(r2)
         .expect(201)
-        .expect(({ res: { body: { iid, type, url, reason, done, reporter } } }) => {
+        .expect(({ body: { iid, type, url, reason, done, reporter } }) => {
           expect(iid).to.be(r2.iid);
           expect(type).to.be(r2.type);
           expect(url).to.be(r2.url);
@@ -125,7 +125,7 @@ describe('Report CRUD Test:', () => {
         .set(userHeader)
         .send(r2)
         .expect(201)
-        .expect(({ res: { body: { iid, type, url, reason, done, reporter } } }) => {
+        .expect(({ body: { iid, type, url, reason, done, reporter } }) => {
           expect(iid).to.be(r2.iid);
           expect(type).to.be(r2.type);
           expect(url).to.be(r2.url);
@@ -139,7 +139,7 @@ describe('Report CRUD Test:', () => {
         .set(bannedHeader)
         .send(r2)
         .expect(201)
-        .expect(({ res: { body: { iid, type, url, reason, done, reporter } } }) => {
+        .expect(({ body: { iid, type, url, reason, done, reporter } }) => {
           expect(iid).to.be(r2.iid);
           expect(type).to.be(r2.type);
           expect(url).to.be(r2.url);
@@ -153,7 +153,7 @@ describe('Report CRUD Test:', () => {
         .set(guestHeader)
         .send(r2)
         .expect(201)
-        .expect(({ res: { body: { iid, type, url, reason, done, reporter } } }) => {
+        .expect(({ body: { iid, type, url, reason, done, reporter } }) => {
           expect(iid).to.be(r2.iid);
           expect(type).to.be(r2.type);
           expect(url).to.be(r2.url);
@@ -209,7 +209,7 @@ describe('Report CRUD Test:', () => {
       agent.get('/api/v1/reports')
         .set(adminHeader)
         .expect(200)
-        .expect(({ res: { body, body: [r, ...rest] } }) => {
+        .expect(({ body, body: [r, ...rest] }) => {
           expect(body).to.have.length(1);
           expect(r.iid).to.be(report.iid);
           expect(r.url).to.be(report.url);
@@ -243,7 +243,7 @@ describe('Report CRUD Test:', () => {
       agent.get(`/api/v1/reports/${report._id}`)
         .set(adminHeader)
         .expect(200)
-        .expect(({ res: { body: { _id, iid, url, reason, type, done } } }) => {
+        .expect(({ body: { _id, iid, url, reason, type, done } }) => {
           expect(_id).to.be(report._id.toString());
           expect(iid).to.be(report.iid);
           expect(url).to.be(report.url);
@@ -290,7 +290,7 @@ describe('Report CRUD Test:', () => {
       agent.put(`/api/v1/reports/${report._id}/done`)
         .set(adminHeader)
         .expect(200)
-        .expect(({ res: { body: { done } } }) => {
+        .expect(({ body: { done } }) => {
           expect(done).to.be(true);
         }).end(done);
     });

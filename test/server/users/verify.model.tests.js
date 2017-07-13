@@ -41,7 +41,6 @@ describe('VerificationToken Model Tests:', () => {
   });
   describe('Testing VerificationToken#generateToken', done => {
     before(done => {
-      User.create({ email: 'user@test.com' }).then(u => user = u);
       VerificationToken.create({ user: user }).then(v => token = v);
       done();
     });

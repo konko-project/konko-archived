@@ -126,7 +126,7 @@ describe('Category CRUD Test:', () => {
         .set(adminHeader)
         .send(c2)
         .expect(201)
-        .expect(({ res: { body: { name, order } } }) => {
+        .expect(({ body: { name, order } }) => {
           expect(name).to.be(c2.name);
           expect(order).to.be(c2.order);
         })
@@ -179,7 +179,7 @@ describe('Category CRUD Test:', () => {
         .set(adminHeader)
         .send(c1)
         .expect(201)
-        .expect(({ res: { body: { name } } }) => {
+        .expect(({ body: { name } }) => {
           expect(name).to.be(c1.name);
         })
         .end(done);
@@ -230,7 +230,7 @@ describe('Category CRUD Test:', () => {
         .set(adminHeader)
         .send(p1)
         .expect(201)
-        .expect(({ res: { body: { name, order, description, category: _cate } } }) => {
+        .expect(({ body: { name, order, description, category: _cate } }) => {
           expect(name).to.be(p1.name);
           expect(order).to.be(p1.order);
           expect(description).to.be(p1.description);
@@ -314,7 +314,7 @@ describe('Category CRUD Test:', () => {
       agent.get('/api/v1/categories')
       .set(adminHeader)
       .expect(200)
-      .expect(({ res: { body, body: [c1, ...rest] } }) => {
+      .expect(({ body, body: [c1, ...rest] }) => {
         expect(body.length).to.be(1);
         expect(c1).to.eql(category.toObject({ transform: (doc, ret, options) => {
           ret._id = doc._id.toString();
@@ -327,7 +327,7 @@ describe('Category CRUD Test:', () => {
       agent.get('/api/v1/categories')
       .set(userHeader)
       .expect(200)
-      .expect(({ res: { body, body: [c1, ...rest] } }) => {
+      .expect(({ body, body: [c1, ...rest] }) => {
         expect(body.length).to.be(1);
         expect(c1).to.eql(category.toObject({ transform: (doc, ret, options) => {
           ret._id = doc._id.toString();
@@ -340,7 +340,7 @@ describe('Category CRUD Test:', () => {
       agent.get('/api/v1/categories')
       .set(bannedHeader)
       .expect(200)
-      .expect(({ res: { body, body: [c1, ...rest] } }) => {
+      .expect(({ body, body: [c1, ...rest] }) => {
         expect(body.length).to.be(1);
         expect(c1).to.eql(category.toObject({ transform: (doc, ret, options) => {
           ret._id = doc._id.toString();
@@ -353,7 +353,7 @@ describe('Category CRUD Test:', () => {
       agent.get('/api/v1/categories')
       .set(guestHeader)
       .expect(200)
-      .expect(({ res: { body, body: [c1, ...rest] } }) => {
+      .expect(({ body, body: [c1, ...rest] }) => {
         expect(body.length).to.be(1);
         expect(c1).to.eql(category.toObject({ transform: (doc, ret, options) => {
           ret._id = doc._id.toString();
@@ -369,7 +369,7 @@ describe('Category CRUD Test:', () => {
       agent.get(`/api/v1/categories/${category._id}`)
         .set(adminHeader)
         .expect(200)
-        .expect(({ res: { body } }) => expect(body).to.eql(category.toObject({ transform: (doc, ret, options) => {
+        .expect(({ body }) => expect(body).to.eql(category.toObject({ transform: (doc, ret, options) => {
           ret._id = doc._id.toString();
         },
         })))
@@ -379,7 +379,7 @@ describe('Category CRUD Test:', () => {
       agent.get(`/api/v1/categories/${category._id}`)
         .set(userHeader)
         .expect(200)
-        .expect(({ res: { body } }) => expect(body).to.eql(category.toObject({ transform: (doc, ret, options) => {
+        .expect(({ body }) => expect(body).to.eql(category.toObject({ transform: (doc, ret, options) => {
           ret._id = doc._id.toString();
         },
         })))
@@ -389,7 +389,7 @@ describe('Category CRUD Test:', () => {
       agent.get(`/api/v1/categories/${category._id}`)
         .set(bannedHeader)
         .expect(200)
-        .expect(({ res: { body } }) => expect(body).to.eql(category.toObject({ transform: (doc, ret, options) => {
+        .expect(({ body }) => expect(body).to.eql(category.toObject({ transform: (doc, ret, options) => {
           ret._id = doc._id.toString();
         },
         })))
@@ -399,7 +399,7 @@ describe('Category CRUD Test:', () => {
       agent.get(`/api/v1/categories/${category._id}`)
         .set(guestHeader)
         .expect(200)
-        .expect(({ res: { body } }) => expect(body).to.eql(category.toObject({ transform: (doc, ret, options) => {
+        .expect(({ body }) => expect(body).to.eql(category.toObject({ transform: (doc, ret, options) => {
           ret._id = doc._id.toString();
         },
         })))
@@ -498,7 +498,7 @@ describe('Category CRUD Test:', () => {
         .set(adminHeader)
         .send(c2)
         .expect(200)
-        .expect(({ res: { body: { name, order } } }) => {
+        .expect(({ body: { name, order } }) => {
           expect(name).to.be(c2.name);
           expect(order).to.be(c2.order);
         })
@@ -557,7 +557,7 @@ describe('Category CRUD Test:', () => {
         .set(adminHeader)
         .send(p1)
         .expect(201)
-        .expect(({ res: { body: { _category } } }) => {
+        .expect(({ body: { _category } }) => {
           Panel.find({ category: _category }).then(panels => expect(panels.length).to.be(1));
         })
         .end((err, res) => {
@@ -581,7 +581,7 @@ describe('Category CRUD Test:', () => {
         .set(adminHeader)
         .send(p1)
         .expect(201)
-        .end((err, { res: { body: panel } }) => {
+        .end((err, { body: panel }) => {
           if (err) {
             expect(err).to.be.empty();
             return done(err);
@@ -592,7 +592,7 @@ describe('Category CRUD Test:', () => {
             .set(adminHeader)
             .send(p1)
             .expect(201)
-            .expect(({ res: { body: { _category } } }) => {
+            .expect(({ body: { _category } }) => {
               Panel.findOne(panel).then(panel => expect(panel.children.length).to.be(1));
               Panel.find({ category: _category }).then(panels => expect(panels.length).to.be(2));
             })

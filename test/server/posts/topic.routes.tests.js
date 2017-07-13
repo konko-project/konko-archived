@@ -159,7 +159,7 @@ describe('Topic CRUD Test:', () => {
         .set(userHeader)
         .send(t2)
         .expect(201)
-        .expect(({ res: { body: { title, content, panel } } }) => {
+        .expect(({ body: { title, content, panel } }) => {
           expect(title).to.be(t2.title);
           expect(content).to.be(t2.content);
           expect(panel._id).to.be(p._id.toString());
@@ -172,7 +172,7 @@ describe('Topic CRUD Test:', () => {
         .set(adminHeader)
         .send(t2)
         .expect(201)
-        .expect(({ res: { body: { title, content, panel } } }) => {
+        .expect(({ body: { title, content, panel } }) => {
           expect(title).to.be(t2.title);
           expect(content).to.be(t2.content);
           expect(panel._id).to.be(p._id.toString());
@@ -186,7 +186,7 @@ describe('Topic CRUD Test:', () => {
         .set(userHeader)
         .send(t1)
         .expect(201)
-        .expect(({ res: { body: { title, content, panel } } }) => {
+        .expect(({ body: { title, content, panel } }) => {
           expect(title).to.be(t1.title);
           expect(content).to.be(t1.content);
           expect(panel._id).to.be(p._id.toString());
@@ -198,7 +198,7 @@ describe('Topic CRUD Test:', () => {
         .set(userHeader)
         .send(t1)
         .expect(201)
-        .expect(({ res: { body: { title, content, panel: _panel } } }) => {
+        .expect(({ body: { title, content, panel: _panel } }) => {
           expect(title).to.be(t1.title);
           expect(content).to.be(t1.content);
           expect(_panel._id).to.be(panel._id.toString());
@@ -362,7 +362,7 @@ describe('Topic CRUD Test:', () => {
       agent.get(`/api/v1/topics/${topic._id}`)
         .set(adminHeader)
         .expect(200)
-        .expect(({ res: { body: { _id, title, content, author, panel } } }) => {
+        .expect(({ body: { _id, title, content, author, panel } }) => {
           expect(_id).to.be(topic._id.toString());
           expect(title).to.be(topic.title);
           expect(content).to.be(topic.content);
@@ -375,7 +375,7 @@ describe('Topic CRUD Test:', () => {
       agent.get(`/api/v1/topics/${topic._id}`)
         .set(userHeader)
         .expect(200)
-        .expect(({ res: { body: { _id, title, content, author, panel } } }) => {
+        .expect(({ body: { _id, title, content, author, panel } }) => {
           expect(_id).to.be(topic._id.toString());
           expect(title).to.be(topic.title);
           expect(content).to.be(topic.content);
@@ -388,7 +388,7 @@ describe('Topic CRUD Test:', () => {
       agent.get(`/api/v1/topics/${topic._id}`)
         .set(bannedHeader)
         .expect(200)
-        .expect(({ res: { body: { _id, title, content, author, panel } } }) => {
+        .expect(({ body: { _id, title, content, author, panel } }) => {
           expect(_id).to.be(topic._id.toString());
           expect(title).to.be(topic.title);
           expect(content).to.be(topic.content);
@@ -401,7 +401,7 @@ describe('Topic CRUD Test:', () => {
       agent.get(`/api/v1/topics/${topic._id}`)
         .set(guestHeader)
         .expect(200)
-        .expect(({ res: { body: { _id, title, content, author, panel } } }) => {
+        .expect(({ body: { _id, title, content, author, panel } }) => {
           expect(_id).to.be(topic._id.toString());
           expect(title).to.be(topic.title);
           expect(content).to.be(topic.content);
@@ -422,7 +422,7 @@ describe('Topic CRUD Test:', () => {
       agent.get(`/api/v1/topics/${topic._id}?fields=_id,content`)
         .set(adminHeader)
         .expect(200)
-        .expect(({ res: { body: { _id, content } } }) => {
+        .expect(({ body: { _id, content } }) => {
           expect(_id).to.be(topic._id.toString());
           expect(content).to.be(topic.content);
         })
@@ -442,7 +442,7 @@ describe('Topic CRUD Test:', () => {
         .set(adminHeader)
         .send(t2)
         .expect(200)
-        .expect(({ res: { body: { title, content } } }) => {
+        .expect(({ body: { title, content } }) => {
           expect(title).to.be(t2.title);
           expect(content).to.be(t2.content);
         })
@@ -453,7 +453,7 @@ describe('Topic CRUD Test:', () => {
         .set(authorHeader)
         .send(t2)
         .expect(200)
-        .expect(({ res: { body: { title, content } } }) => {
+        .expect(({ body: { title, content } }) => {
           expect(title).to.be(t2.title);
           expect(content).to.be(t2.content);
         })
@@ -548,7 +548,7 @@ describe('Topic CRUD Test:', () => {
         .set(adminHeader)
         .send(t2)
         .expect(200)
-        .expect(({ res: { body: { title, content } } }) => {
+        .expect(({ body: { title, content } }) => {
           expect(title).to.be(t2.title);
           expect(content).to.be(t2.content);
         })

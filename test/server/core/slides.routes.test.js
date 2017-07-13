@@ -113,7 +113,7 @@ describe('Slide CRUD Test:', () => {
         .set(adminHeader)
         .send(s2)
         .expect(201)
-        .expect(({ res: { body: { title, description, image, url, alt, order } } }) => {
+        .expect(({ body: { title, description, image, url, alt, order } }) => {
           expect(title).to.be(s2.title);
           expect(description).to.be(s2.description);
           expect(image).to.be(s2.image);
@@ -180,7 +180,7 @@ describe('Slide CRUD Test:', () => {
       agent.get('/api/v1/slides')
         .set(adminHeader)
         .expect(200)
-        .expect(({ res: { body, body: [s, ...rest] } }) => {
+        .expect(({ body, body: [s, ...rest] }) => {
           expect(body).to.have.length(1);
           expect(s.title).to.be(slide.title);
           expect(s.description).to.be(slide.description);
@@ -194,7 +194,7 @@ describe('Slide CRUD Test:', () => {
       agent.get('/api/v1/slides')
         .set(userHeader)
         .expect(200)
-        .expect(({ res: { body, body: [s, ...rest] } }) => {
+        .expect(({ body, body: [s, ...rest] }) => {
           expect(body).to.have.length(1);
           expect(s.title).to.be(slide.title);
           expect(s.description).to.be(slide.description);
@@ -208,7 +208,7 @@ describe('Slide CRUD Test:', () => {
       agent.get('/api/v1/slides')
         .set(bannedHeader)
         .expect(200)
-        .expect(({ res: { body, body: [s, ...rest] } }) => {
+        .expect(({ body, body: [s, ...rest] }) => {
           expect(body).to.have.length(1);
           expect(s.title).to.be(slide.title);
           expect(s.description).to.be(slide.description);
@@ -222,7 +222,7 @@ describe('Slide CRUD Test:', () => {
       agent.get('/api/v1/slides')
         .set(guestHeader)
         .expect(200)
-        .expect(({ res: { body, body: [s, ...rest] } }) => {
+        .expect(({ body, body: [s, ...rest] }) => {
           expect(body).to.have.length(1);
           expect(s.title).to.be(slide.title);
           expect(s.description).to.be(slide.description);
@@ -242,7 +242,7 @@ describe('Slide CRUD Test:', () => {
       agent.get(`/api/v1/slides/${slide._id}`)
         .set(adminHeader)
         .expect(200)
-        .expect(({ res: { body: { _id, title, description, image, url, alt, order } } }) => {
+        .expect(({ body: { _id, title, description, image, url, alt, order } }) => {
           expect(_id).to.be(slide._id.toString());
           expect(title).to.be(slide.title);
           expect(description).to.be(slide.description);
@@ -256,7 +256,7 @@ describe('Slide CRUD Test:', () => {
       agent.get(`/api/v1/slides/${slide._id}`)
         .set(userHeader)
         .expect(200)
-        .expect(({ res: { body: { _id, title, description, image, url, alt, order } } }) => {
+        .expect(({ body: { _id, title, description, image, url, alt, order } }) => {
           expect(_id).to.be(slide._id.toString());
           expect(title).to.be(slide.title);
           expect(description).to.be(slide.description);
@@ -270,7 +270,7 @@ describe('Slide CRUD Test:', () => {
       agent.get(`/api/v1/slides/${slide._id}`)
         .set(bannedHeader)
         .expect(200)
-        .expect(({ res: { body: { _id, title, description, image, url, alt, order } } }) => {
+        .expect(({ body: { _id, title, description, image, url, alt, order } }) => {
           expect(_id).to.be(slide._id.toString());
           expect(title).to.be(slide.title);
           expect(description).to.be(slide.description);
@@ -284,7 +284,7 @@ describe('Slide CRUD Test:', () => {
       agent.get(`/api/v1/slides/${slide._id}`)
         .set(guestHeader)
         .expect(200)
-        .expect(({ res: { body: { _id, title, description, image, url, alt, order } } }) => {
+        .expect(({ body: { _id, title, description, image, url, alt, order } }) => {
           expect(_id).to.be(slide._id.toString());
           expect(title).to.be(slide.title);
           expect(description).to.be(slide.description);
@@ -318,7 +318,7 @@ describe('Slide CRUD Test:', () => {
         .set(adminHeader)
         .send(s2)
         .expect(200)
-        .expect(({ res: { body: { title, description, image, url, alt, order } } }) => {
+        .expect(({ body: { title, description, image, url, alt, order } }) => {
           expect(title).to.be(s2.title);
           expect(description).to.be(s2.description);
           expect(image).to.be(s2.image);
