@@ -1,9 +1,9 @@
 language: node_js
 node_js:
+  - "8"
+  - "7"
   - "6.0"
   - "6"
-  - "5.0"
-  - "5"
 env:
   global:
     - MONGODB_VERSION=2.6.12
